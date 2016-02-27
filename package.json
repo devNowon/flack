@@ -6,7 +6,10 @@
   "dependencies": {
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
-    "socket.io-client": "^1.4.5"
+    "socket.io-client": "^1.4.5",
+    "express": "^4.4.5",
+    "socket.io": "^1.4.5",
+    "ws": "0.4.x"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",
