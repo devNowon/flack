@@ -14,7 +14,7 @@ app.get('/channel', function(req, res) {
     'local' : {
       user : 1
     }
-  }
+  };
   res.send(data);
 });
 
