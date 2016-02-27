@@ -11,6 +11,9 @@
     "socket.io": "^1.4.5",
     "ws": "0.4.x"
   },
+  "scripts": {
+    "start": "node app.js"
+  },
   "devDependencies": {
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.3",

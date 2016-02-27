@@ -4,7 +4,33 @@ var express = require("express")
 var app = express()
 var port = process.env.PORT || 3000
 
-app.use(express.static(__dirname + "/"))
+app.use(express.static(__dirname + "/app"))
+
+app.get('/channel', function(req, res) {
+  var data = {
+    'dev' : {
+      user : 2
+    },
+    'local' : {
+      user : 1
+    }
+  }
+  res.send(data);
+});
+
+app.get('/user/list', function(req,res) {
+  var user = [
+    {
+      id : 'id',
+      name : 'name',
+    },
+    {
+      id : 'id2',
+      name : 'name2',
+    }
+  ];
+  res.send(user);
+})
 
 var server = http.createServer(app)
 
