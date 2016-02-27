@@ -13,6 +13,6 @@ export default class InputComponent extends React.Component {
         />
         <button onClick={this.props.handleButtonClick}> {this.props.buttonText} </button>
       </div>
-    )
+    );
   }
 }
