@@ -74,7 +74,7 @@ export default class MessageWrapperComponent extends React.Component {
           ></InputComponent>
           {this.state.TYPING?<nowInput />:""}
         </div>
-    )
+    );
   }
 }
 
