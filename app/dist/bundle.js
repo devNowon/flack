@@ -19667,7 +19667,7 @@
 /* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -19683,11 +19683,11 @@
 
 	var _socket2 = _interopRequireDefault(_socket);
 
-	var _MessageComponent = __webpack_require__(208);
+	var _MessageComponent = __webpack_require__(207);
 
 	var _MessageComponent2 = _interopRequireDefault(_MessageComponent);
 
-	var _InputComponent = __webpack_require__(209);
+	var _InputComponent = __webpack_require__(208);
 
 	var _InputComponent2 = _interopRequireDefault(_InputComponent);
 
@@ -19714,10 +19714,10 @@
 	      TYPING: false
 	    };
 	    _this.receiveProcess = _this.receiveProcess.bind(_this);
-	    _this.clickSendButton = _this.clickSendButton.bind(_this);
 	    _this.handleInputChange = _this.handleInputChange.bind(_this);
 	    _this.handleInputBlur = _this.handleInputBlur.bind(_this);
 	    _this.handleInputFocus = _this.handleInputFocus.bind(_this);
+	    _this.handleKeyPress = _this.handleKeyPress.bind(_this);
 	    return _this;
 	  }
 
@@ -19739,11 +19739,6 @@
 	      this.setState({ receivedMessages: receivedMessages });
 	    }
 	  }, {
-	    key: 'clickSendButton',
-	    value: function clickSendButton() {
-	      SOCKET.emit('chat message', this.state.inputValue);
-	    }
-	  }, {
 	    key: 'handleInputChange',
 	    value: function handleInputChange(e) {
 	      this.setState({ inputValue: e.target.value });
@@ -19759,8 +19754,18 @@
 	      SOCKET.emit('typing', false);
 	    }
 	  }, {
+	    key: 'handleKeyPress',
+	    value: function handleKeyPress(e) {
+	      if (e.key === 'Enter') {
+	        SOCKET.emit('chat message', this.state.inputValue);
+	        this.setState({ inputValue: '' });
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
+	      "use strict";
+
 	      var _this3 = this;
 
 	      var processReceivedMessages = function processReceivedMessages() {
@@ -19785,10 +19790,9 @@
 	        _react2.default.createElement(_InputComponent2.default, {
 	          inputValue: this.state.inputValue,
 	          handleInputChange: this.handleInputChange,
-	          handleButtonClick: this.clickSendButton,
 	          handleInputFocus: this.handleInputFocus,
 	          handleInputBlur: this.handleInputBlur,
-	          buttonText: 'send'
+	          handleKeyPress: this.handleKeyPress
 	        }),
 	        this.state.TYPING ? _react2.default.createElement('nowInput', null) : ""
 	      );
@@ -19904,7 +19908,7 @@
 	 */
 
 	exports.Manager = __webpack_require__(174);
-	exports.Socket = __webpack_require__(201);
+	exports.Socket = __webpack_require__(200);
 
 
 /***/ },
@@ -22239,14 +22243,14 @@
 	 */
 
 	var eio = __webpack_require__(175);
-	var Socket = __webpack_require__(201);
-	var Emitter = __webpack_require__(202);
+	var Socket = __webpack_require__(200);
+	var Emitter = __webpack_require__(201);
 	var parser = __webpack_require__(166);
-	var on = __webpack_require__(204);
-	var bind = __webpack_require__(205);
+	var on = __webpack_require__(203);
+	var bind = __webpack_require__(204);
 	var debug = __webpack_require__(163)('socket.io-client:manager');
-	var indexOf = __webpack_require__(199);
-	var Backoff = __webpack_require__(207);
+	var indexOf = __webpack_require__(198);
+	var Backoff = __webpack_require__(206);
 
 	/**
 	 * IE6+ hasOwnProperty
@@ -22825,13 +22829,13 @@
 	 */
 
 	var transports = __webpack_require__(178);
-	var Emitter = __webpack_require__(192);
+	var Emitter = __webpack_require__(171);
 	var debug = __webpack_require__(163)('engine.io-client:socket');
-	var index = __webpack_require__(199);
+	var index = __webpack_require__(198);
 	var parser = __webpack_require__(184);
 	var parseuri = __webpack_require__(162);
-	var parsejson = __webpack_require__(200);
-	var parseqs = __webpack_require__(193);
+	var parsejson = __webpack_require__(199);
+	var parseqs = __webpack_require__(192);
 
 	/**
 	 * Module exports.
@@ -23561,8 +23565,8 @@
 
 	var XMLHttpRequest = __webpack_require__(179);
 	var XHR = __webpack_require__(181);
-	var JSONP = __webpack_require__(196);
-	var websocket = __webpack_require__(197);
+	var JSONP = __webpack_require__(195);
+	var websocket = __webpack_require__(196);
 
 	/**
 	 * Export transports.
@@ -23686,8 +23690,8 @@
 
 	var XMLHttpRequest = __webpack_require__(179);
 	var Polling = __webpack_require__(182);
-	var Emitter = __webpack_require__(192);
-	var inherit = __webpack_require__(194);
+	var Emitter = __webpack_require__(171);
+	var inherit = __webpack_require__(193);
 	var debug = __webpack_require__(163)('engine.io-client:polling-xhr');
 
 	/**
@@ -24104,10 +24108,10 @@
 	 */
 
 	var Transport = __webpack_require__(183);
-	var parseqs = __webpack_require__(193);
+	var parseqs = __webpack_require__(192);
 	var parser = __webpack_require__(184);
-	var inherit = __webpack_require__(194);
-	var yeast = __webpack_require__(195);
+	var inherit = __webpack_require__(193);
+	var yeast = __webpack_require__(194);
 	var debug = __webpack_require__(163)('engine.io-client:polling');
 
 	/**
@@ -24357,7 +24361,7 @@
 	 */
 
 	var parser = __webpack_require__(184);
-	var Emitter = __webpack_require__(192);
+	var Emitter = __webpack_require__(171);
 
 	/**
 	 * Module exports.
@@ -25690,176 +25694,6 @@
 /* 192 */
 /***/ function(module, exports) {
 
-	
-	/**
-	 * Expose `Emitter`.
-	 */
-
-	module.exports = Emitter;
-
-	/**
-	 * Initialize a new `Emitter`.
-	 *
-	 * @api public
-	 */
-
-	function Emitter(obj) {
-	  if (obj) return mixin(obj);
-	};
-
-	/**
-	 * Mixin the emitter properties.
-	 *
-	 * @param {Object} obj
-	 * @return {Object}
-	 * @api private
-	 */
-
-	function mixin(obj) {
-	  for (var key in Emitter.prototype) {
-	    obj[key] = Emitter.prototype[key];
-	  }
-	  return obj;
-	}
-
-	/**
-	 * Listen on the given `event` with `fn`.
-	 *
-	 * @param {String} event
-	 * @param {Function} fn
-	 * @return {Emitter}
-	 * @api public
-	 */
-
-	Emitter.prototype.on =
-	Emitter.prototype.addEventListener = function(event, fn){
-	  this._callbacks = this._callbacks || {};
-	  (this._callbacks[event] = this._callbacks[event] || [])
-	    .push(fn);
-	  return this;
-	};
-
-	/**
-	 * Adds an `event` listener that will be invoked a single
-	 * time then automatically removed.
-	 *
-	 * @param {String} event
-	 * @param {Function} fn
-	 * @return {Emitter}
-	 * @api public
-	 */
-
-	Emitter.prototype.once = function(event, fn){
-	  var self = this;
-	  this._callbacks = this._callbacks || {};
-
-	  function on() {
-	    self.off(event, on);
-	    fn.apply(this, arguments);
-	  }
-
-	  on.fn = fn;
-	  this.on(event, on);
-	  return this;
-	};
-
-	/**
-	 * Remove the given callback for `event` or all
-	 * registered callbacks.
-	 *
-	 * @param {String} event
-	 * @param {Function} fn
-	 * @return {Emitter}
-	 * @api public
-	 */
-
-	Emitter.prototype.off =
-	Emitter.prototype.removeListener =
-	Emitter.prototype.removeAllListeners =
-	Emitter.prototype.removeEventListener = function(event, fn){
-	  this._callbacks = this._callbacks || {};
-
-	  // all
-	  if (0 == arguments.length) {
-	    this._callbacks = {};
-	    return this;
-	  }
-
-	  // specific event
-	  var callbacks = this._callbacks[event];
-	  if (!callbacks) return this;
-
-	  // remove all handlers
-	  if (1 == arguments.length) {
-	    delete this._callbacks[event];
-	    return this;
-	  }
-
-	  // remove specific handler
-	  var cb;
-	  for (var i = 0; i < callbacks.length; i++) {
-	    cb = callbacks[i];
-	    if (cb === fn || cb.fn === fn) {
-	      callbacks.splice(i, 1);
-	      break;
-	    }
-	  }
-	  return this;
-	};
-
-	/**
-	 * Emit `event` with the given args.
-	 *
-	 * @param {String} event
-	 * @param {Mixed} ...
-	 * @return {Emitter}
-	 */
-
-	Emitter.prototype.emit = function(event){
-	  this._callbacks = this._callbacks || {};
-	  var args = [].slice.call(arguments, 1)
-	    , callbacks = this._callbacks[event];
-
-	  if (callbacks) {
-	    callbacks = callbacks.slice(0);
-	    for (var i = 0, len = callbacks.length; i < len; ++i) {
-	      callbacks[i].apply(this, args);
-	    }
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Return array of callbacks for `event`.
-	 *
-	 * @param {String} event
-	 * @return {Array}
-	 * @api public
-	 */
-
-	Emitter.prototype.listeners = function(event){
-	  this._callbacks = this._callbacks || {};
-	  return this._callbacks[event] || [];
-	};
-
-	/**
-	 * Check if this emitter has `event` handlers.
-	 *
-	 * @param {String} event
-	 * @return {Boolean}
-	 * @api public
-	 */
-
-	Emitter.prototype.hasListeners = function(event){
-	  return !! this.listeners(event).length;
-	};
-
-
-/***/ },
-/* 193 */
-/***/ function(module, exports) {
-
 	/**
 	 * Compiles a querystring
 	 * Returns string representation of the object
@@ -25900,7 +25734,7 @@
 
 
 /***/ },
-/* 194 */
+/* 193 */
 /***/ function(module, exports) {
 
 	
@@ -25912,7 +25746,7 @@
 	};
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -25986,7 +25820,7 @@
 
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {
@@ -25995,7 +25829,7 @@
 	 */
 
 	var Polling = __webpack_require__(182);
-	var inherit = __webpack_require__(194);
+	var inherit = __webpack_require__(193);
 
 	/**
 	 * Module exports.
@@ -26231,7 +26065,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -26240,9 +26074,9 @@
 
 	var Transport = __webpack_require__(183);
 	var parser = __webpack_require__(184);
-	var parseqs = __webpack_require__(193);
-	var inherit = __webpack_require__(194);
-	var yeast = __webpack_require__(195);
+	var parseqs = __webpack_require__(192);
+	var inherit = __webpack_require__(193);
+	var yeast = __webpack_require__(194);
 	var debug = __webpack_require__(163)('engine.io-client:websocket');
 	var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 
@@ -26255,7 +26089,7 @@
 	var WebSocket = BrowserWebSocket;
 	if (!WebSocket && typeof window === 'undefined') {
 	  try {
-	    WebSocket = __webpack_require__(198);
+	    WebSocket = __webpack_require__(197);
 	  } catch (e) { }
 	}
 
@@ -26526,13 +26360,13 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports) {
 
 	
@@ -26547,7 +26381,7 @@
 	};
 
 /***/ },
-/* 200 */
+/* 199 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -26585,7 +26419,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -26594,12 +26428,12 @@
 	 */
 
 	var parser = __webpack_require__(166);
-	var Emitter = __webpack_require__(202);
-	var toArray = __webpack_require__(203);
-	var on = __webpack_require__(204);
-	var bind = __webpack_require__(205);
+	var Emitter = __webpack_require__(201);
+	var toArray = __webpack_require__(202);
+	var on = __webpack_require__(203);
+	var bind = __webpack_require__(204);
 	var debug = __webpack_require__(163)('socket.io-client:socket');
-	var hasBin = __webpack_require__(206);
+	var hasBin = __webpack_require__(205);
 
 	/**
 	 * Module exports.
@@ -27003,7 +26837,7 @@
 
 
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports) {
 
 	
@@ -27170,7 +27004,7 @@
 
 
 /***/ },
-/* 203 */
+/* 202 */
 /***/ function(module, exports) {
 
 	module.exports = toArray
@@ -27189,7 +27023,7 @@
 
 
 /***/ },
-/* 204 */
+/* 203 */
 /***/ function(module, exports) {
 
 	
@@ -27219,7 +27053,7 @@
 
 
 /***/ },
-/* 205 */
+/* 204 */
 /***/ function(module, exports) {
 
 	/**
@@ -27248,7 +27082,7 @@
 
 
 /***/ },
-/* 206 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {
@@ -27314,7 +27148,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 207 */
+/* 206 */
 /***/ function(module, exports) {
 
 	
@@ -27405,7 +27239,7 @@
 
 
 /***/ },
-/* 208 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27440,6 +27274,8 @@
 	  _createClass(MessageComponent, [{
 	    key: "render",
 	    value: function render() {
+	      "use strict";
+
 	      return _react2.default.createElement(
 	        "div",
 	        null,
@@ -27454,10 +27290,10 @@
 	exports.default = MessageComponent;
 
 /***/ },
-/* 209 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -27489,21 +27325,17 @@
 	  _createClass(InputComponent, [{
 	    key: 'render',
 	    value: function render() {
+	      "use strict";
+
 	      return _react2.default.createElement(
 	        'div',
 	        null,
 	        _react2.default.createElement('input', { type: 'text', value: this.props.inputValue,
 	          onChange: this.props.handleInputChange,
 	          onBlur: this.props.handleInputBlur,
-	          onFocus: this.props.handleInputFocus
-	        }),
-	        _react2.default.createElement(
-	          'button',
-	          { onClick: this.props.handleButtonClick },
-	          ' ',
-	          this.props.buttonText,
-	          ' '
-	        )
+	          onFocus: this.props.handleInputFocus,
+	          onKeyPress: this.props.handleKeyPress
+	        })
 	      );
 	    }
 	  }]);

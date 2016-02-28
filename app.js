@@ -1,10 +1,10 @@
 //var WebSocketServer = require("ws").Server
-var http = require("http")
-var express = require("express")
-var app = express()
-var port = process.env.PORT || 3000
+var http = require("http");
+var express = require("express");
+var app = express();
+var port = process.env.PORT || 3000;
 
-app.use(express.static(__dirname + "/app"))
+app.use(express.static(__dirname + "/app"));
 
 app.get('/channel', function(req, res) {
   var data = {
@@ -30,15 +30,15 @@ app.get('/user/list', function(req,res) {
     }
   ];
   res.send(user);
-})
+});
 
-var server = http.createServer(app)
+var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 
-server.listen(port)
+server.listen(port);
 
-console.log("http server listening on %d", port)
+console.log("http server listening on %d", port);
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -46,6 +46,6 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
   socket.on('typing', function(bool){
-    io.emit('typing', bool)
+    io.emit('typing', bool);
   });
 });
