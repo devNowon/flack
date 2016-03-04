@@ -18,21 +18,28 @@ var rooms = [];
 io.on('connection', function(socket){
   console.log('a user connected');
 
-  var roomId;
+  var roomID = 'global';
+  socket.join(roomID);
+
   socket.on('joinRoom', function(data){
-    roomId = data;
-    socket.join(roomId);
+    roomID = data;
+    socket.join(roomID);
     console.log('JOIN ROOM LIST', io.sockets.adapter.rooms);
   });
 
   socket.on('leaveRoom', function(data){
-    socket.leave(roomID);//룸퇴장
-    roomID = null;
+    socket.leave(roomID);
+    roomID = 'global';
     console.log('OUT ROOM LIST', io.sockets.adapter.rooms);
   });
 
+  socket.on('roomInformation', function(){
+    console.log('gro')
+    io.emit('roomInformation', io.sockets.adapter.rooms);
+  });
+
   socket.on('sendMessage', function(data){
-    io.sockets.in(room_id).emit('receiveMessage', data);
+    io.sockets.in(roomID).emit('receiveMessage', data);
   });
 
   socket.on('typing', function(bool){
