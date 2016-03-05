@@ -7,6 +7,7 @@ var port = process.env.PORT || 3000;
 
 var mongoose = require('mongoose');
 var passport = require('passport');
+var mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev';
 
 app.use(express.static(path.join(__dirname, '../app')));
 
@@ -21,7 +22,7 @@ app.use(passport.session());
 require('./config/passport.js')(passport); // pass passport for configuration
 app.use(require('./router/user.router.js'));
 
-mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev');
+mongoose.connect(mongoURI);
 
 var server = http.createServer(app);
 
