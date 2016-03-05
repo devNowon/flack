@@ -1,4 +1,4 @@
-//var WebSocketServer = require("ws").Server
+var path = require('path');
 var http = require("http");
 var express = require("express");
 var bodyParser = require('body-parser');
@@ -7,8 +7,9 @@ var port = process.env.PORT || 3000;
 
 var mongoose = require('mongoose');
 var passport = require('passport');
+var mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev';
 
-app.use(express.static("../app/"));
+app.use(express.static(path.join(__dirname, '../app')));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -21,7 +22,7 @@ app.use(passport.session());
 require('./config/passport.js')(passport); // pass passport for configuration
 app.use(require('./router/user.router.js'));
 
-mongoose.connect('mongodb://localhost/flack-dev');
+mongoose.connect(mongoURI);
 
 var server = http.createServer(app);
 
@@ -51,7 +52,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('roomInformation', function(){
-    console.log('gro')
     io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
