@@ -64,7 +64,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	_reactDom2.default.render(_react2.default.createElement(_ListWrapperComponent2.default, { url: '/user/list' }), document.getElementById('listPeoples'));
+	_reactDom2.default.render(_react2.default.createElement(_ListWrapperComponent2.default, null), document.getElementById('listPeoples'));
 	_reactDom2.default.render(_react2.default.createElement(_MessageWrapperComponent2.default, null), document.getElementById('contents'));
 
 /***/ },
@@ -19704,7 +19704,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var SOCKET = (0, _socket2.default)('');
+	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com');
 
 	var MessageWrapperComponent = function (_React$Component) {
 	  _inherits(MessageWrapperComponent, _React$Component);
@@ -27435,7 +27435,7 @@
 	// const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 
-	var SOCKET = (0, _socket2.default)('');
+	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com');
 
 	var ListWrapperComponent = function (_React$Component) {
 	  _inherits(ListWrapperComponent, _React$Component);
@@ -27445,8 +27445,8 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ListWrapperComponent).call(this));
 
-	    _this.state = { data: [], userID: '' };
-	    _this.receiveUser = _this.receiveUser.bind(_this);
+	    _this.state = { data: [] };
+	    // this.receiveUser = this.receiveUser.bind(this);
 	    return _this;
 	  }
 
@@ -27455,22 +27455,28 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
-	      SOCKET.on('userID', function (e) {
-	        _this2.setState({ userID: e });
-	      });
-	      request.get(this.props.url).end(function (err, res) {
-	        if (err || !res.ok) {
-	          alert('yay got ' + JSON.stringify(res.body));
-	        } else {
-	          _this2.setState({ data: res.body });
-	        }
+	      // SOCKET.on('userID',(e)=>{this.setState({userID: e})});
+	      // request
+	      //   .get(this.props.url)
+	      //   .end((err, res)=>{
+	      //     if (err || !res.ok) {
+	      //       alert('yay got ' + JSON.stringify(res.body));
+	      //    } else {
+	      //       this.setState({data: res.body});
+	      //    }
+	      // });
+	      console.log('a');
+	      SOCKET.on('roomInformation', function (obj) {
+	        console.log(obj);
+	        _this2.setState({ data: obj });
 	      });
 	    }
 	  }, {
 	    key: 'receiveUser',
 	    value: function receiveUser(msg) {
-	      this.setState({ userID: msg });
-	      console.log(msg);
+	      var receivedUsers = this.state.data.slice();
+	      receivedUsers.push(msg);
+	      this.setState({ data: receivedUsers });
 	    }
 	  }, {
 	    key: 'render',
@@ -27483,19 +27489,16 @@
 	        var dom = [];
 	        var people = _this3.state.data;
 	        for (var i = 0; i < people.length; i++) {
-	          dom.push(_react2.default.createElement(_PeopleComponent2.default, { name: people[i].name, key: people[i].id }));
+	          dom.push(_react2.default.createElement(_PeopleComponent2.default, { name: people[i], key: i }));
+	          console.log(i);
 	        }
 	        return dom;
 	      };
+	      // <p>{this.state.userID}</p>
 
 	      return _react2.default.createElement(
 	        'ul',
 	        null,
-	        _react2.default.createElement(
-	          'p',
-	          null,
-	          this.state.userID
-	        ),
 	        listsOfPeoples()
 	      );
 	    }
