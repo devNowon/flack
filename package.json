@@ -20,7 +20,8 @@
     "ws": "0.4.x"
   },
   "scripts": {
-    "start": "node server/app.js"
+    "start": "node server/app.js",
+    "dev" : "webpack-dev-server --content-base app"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",
@@ -30,6 +31,7 @@
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0",
-    "webpack": "^1.12.13"
+    "webpack": "^1.12.13",
+    "webpack-dev-server": "^1.14.1"
   }
 }
