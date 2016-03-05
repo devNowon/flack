@@ -1,4 +1,4 @@
-//var WebSocketServer = require("ws").Server
+var path = require('path');
 var http = require("http");
 var express = require("express");
 var bodyParser = require('body-parser');
@@ -8,7 +8,7 @@ var port = process.env.PORT || 3000;
 var mongoose = require('mongoose');
 var passport = require('passport');
 
-app.use(express.static("../app/"));
+app.use(express.static(path.join(__dirname, '../app')));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
