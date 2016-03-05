@@ -1,10 +1,27 @@
 //var WebSocketServer = require("ws").Server
 var http = require("http");
 var express = require("express");
+var bodyParser = require('body-parser');
 var app = express();
 var port = process.env.PORT || 3000;
 
+var mongoose = require('mongoose');
+var passport = require('passport');
+
 app.use(express.static("../app/"));
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./config/passport.js')(passport); // pass passport for configuration
+app.use(require('./router/user.router.js'));
+
+mongoose.connect('mongodb://localhost/flack-dev');
 
 var server = http.createServer(app);
 
