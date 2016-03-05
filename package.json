@@ -12,7 +12,7 @@
     "ws": "0.4.x"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node server/app.js"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",

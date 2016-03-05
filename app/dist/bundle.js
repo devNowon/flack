@@ -44,7 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var _reactDom = __webpack_require__(1);
 
@@ -19667,7 +19667,7 @@
 /* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -19699,7 +19699,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
+	var SOCKET = (0, _socket2.default)('localhost:3000');
 
 	var MessageWrapperComponent = function (_React$Component) {
 	  _inherits(MessageWrapperComponent, _React$Component);
@@ -19718,6 +19718,8 @@
 	    _this.handleInputChange = _this.handleInputChange.bind(_this);
 	    _this.handleInputBlur = _this.handleInputBlur.bind(_this);
 	    _this.handleInputFocus = _this.handleInputFocus.bind(_this);
+	    _this.handleRoomNameInputChange = _this.handleRoomNameInputChange.bind(_this);
+	    _this.handleRoomNameButtonClick = _this.handleRoomNameButtonClick.bind(_this);
 	    return _this;
 	  }
 
@@ -19726,10 +19728,19 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
-	      SOCKET.on('chat message', this.receiveProcess);
+	      SOCKET.on('receiveMessage', this.receiveProcess);
 	      SOCKET.on('typing', function (bool) {
 	        _this2.setState({ TYPING: bool });
 	      });
+	      SOCKET.on('roomInformation', function (obj) {
+	        console.log(obj);
+	      });
+	    }
+	  }, {
+	    key: 'getRoomInformation',
+	    value: function getRoomInformation() {
+	      console.log('asd');
+	      SOCKET.emit('roomInformation');
 	    }
 	  }, {
 	    key: 'receiveProcess',
@@ -19741,12 +19752,22 @@
 	  }, {
 	    key: 'clickSendButton',
 	    value: function clickSendButton() {
-	      SOCKET.emit('chat message', this.state.inputValue);
+	      SOCKET.emit('sendMessage', this.state.inputValue);
 	    }
 	  }, {
 	    key: 'handleInputChange',
 	    value: function handleInputChange(e) {
 	      this.setState({ inputValue: e.target.value });
+	    }
+	  }, {
+	    key: 'handleRoomNameInputChange',
+	    value: function handleRoomNameInputChange(e) {
+	      this.setState({ roomName: e.target.value });
+	    }
+	  }, {
+	    key: 'handleRoomNameButtonClick',
+	    value: function handleRoomNameButtonClick() {
+	      SOCKET.emit('joinRoom', this.state.roomName);
 	    }
 	  }, {
 	    key: 'handleInputFocus',
@@ -19755,7 +19776,7 @@
 	    }
 	  }, {
 	    key: 'handleInputBlur',
-	    value: function handleInputBlur(e) {
+	    value: function handleInputBlur() {
 	      SOCKET.emit('typing', false);
 	    }
 	  }, {
@@ -19790,7 +19811,22 @@
 	          handleInputBlur: this.handleInputBlur,
 	          buttonText: 'send'
 	        }),
-	        this.state.TYPING ? _react2.default.createElement('nowInput', null) : ""
+	        this.state.TYPING ? _react2.default.createElement('nowInput', null) : "",
+	        _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_InputComponent2.default, {
+	            inputValue: this.state.roomName,
+	            handleInputChange: this.handleRoomNameInputChange,
+	            handleButtonClick: this.handleRoomNameButtonClick,
+	            buttonText: 'enter room'
+	          })
+	        ),
+	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.getRoomInformation },
+	          ' Get Room Info '
+	        )
 	      );
 	    }
 	  }]);
@@ -27408,7 +27444,7 @@
 /* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -27438,12 +27474,13 @@
 	  }
 
 	  _createClass(MessageComponent, [{
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
+	        'div',
 	        null,
-	        this.props.message
+	        this.props.message,
+	        ';'
 	      );
 	    }
 	  }]);
@@ -27457,7 +27494,7 @@
 /* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true

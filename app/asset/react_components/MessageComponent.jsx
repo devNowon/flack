@@ -1,5 +1,3 @@
-"use strict";
-
 import React from 'react';
 
 export default class MessageComponent extends React.Component {
@@ -8,6 +6,6 @@ export default class MessageComponent extends React.Component {
       <div>
         {this.props.message};
       </div>
-    )
+    );
   }
 }

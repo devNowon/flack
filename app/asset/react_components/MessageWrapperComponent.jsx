@@ -1,5 +1,3 @@
-"use strict";
-
 import React from 'react';
 import io from 'socket.io-client';
 
@@ -20,34 +18,51 @@ export default class MessageWrapperComponent extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputBlur = this.handleInputBlur.bind(this);
     this.handleInputFocus = this.handleInputFocus.bind(this);
+    this.handleRoomNameInputChange = this.handleRoomNameInputChange.bind(this);
+    this.handleRoomNameButtonClick = this.handleRoomNameButtonClick.bind(this);
   }
 
   componentDidMount() {
-    SOCKET.on('chat message',this.receiveProcess);
+    SOCKET.on('receiveMessage', this.receiveProcess);
     SOCKET.on('typing', (bool) => {
-      this.setState({TYPING: bool});
+      this.setState({ TYPING: bool });
     });
+    SOCKET.on('roomInformation', (obj) => {
+      console.log(obj);
+    });
+  }
+
+  getRoomInformation() {
+    SOCKET.emit('roomInformation');
   }
 
   receiveProcess(msg) {
     let receivedMessages = this.state.receivedMessages.slice();
     receivedMessages.push(msg);
-    this.setState({receivedMessages: receivedMessages});
+    this.setState({ receivedMessages: receivedMessages });
   }
 
   clickSendButton() {
-    SOCKET.emit('chat message', this.state.inputValue);
+    SOCKET.emit('sendMessage', this.state.inputValue);
   }
 
   handleInputChange(e) {
-    this.setState({inputValue: e.target.value});
+    this.setState({ inputValue: e.target.value });
   }
 
-  handleInputFocus(){
+  handleRoomNameInputChange(e) {
+    this.setState({ roomName: e.target.value });
+  }
+
+  handleRoomNameButtonClick() {
+    SOCKET.emit('joinRoom', this.state.roomName);
+  }
+
+  handleInputFocus() {
     SOCKET.emit('typing', true);
   }
 
-  handleInputBlur(e){
+  handleInputBlur() {
     SOCKET.emit('typing', false);
   }
 
@@ -73,6 +88,16 @@ export default class MessageWrapperComponent extends React.Component {
             buttonText="send"
           ></InputComponent>
           {this.state.TYPING?<nowInput />:""}
+
+          <div>
+            <InputComponent
+              inputValue={this.state.roomName}
+              handleInputChange={this.handleRoomNameInputChange}
+              handleButtonClick={this.handleRoomNameButtonClick}
+              buttonText="enter room"
+            />
+          </div>
+          <button onClick={this.getRoomInformation}> Get Room Info </button>
         </div>
     )
   }
