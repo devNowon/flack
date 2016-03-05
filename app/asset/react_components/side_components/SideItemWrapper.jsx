@@ -17,7 +17,7 @@ class SideItemWrapper extends React.Component {
     }
     render() {
     	// 채널 리스트를 뿌려주는 메소드
-    	let showChannelList() {
+    	let showChannelList = () => {
     		let itemDom = [];
     		let channelItems = this.props.channelArr; // 채널 이름 배열
     		for (let item of channelItems) {

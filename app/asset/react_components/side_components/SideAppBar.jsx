@@ -1,10 +1,7 @@
-"use strict";
-
 import React from 'react';
 import FlatButton from 'material-ui/lib/flat-button';
 import AppBar from 'material-ui/lib/app-bar';
 import IconButton from 'material-ui/lib/icon-button';
-import FlatButton from 'material-ui/lib/flat-button';
 
 const style = {
 	appBar: {
@@ -20,12 +17,10 @@ class SideAppBar extends React.Component {
     render() {
         return 
         (
-        	<div>
         		<AppBar 
-        			title={this.props.title}({this.props.itemLength})
+        			title={this.props.title + '(' +this.props.itemLength + ')'}
         			iconElementRight={<FlatButton label="add" onClick={this.props.handleChnlAddClick}/>}
         		/>
-        	</div>
         );
     }
 }
