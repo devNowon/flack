@@ -9,6 +9,7 @@ class SideAppBar extends React.Component {
         this.displayName = 'SideAppBar';
     }
     render() {
+
         return (
         	<AppBar 
         		title={this.props.title + '(' + this.props.itemLength + ')'}

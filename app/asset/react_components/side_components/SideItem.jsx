@@ -7,12 +7,14 @@ class SideItem extends React.Component {
         this.displayName = 'SideItem';
     }
     render() {
+
         return (
         	<MenuItem 
         	primaryText={this.props.name} 
-        	leftIcon={this.props.icon} />
+        	leftIcon={this.props.icon}  />
         );
     }
 }
 
 export default SideItem;
+ 
