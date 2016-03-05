@@ -5,6 +5,8 @@ import MessageComponent from './MessageComponent.jsx';
 import InputComponent from './InputComponent.jsx';
 import LogIn from './login.jsx';
 
+import ChannelWrapperComponent from './channel_components/ChannelWrapperComponent.jsx';
+
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 export default class MessageWrapperComponent extends React.Component {
@@ -100,6 +102,7 @@ export default class MessageWrapperComponent extends React.Component {
           </div>
           <button onClick={this.getRoomInformation}> Get Room Info </button>
           <LogIn />
+          <ChannelWrapperComponent/>
         </div>
     )
   }
