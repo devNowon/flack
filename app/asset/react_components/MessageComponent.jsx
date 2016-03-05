@@ -7,6 +7,6 @@ export default class MessageComponent extends React.Component {
       <div>
         {this.props.message}
       </div>
-    )
+    );
   }
 }
