@@ -64,7 +64,7 @@ export default class MessageWrapperComponent extends React.Component {
   }
   handleKeyPress(e) {
     if (e.key === 'Enter') {
-      SOCKET.emit('receiveMessage', this.state.inputValue);
+      SOCKET.emit('sendMessage', this.state.inputValue);
       this.setState({inputValue: ''});
     }
   }

@@ -19704,15 +19704,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	var SOCKET = (0, _socket2.default)('');
-=======
-	var SOCKET = (0, _socket2.default)('localhost:3000');
->>>>>>> 95e387461847b92ea7b71c862c60468b2ac32b6f
-=======
-	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
->>>>>>> cb25aa0638470d5e17a1ad47f85e36ca18265f02
 
 	var MessageWrapperComponent = function (_React$Component) {
 	  _inherits(MessageWrapperComponent, _React$Component);
@@ -19730,12 +19722,9 @@
 	    _this.handleInputChange = _this.handleInputChange.bind(_this);
 	    _this.handleInputBlur = _this.handleInputBlur.bind(_this);
 	    _this.handleInputFocus = _this.handleInputFocus.bind(_this);
-<<<<<<< HEAD
 	    _this.handleKeyPress = _this.handleKeyPress.bind(_this);
-=======
 	    _this.handleRoomNameInputChange = _this.handleRoomNameInputChange.bind(_this);
 	    _this.handleRoomNameButtonClick = _this.handleRoomNameButtonClick.bind(_this);
->>>>>>> 95e387461847b92ea7b71c862c60468b2ac32b6f
 	    return _this;
 	  }
 
@@ -19765,14 +19754,6 @@
 	      this.setState({ receivedMessages: receivedMessages });
 	    }
 	  }, {
-<<<<<<< HEAD
-=======
-	    key: 'clickSendButton',
-	    value: function clickSendButton() {
-	      SOCKET.emit('sendMessage', this.state.inputValue);
-	    }
-	  }, {
->>>>>>> 95e387461847b92ea7b71c862c60468b2ac32b6f
 	    key: 'handleInputChange',
 	    value: function handleInputChange(e) {
 	      this.setState({ inputValue: e.target.value });
@@ -19801,7 +19782,7 @@
 	    key: 'handleKeyPress',
 	    value: function handleKeyPress(e) {
 	      if (e.key === 'Enter') {
-	        SOCKET.emit('chat message', this.state.inputValue);
+	        SOCKET.emit('sendMessage', this.state.inputValue);
 	        this.setState({ inputValue: '' });
 	      }
 	    }
@@ -27301,7 +27282,7 @@
 /* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -27331,15 +27312,14 @@
 	  }
 
 	  _createClass(MessageComponent, [{
-	    key: 'render',
+	    key: "render",
 	    value: function render() {
 	      "use strict";
 
 	      return _react2.default.createElement(
-	        'div',
+	        "div",
 	        null,
-	        this.props.message,
-	        ';'
+	        this.props.message
 	      );
 	    }
 	  }]);
@@ -27395,7 +27375,14 @@
 	          onBlur: this.props.handleInputBlur,
 	          onFocus: this.props.handleInputFocus,
 	          onKeyPress: this.props.handleKeyPress
-	        })
+	        }),
+	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.props.handleButtonClick },
+	          ' ',
+	          this.props.buttonText,
+	          ' '
+	        )
 	      );
 	    }
 	  }]);

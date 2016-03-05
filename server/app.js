@@ -6,6 +6,21 @@ var port = process.env.PORT || 3000;
 
 app.use(express.static("../app/"));
 
+var user =[];
+app.get('/user/list', function(req,res) {
+  user = [
+    {
+      id : 'id',
+      name : 'name',
+    },
+    {
+      id : 'id2',
+      name : 'name2',
+    }
+  ];
+  res.send(user);
+});
+
 var server = http.createServer(app);
 
 var io = require('socket.io')(server);

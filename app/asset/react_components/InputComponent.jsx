@@ -11,6 +11,7 @@ export default class InputComponent extends React.Component {
           onFocus={this.props.handleInputFocus}
           onKeyPress = {this.props.handleKeyPress} 
         />
+        <button onClick={this.props.handleButtonClick}> {this.props.buttonText} </button>
       </div>
     );
   }

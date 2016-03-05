@@ -6,3 +6,4 @@ import ListWrapperComponent from './asset/react_components/ListWrapperComponent.
 
 ReactDOM.render(<ListWrapperComponent url="/user/list" />, document.getElementById('listPeoples'));
 ReactDOM.render(<MessageWrapperComponent />, document.getElementById('contents'));
+ 
