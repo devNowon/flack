@@ -3,7 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: './app/main.js',
-    output: { path: __dirname + '/app/dist', filename: 'bundle.js' },
+    output: { path: __dirname + '/app', filename: 'bundle.js' },
     module: {
         loaders: [
             {

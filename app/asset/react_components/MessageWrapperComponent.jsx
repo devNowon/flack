@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 
 import MessageComponent from './MessageComponent.jsx';
 import InputComponent from './InputComponent.jsx';
+import LogIn from './login.jsx';
 
 import ChannelWrapperComponent from './channel_components/ChannelWrapperComponent.jsx';
 
@@ -100,6 +101,7 @@ export default class MessageWrapperComponent extends React.Component {
             />
           </div>
           <button onClick={this.getRoomInformation}> Get Room Info </button>
+          <LogIn />
           <ChannelWrapperComponent/>
         </div>
     )
