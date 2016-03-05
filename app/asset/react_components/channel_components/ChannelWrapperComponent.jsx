@@ -4,7 +4,7 @@ import React from 'react';
 import io from 'socket.io-client';
 
 import SideAppBar from './SideAppBar.jsx';
-import SideItemWrapper from './SideItemWrapper.jsx';
+import SideItemWrapper from '../side_components/SideItemWrapper.jsx';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
