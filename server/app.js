@@ -21,7 +21,7 @@ app.use(passport.session());
 require('./config/passport.js')(passport); // pass passport for configuration
 app.use(require('./router/user.router.js'));
 
-mongoose.connect('mongodb://localhost/flack-dev');
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev');
 
 var server = http.createServer(app);
 
