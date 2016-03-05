@@ -11,9 +11,10 @@ class SideItem extends React.Component {
         return (
         	<MenuItem 
         	primaryText={this.props.name} 
-        	leftIcon={this.props.icon} />
+        	leftIcon={this.props.icon}  />
         );
     }
 }
 
 export default SideItem;
+ 

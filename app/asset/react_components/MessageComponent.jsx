@@ -5,7 +5,7 @@ export default class MessageComponent extends React.Component {
 	"use strict";
     return (
       <div>
-        {this.props.message}
+        {this.props.message} 
       </div>
     );
   }
