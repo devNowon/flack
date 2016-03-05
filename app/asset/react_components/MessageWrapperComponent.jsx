@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import MessageComponent from './MessageComponent.jsx';
 import InputComponent from './InputComponent.jsx';
 
-const SOCKET = io('localhost:3000');
+const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 export default class MessageWrapperComponent extends React.Component {
   constructor() {
