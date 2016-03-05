@@ -18,11 +18,12 @@
     "react-tap-event-plugin": "^0.2.2",
     "socket.io": "^1.4.5",
     "socket.io-client": "^1.4.5",
+    "superagent": "^1.7.2",
     "ws": "0.4.x"
   },
   "scripts": {
     "start": "node server/app.js",
-    "dev" : "webpack-dev-server --content-base app"
+    "dev": "webpack-dev-server --content-base app"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",

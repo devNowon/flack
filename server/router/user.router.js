@@ -11,11 +11,10 @@ function(req, res) {
 router.post('/api/signup', function(req, res) {
     User.register(new User({ username : req.body.username }), req.body.password, function(err, user) {
         if (err) {
-        	console.log(err);
-            return res.send(user);
+          return res.send(err);
         }
         passport.authenticate('local')(req, res, function () {
-            res.redirect('/');
+            res.send(user);
         });
     });
 });
