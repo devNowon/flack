@@ -2,6 +2,7 @@ var path = require('path');
 var http = require("http");
 var express = require("express");
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var app = express();
 var port = process.env.PORT || 3000;
 
@@ -10,6 +11,8 @@ var passport = require('passport');
 var mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev';
 
 app.use(express.static(path.join(__dirname, '../app')));
+
+app.use(cors()); //enable cors
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded

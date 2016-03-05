@@ -5,6 +5,7 @@
   "author": "PARK BYUNGHYUN, LEE WOONGHEE, KIM CHANWOOL",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
     "express": "^4.4.5",
     "express-session": "^1.13.0",
     "lodash": "^4.6.1",
@@ -23,7 +24,7 @@
   },
   "scripts": {
     "start": "node server/app.js",
-    "dev": "webpack-dev-server --content-base app"
+    "dev": "webpack-dev-server --content-base app --hot --inline"
   },
   "devDependencies": {
     "babel-core": "^6.5.2",
