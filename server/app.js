@@ -52,7 +52,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('roomInformation', function(){
-    console.log('gro')
     io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
