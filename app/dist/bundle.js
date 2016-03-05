@@ -19705,10 +19705,14 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var SOCKET = (0, _socket2.default)('');
 =======
 	var SOCKET = (0, _socket2.default)('localhost:3000');
 >>>>>>> 95e387461847b92ea7b71c862c60468b2ac32b6f
+=======
+	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
+>>>>>>> cb25aa0638470d5e17a1ad47f85e36ca18265f02
 
 	var MessageWrapperComponent = function (_React$Component) {
 	  _inherits(MessageWrapperComponent, _React$Component);
@@ -19751,7 +19755,6 @@
 	  }, {
 	    key: 'getRoomInformation',
 	    value: function getRoomInformation() {
-	      console.log('asd');
 	      SOCKET.emit('roomInformation');
 	    }
 	  }, {
