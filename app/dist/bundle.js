@@ -19696,6 +19696,10 @@
 
 	var _InputComponent2 = _interopRequireDefault(_InputComponent);
 
+	var _login = __webpack_require__(218);
+
+	var _login2 = _interopRequireDefault(_login);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -19834,7 +19838,8 @@
 	          'button',
 	          { onClick: this.getRoomInformation },
 	          ' Get Room Info '
-	        )
+	        ),
+	        _react2.default.createElement(_login2.default, null)
 	      );
 	    }
 	  }]);
@@ -29067,6 +29072,104 @@
 
 	module.exports = request;
 
+
+/***/ },
+/* 218 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _superagent = __webpack_require__(211);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LogIn = function (_React$Component) {
+	  _inherits(LogIn, _React$Component);
+
+	  function LogIn() {
+	    _classCallCheck(this, LogIn);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LogIn).call(this));
+
+	    _this.state = {
+	      username: '',
+	      password: ''
+	    };
+	    _this.signIn = _this.signIn.bind(_this);
+	    _this.signUp = _this.signUp.bind(_this);
+	    _this.setId = _this.setId.bind(_this);
+	    _this.setPw = _this.setPw.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(LogIn, [{
+	    key: 'signIn',
+	    value: function signIn() {
+	      _superagent2.default.post('http://murmuring-ridge-75162.herokuapp.com/api/signin').send(this.state).end(function (err, res) {
+	        console.log(res);
+	      });
+	    }
+	  }, {
+	    key: 'signUp',
+	    value: function signUp() {
+	      _superagent2.default.post('http://murmuring-ridge-75162.herokuapp.com/api/signup').send(this.state).end(function (err, res) {
+	        console.log(res);
+	      });
+	    }
+	  }, {
+	    key: 'setId',
+	    value: function setId(e) {
+	      this.setState({ username: e.target.value });
+	    }
+	  }, {
+	    key: 'setPw',
+	    value: function setPw(e) {
+	      this.setState({ password: e.target.value });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement('input', { type: 'text', value: this.state.id, onChange: this.setId }),
+	        _react2.default.createElement('input', { type: 'password', value: this.state.password, onChange: this.setPw }),
+	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.signIn },
+	          ' 로그인 '
+	        ),
+	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.signUp },
+	          ' 가입 '
+	        )
+	      );
+	    }
+	  }]);
+
+	  return LogIn;
+	}(_react2.default.Component);
+
+	exports.default = LogIn;
 
 /***/ }
 /******/ ]);

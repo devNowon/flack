@@ -2,6 +2,7 @@ var path = require('path');
 var http = require("http");
 var express = require("express");
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var app = express();
 var port = process.env.PORT || 3000;
 
@@ -10,6 +11,8 @@ var passport = require('passport');
 var mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev';
 
 app.use(express.static(path.join(__dirname, '../app')));
+
+app.use(cors()); //enable cors
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -49,7 +52,7 @@ console.log("http server listening on %d", port);
 
 var rooms = [];
 io.on('connection', function(socket){
-  console.log('a user connected');
+  io.emit('roomInformation', io.sockets.adapter.rooms);
 
   var roomID = 'global';
   socket.join(roomID);
@@ -57,13 +60,13 @@ io.on('connection', function(socket){
   socket.on('joinRoom', function(data){
     roomID = data;
     socket.join(roomID);
-    console.log('JOIN ROOM LIST', io.sockets.adapter.rooms);
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('leaveRoom', function(data){
     socket.leave(roomID);
     roomID = 'global';
-    console.log('OUT ROOM LIST', io.sockets.adapter.rooms);
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('roomInformation', function(){
@@ -76,5 +79,9 @@ io.on('connection', function(socket){
 
   socket.on('typing', function(bool){
     io.emit('typing', bool)
+  });
+
+  socket.on('disconnect', function(){
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 });
