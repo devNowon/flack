@@ -5,6 +5,7 @@ import MessageComponent from './MessageComponent.jsx';
 import InputComponent from './InputComponent.jsx';
 import LogIn from './login.jsx';
 
+
 import ChannelWrapperComponent from './channel_components/ChannelWrapperComponent.jsx';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
@@ -17,14 +18,14 @@ export default class MessageWrapperComponent extends React.Component {
                     TYPING: false,
                   };
     this.receiveProcess = this.receiveProcess.bind(this);
-    this.clickSendButton = this.clickSendButton.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputBlur = this.handleInputBlur.bind(this);
     this.handleInputFocus = this.handleInputFocus.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleRoomNameInputChange = this.handleRoomNameInputChange.bind(this);
     this.handleRoomNameButtonClick = this.handleRoomNameButtonClick.bind(this);
   }
-
+ 
   componentDidMount() {
     SOCKET.on('receiveMessage', this.receiveProcess);
     SOCKET.on('typing', (bool) => {
@@ -45,9 +46,6 @@ export default class MessageWrapperComponent extends React.Component {
     this.setState({ receivedMessages: receivedMessages });
   }
 
-  clickSendButton() {
-    SOCKET.emit('sendMessage', this.state.inputValue);
-  }
 
   handleInputChange(e) {
     this.setState({ inputValue: e.target.value });
@@ -68,15 +66,21 @@ export default class MessageWrapperComponent extends React.Component {
   handleInputBlur() {
     SOCKET.emit('typing', false);
   }
-
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      SOCKET.emit('sendMessage', this.state.inputValue);
+      this.setState({inputValue: ''});
+    }
+  }
   render() {
+    "use strict";
     let processReceivedMessages = () => {
       let dom = [];
       let messages = this.state.receivedMessages;
       for(var i = 0 ; i < messages.length ; i++){
         dom.push(<MessageComponent message={messages[i]} key={i} />);
       }
-      return dom
+      return dom;
     };
 
     return (
@@ -85,10 +89,9 @@ export default class MessageWrapperComponent extends React.Component {
           <InputComponent
             inputValue={this.state.inputValue}
             handleInputChange={this.handleInputChange}
-            handleButtonClick={this.clickSendButton}
             handleInputFocus={this.handleInputFocus}
             handleInputBlur={this.handleInputBlur}
-            buttonText="send"
+            handleKeyPress={this.handleKeyPress}
           ></InputComponent>
           {this.state.TYPING?<nowInput />:""}
 
