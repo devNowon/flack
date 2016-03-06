@@ -25,23 +25,28 @@ class ChannelWrapperComponent extends React.Component {
     SOCKET.on('roomInformation', (obj) => {
       const CHNL_OBJ =  obj;
       const result = _.keys(CHNL_OBJ).filter((key) => !(_.startsWith(_.trim(key), '/#')));
-      console.log('result : ' + result);
       this.setState({channelArr: result});
-      console.log('channelArr : ' + this.state.channelArr);
     });
     SOCKET.emit('roomInformation');
   }
   handleChnlAddClick() {
     // 채널 생성 화면 전환
+    console.log('채널생성화면');
   }
   handleChnlItemClick() {
     // 채널 채팅 화면 전환
+    console.log('채널채팅화면');
   }
   render() {
     return(
      <div>
-        <SideAppBar itemLength={this.state.channelArr.length} title="Channel"/>
-        <SideItemWrapper channelArr={this.state.channelArr}/>
+        <SideAppBar
+          itemLength={this.state.channelArr.length}
+          title="Channel"
+          handleChnlAddClick={this.handleChnlAddClick}/>
+        <SideItemWrapper
+          channelArr={this.state.channelArr}
+          handleChnlItemClick={this.handleChnlItemClick}/>
      </div>
     );
   }
