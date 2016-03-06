@@ -10,7 +10,6 @@ const style = {
 }
 
 class SideAppBar extends React.Component {
-<<<<<<< HEAD
   constructor(props) {
     super(props);
     this.displayName = 'SideAppBar';
@@ -28,20 +27,6 @@ class SideAppBar extends React.Component {
         style={style.appBar}/>
     );
   }
-=======
-    constructor(props) {
-        super(props);
-        this.displayName = 'SideAppBar';
-    }
-    render() {
-
-        return (
-        	<AppBar 
-        		title={this.props.title + '(' + this.props.itemLength + ')'}
-        		iconElementRight={<FlatButton label="add" />}/>
-        );
-    }
->>>>>>> 623b177fb5fa044898d4d024fc78a6e09d123ac8
 }
 
 export default SideAppBar;
