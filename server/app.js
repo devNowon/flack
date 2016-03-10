@@ -50,10 +50,13 @@ server.listen(port);
 
 console.log("http server listening on %d", port);
 
+var clients = [];
 var rooms = [];
 io.on('connection', function(socket){
-  io.emit('roomInformation', io.sockets.adapter.rooms);
+  clients.push(socket.id);
+  io.emit('mySession', socket.id);
 
+  io.emit('roomInformation', io.sockets.adapter.rooms);
   var roomID = 'global';
   socket.join(roomID);
 
