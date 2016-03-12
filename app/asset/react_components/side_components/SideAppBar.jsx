@@ -5,7 +5,7 @@ import FontIcon from 'material-ui/lib/font-icon';
 
 const style = {
   appBar: {
-    maxWidth: '300px'
+    // 앱바 스타일 작성
   }
 }
 
@@ -20,7 +20,7 @@ class SideAppBar extends React.Component {
         title={this.props.title + '(' + this.props.itemLength + ')'}
         iconElementLeft={<i/>}
         iconElementRight={
-          <IconButton tooltip="Add Channel" onClick={this.props.handleChnlAddClick}>
+          <IconButton tooltip={this.props.addToolTip} onClick={this.props.handleAddClick}>
             <FontIcon className="fa fa-plus-circle"/>
           </IconButton>
         }

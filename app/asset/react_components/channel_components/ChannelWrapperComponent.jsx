@@ -4,8 +4,15 @@ import _ from 'lodash';
 
 import SideItemWrapper from '../side_components/SideItemWrapper.jsx';
 import SideAppBar from '../side_components/SideAppBar.jsx';
+import FontIcon from 'material-ui/lib/font-icon';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
+
+const style = {
+  leftIcon: {
+    // 아이콘 스타일 작성
+  }
+}
 
 class ChannelWrapperComponent extends React.Component {
   constructor(props) {
@@ -36,6 +43,7 @@ class ChannelWrapperComponent extends React.Component {
   handleChnlItemClick() {
     // 채널 채팅 화면 전환
     console.log('채널채팅화면');
+    console.log('clicked value: ' + this.props.value);
   }
   render() {
     return(
@@ -43,10 +51,15 @@ class ChannelWrapperComponent extends React.Component {
         <SideAppBar
           itemLength={this.state.channelArr.length}
           title="Channel"
-          handleChnlAddClick={this.handleChnlAddClick}/>
+          addToolTip="Add Channel"
+          handleAddClick={this.handleChnlAddClick}/>
         <SideItemWrapper
-          channelArr={this.state.channelArr}
-          handleChnlItemClick={this.handleChnlItemClick}/>
+          itemArr={this.state.channelArr}
+          leftIcon={<FontIcon
+              className="fa fa-hashtag fa-1"
+              style={style.leftIcon}
+              />}
+          handleItemClick={this.handleChnlItemClick}/>
      </div>
     );
   }
