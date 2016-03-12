@@ -29,6 +29,9 @@ export default class ListWrapperComponent extends React.Component {
     SOCKET.on('roomInformation', (obj) => {
       this.setState({data: obj});
     });
+    SOCKET.on('mySession', (obj) => {
+      this.setState({data: obj});
+    });
   }
   
   handleFormDirect(e) {
@@ -41,8 +44,8 @@ export default class ListWrapperComponent extends React.Component {
   //   receivedUsers.push(msg);
   //   this.setState({ data: receivedUsers });
   // }
-
-  render() {
+  
+  render() { 
     "use strict";
 
     let listsOfPeoples = () => {
