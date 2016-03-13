@@ -21,8 +21,6 @@ class ChannelWrapperComponent extends React.Component {
     this.state = {
       channelArr: [],
     };
-    this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
-    this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
   }
   componentWillMount() {
     // 채널 리스트 받아오는 코드
@@ -36,15 +34,6 @@ class ChannelWrapperComponent extends React.Component {
     });
     SOCKET.emit('roomInformation');
   }
-  handleChnlAddClick() {
-    // 채널 생성 화면 전환
-    console.log('채널생성화면');
-  }
-  handleChnlItemClick() {
-    // 채널 채팅 화면 전환
-    console.log('채널채팅화면');
-    console.log('clicked value: ' + this.props.value);
-  }
   render() {
     return(
      <div>
@@ -52,14 +41,14 @@ class ChannelWrapperComponent extends React.Component {
           itemLength={this.state.channelArr.length}
           title="Channel"
           addToolTip="Add Channel"
-          handleAddClick={this.handleChnlAddClick}/>
+          handleAddClick={this.props.handleChnlAddClick}/>
         <SideItemWrapper
           itemArr={this.state.channelArr}
           leftIcon={<FontIcon
               className="fa fa-hashtag fa-1"
               style={style.leftIcon}
               />}
-          handleItemClick={this.handleChnlItemClick}/>
+          handleItemClick={this.props.handleChnlItemClick}/>
      </div>
     );
   }
