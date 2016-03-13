@@ -2,8 +2,8 @@ import React from 'react';
 import io from 'socket.io-client';
 import _ from 'lodash';
 
-import SideItemWrapper from '../side_components/SideItemWrapper.jsx';
-import SideAppBar from '../side_components/SideAppBar.jsx';
+import SideItemWrapper from '../common_components/SideItemWrapper.jsx';
+import SideAppBar from '../common_components/SideAppBar.jsx';
 import FontIcon from 'material-ui/lib/font-icon';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
