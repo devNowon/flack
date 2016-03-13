@@ -27,7 +27,8 @@ class AppWrapper extends React.Component {
     console.log('clicked value: ' + this.props.value);
   }
   handleCloseCreateChannelForm() {
-    this.setState({openCreateChannelForm: false});
+    const me = this;
+    me.setState({openCreateChannelForm: false});
   }
   render() {
     return (
@@ -44,6 +45,7 @@ class AppWrapper extends React.Component {
           modal={false}
           open={this.state.openCreateChannelForm}
           onRequestClose={this.handleCloseCreateChannelForm}
+          handleClose={this.handleCloseCreateChannelForm}
         />
       </div>
     );

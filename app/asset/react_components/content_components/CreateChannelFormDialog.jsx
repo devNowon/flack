@@ -33,14 +33,15 @@ class CreateChannelFormDialog extends React.Component {
   }
   _createChannel() {
     SOCKET.emit('joinRoom', $('#channelName').val());
+    this.props.handleClose;
   }
   render() {
     const actions = [
       <RaisedButton
-      label="Create channel"
-      primary={true}
-      keyboardFocused={true}
-      onTouchTap={this._createChannel}
+        label="Create channel"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this._createChannel}
       />,
     ];
     return (
