@@ -84,7 +84,7 @@ export default class MessageWrapperComponent extends React.Component {
     };
 
     return (
-        <div>
+        <div {...this.props}>
           <div> { processReceivedMessages() } </div>
           <InputComponent
             inputValue={this.state.inputValue}
@@ -105,7 +105,6 @@ export default class MessageWrapperComponent extends React.Component {
           </div>
           <button onClick={this.getRoomInformation}> Get Room Info </button>
           <LogIn />
-          <ChannelWrapperComponent/>
         </div>
     )
   }
