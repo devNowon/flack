@@ -3,6 +3,9 @@ import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
+import io from 'socket.io-client';
+
+const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 const styles = {
   block: {
@@ -19,7 +22,7 @@ class CreateChannelFormDialog extends React.Component {
     super(props);
     this.displayName = 'CreateChannelFormDialog';
     this.state = {
-      channelType: "public"
+      channelType: "public",
     }
     this._toggleChannelType = this._toggleChannelType.bind(this);
   }
@@ -28,19 +31,18 @@ class CreateChannelFormDialog extends React.Component {
     this.setState({channelType: channelType === "public" ? "private" : "public"});
     $('.private-desc').toggle();
   }
-  _handleCreate() {
-    // 채널 만들기 기능 구현할 자리
+  _createChannel() {
+    SOCKET.emit('joinRoom', $('#channelName').val());
   }
   render() {
     const actions = [
       <RaisedButton
-        label="Create channel"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this._handleCreate}
+      label="Create channel"
+      primary={true}
+      keyboardFocused={true}
+      onTouchTap={this._createChannel}
       />,
     ];
-
     return (
       <Dialog
         {...this.props}
@@ -54,6 +56,7 @@ class CreateChannelFormDialog extends React.Component {
             labelPosition="right"
             style={styles.toggle}
             onToggle={this._toggleChannelType}
+            id="channelType"
           />
         </div>
         <div className="private-desc">
@@ -65,6 +68,7 @@ class CreateChannelFormDialog extends React.Component {
           floatingLabelText="Channel name"
           errorText="Name must be 21 characters or less, lower case and cannot contain spaces or perioed"
           fullWidth={true}
+          id="channelName"
         />
         <TextField 
           hintText="Search by name" 
