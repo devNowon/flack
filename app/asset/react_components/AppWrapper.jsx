@@ -44,6 +44,7 @@ class AppWrapper extends React.Component {
           modal={false}
           open={this.state.openCreateChannelForm}
           onRequestClose={this.handleCloseCreateChannelForm}
+          handleClose={this.handleCloseCreateChannelForm}
         />
       </div>
     );

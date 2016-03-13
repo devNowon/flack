@@ -3,6 +3,9 @@ import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
+import io from 'socket.io-client';
+
+const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 const styles = {
   block: {
@@ -19,17 +22,23 @@ class CreateChannelFormDialog extends React.Component {
     super(props);
     this.displayName = 'CreateChannelFormDialog';
     this.state = {
-      channelType: "public"
+      channelType: "public",
     }
     this._toggleChannelType = this._toggleChannelType.bind(this);
+    this._createChannel = this._createChannel.bind(this);
+    this._closeForm = this._closeForm.bind(this);
   }
   _toggleChannelType() {
     let channelType = this.state.channelType;
     this.setState({channelType: channelType === "public" ? "private" : "public"});
     $('.private-desc').toggle();
   }
-  _handleCreate() {
-    // 채널 만들기 기능 구현할 자리
+  _createChannel() {
+    SOCKET.emit('joinRoom', $('#channelName').val());
+    this._closeForm();
+  }
+  _closeForm() {
+    this.props.handleClose();
   }
   render() {
     const actions = [
@@ -37,10 +46,9 @@ class CreateChannelFormDialog extends React.Component {
         label="Create channel"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this._handleCreate}
+        onTouchTap={this._createChannel}
       />,
     ];
-
     return (
       <Dialog
         {...this.props}
@@ -54,6 +62,7 @@ class CreateChannelFormDialog extends React.Component {
             labelPosition="right"
             style={styles.toggle}
             onToggle={this._toggleChannelType}
+            id="channelType"
           />
         </div>
         <div className="private-desc">
@@ -65,6 +74,7 @@ class CreateChannelFormDialog extends React.Component {
           floatingLabelText="Channel name"
           errorText="Name must be 21 characters or less, lower case and cannot contain spaces or perioed"
           fullWidth={true}
+          id="channelName"
         />
         <TextField 
           hintText="Search by name" 
