@@ -38,8 +38,7 @@ class CreateChannelFormDialog extends React.Component {
     this._closeForm();
   }
   _closeForm() {
-    console.log('this.props.handleClose: ' + this.props.handleClose);
-    this.props.handleClose;
+    this.props.handleClose();
   }
   render() {
     const actions = [
