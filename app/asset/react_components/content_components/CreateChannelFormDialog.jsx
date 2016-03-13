@@ -26,6 +26,7 @@ class CreateChannelFormDialog extends React.Component {
   _toggleChannelType() {
     let channelType = this.state.channelType;
     this.setState({channelType: channelType === "public" ? "private" : "public"});
+    $('.private-desc').toggle();
   }
   _handleCreate() {
     // 채널 만들기 기능 구현할 자리
@@ -44,8 +45,8 @@ class CreateChannelFormDialog extends React.Component {
       <Dialog
         {...this.props}
         actions={actions}
+        title={"Create new " + this.state.channelType + " channel"}
       >
-        <h1>Create a new {this.state.channelType} channel</h1>
         <div style={styles.block}>
           <Toggle
             label={channelTypeMap.get(this.state.channelType)}
@@ -54,6 +55,10 @@ class CreateChannelFormDialog extends React.Component {
             style={styles.toggle}
             onToggle={this._toggleChannelType}
           />
+        </div>
+        <div className="private-desc">
+          A private channel is only visible to its members, 
+          and only members of a private channel can read or search its contents.
         </div>
         <TextField 
           hintText="# Enter name here" 

@@ -39,7 +39,7 @@ class ChannelWrapperComponent extends React.Component {
      <div>
         <SideAppBar
           itemLength={this.state.channelArr.length}
-          title="Channel"
+          title="CHANNELS"
           addToolTip="Add Channel"
           handleAddClick={this.props.handleChnlAddClick}/>
         <SideItemWrapper
