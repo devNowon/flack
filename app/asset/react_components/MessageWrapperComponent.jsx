@@ -106,7 +106,7 @@ export default class MessageWrapperComponent extends React.Component {
           <button onClick={this.getRoomInformation}> Get Room Info </button>
           <LogIn />
         </div>
-    )
+    );
   }
 }
 
