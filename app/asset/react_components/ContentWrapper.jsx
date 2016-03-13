@@ -7,11 +7,17 @@ class ContentWrapper extends React.Component {
     this.displayName = 'ContentWrapper';
   }
   render() {
+    const renderContent = () => {
+      const Component = this.props.contentComponent;
+      return (
+        <Component 
+          className={this.props.className}
+        />
+      );
+    }
     return (
       <div>
-        <MessageWrapperComponent
-          {...this.props}
-        />
+        { renderContent() }
       </div>
     );
   }

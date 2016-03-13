@@ -11,8 +11,12 @@ class SideWrapper extends React.Component {
   render() {
     return (
       <LeftNav open={true} docked={true}>
-        <ChannelWrapperComponent/>
-        <ListWrapperComponent/>
+        <ChannelWrapperComponent
+          handleChnlAddClick={this.props.handleChnlAddClick}
+          handleChnlItemClick={this.props.handleChnlItemClick}
+        />
+        <ListWrapperComponent
+        />
       </LeftNav>
     );
   }
