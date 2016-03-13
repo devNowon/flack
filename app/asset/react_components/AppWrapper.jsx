@@ -14,7 +14,7 @@ class AppWrapper extends React.Component {
     };
     this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
     this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
-    this.handleCloseCreateChannelForm = this.handleCloseCreateChannelForm.bind(this);
+    // this.handleCloseCreateChannelForm = this.handleCloseCreateChannelForm.bind(this);
   }
   handleChnlAddClick() {
     // 채널 생성 화면 전환
@@ -26,11 +26,12 @@ class AppWrapper extends React.Component {
     console.log('채널채팅화면');
     console.log('clicked value: ' + this.props.value);
   }
-  handleCloseCreateChannelForm() {
-    const me = this;
-    me.setState({openCreateChannelForm: false});
-  }
   render() {
+    const me = this;
+    let handleCloseCreateChannelForm = () => {
+      me.setState({openCreateChannelForm: false});
+      console.log('openCreateChannelForm: ' + me.state.openCreateChannelForm);
+    }
     return (
       <div>
         <ContentWrapper
@@ -44,8 +45,8 @@ class AppWrapper extends React.Component {
         <CreateChannelFormDialog
           modal={false}
           open={this.state.openCreateChannelForm}
-          onRequestClose={this.handleCloseCreateChannelForm}
-          handleClose={this.handleCloseCreateChannelForm}
+          onRequestClose={handleCloseCreateChannelForm}
+          handleClose={handleCloseCreateChannelForm}
         />
       </div>
     );

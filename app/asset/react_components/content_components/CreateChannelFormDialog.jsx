@@ -25,6 +25,8 @@ class CreateChannelFormDialog extends React.Component {
       channelType: "public",
     }
     this._toggleChannelType = this._toggleChannelType.bind(this);
+    this._createChannel = this._createChannel.bind(this);
+    this._closeForm = this._closeForm.bind(this);
   }
   _toggleChannelType() {
     let channelType = this.state.channelType;
@@ -33,6 +35,10 @@ class CreateChannelFormDialog extends React.Component {
   }
   _createChannel() {
     SOCKET.emit('joinRoom', $('#channelName').val());
+    this._closeForm();
+  }
+  _closeForm() {
+    console.log('this.props.handleClose: ' + this.props.handleClose);
     this.props.handleClose;
   }
   render() {
