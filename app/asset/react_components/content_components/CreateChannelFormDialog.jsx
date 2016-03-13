@@ -10,9 +10,9 @@ const styles = {
   }
 }
 
-const channelTypeMap = new Map();
-channelTypeMap.set("public", "Anyone on your team can join");
-channelTypeMap.set("private", "Restricted to invited members");
+const channelTypeMessageMap = new Map();
+channelTypeMessageMap.set("public", "Anyone on your team can join");
+channelTypeMessageMap.set("private", "Restricted to invited members");
 
 class CreateChannelFormDialog extends React.Component {
   constructor(props) {
@@ -49,7 +49,7 @@ class CreateChannelFormDialog extends React.Component {
       >
         <div style={styles.block}>
           <Toggle
-            label={channelTypeMap.get(this.state.channelType)}
+            label={channelTypeMessageMap.get(this.state.channelType)}
             defaultToggled={true}
             labelPosition="right"
             style={styles.toggle}
