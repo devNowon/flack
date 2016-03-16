@@ -1,9 +1,10 @@
 import React from 'react';
 import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
-import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import io from 'socket.io-client';
+import $ from 'jquery';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
@@ -13,9 +14,10 @@ const styles = {
   }
 }
 
-const channelTypeMessageMap = new Map();
-channelTypeMessageMap.set("public", "Anyone on your team can join");
-channelTypeMessageMap.set("private", "Restricted to invited members");
+const channelTypeMessage = {
+  public: "Anyone on your team can join",
+  private: "Restricted to invited members"
+}
 
 class CreateChannelFormDialog extends React.Component {
   constructor(props) {
@@ -42,7 +44,12 @@ class CreateChannelFormDialog extends React.Component {
   }
   render() {
     const actions = [
-      <RaisedButton
+      <FlatButton
+        label="Cancel"
+        secondary={true}
+        onTouchTap={this._closeForm}
+      />,
+      <FlatButton
         label="Create channel"
         primary={true}
         keyboardFocused={true}
@@ -57,7 +64,7 @@ class CreateChannelFormDialog extends React.Component {
       >
         <div style={styles.block}>
           <Toggle
-            label={channelTypeMessageMap.get(this.state.channelType)}
+            label={channelTypeMessage[this.state.channelType]}
             defaultToggled={true}
             labelPosition="right"
             style={styles.toggle}
