@@ -57709,6 +57709,10 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
+	var _lodash = __webpack_require__(308);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -57740,11 +57744,15 @@
 
 	    _this.displayName = 'CreateChannelFormDialog';
 	    _this.state = {
-	      channelType: "public"
+	      channelType: "public",
+	      channelName: "",
+	      channelNameValidationMessage: ""
 	    };
 	    _this._toggleChannelType = _this._toggleChannelType.bind(_this);
 	    _this._createChannel = _this._createChannel.bind(_this);
 	    _this._closeForm = _this._closeForm.bind(_this);
+	    _this._handleChannelNameChange = _this._handleChannelNameChange.bind(_this);
+	    _this._validateChannelName = _this._validateChannelName.bind(_this);
 	    return _this;
 	  }
 
@@ -57765,6 +57773,60 @@
 	    key: '_closeForm',
 	    value: function _closeForm() {
 	      this.props.handleClose();
+	    }
+	  }, {
+	    key: '_handleChannelNameChange',
+	    value: function _handleChannelNameChange(e) {
+	      var inputedName = e.target.value;
+	      this.setState({ channelName: inputedName, channelNameValidationMessage: '' });
+	      this._validateChannelName(inputedName);
+	    }
+	  }, {
+	    key: '_validateChannelName',
+	    value: function _validateChannelName(name) {
+	      var messageArray = [];
+	      var mustBeFlag = true;
+	      if (name.length > 20) {
+	        messageArray.push(' 21 characters or less');
+	      }
+	      if (_lodash2.default.toLower(name) !== name) {
+	        messageArray.push(messageArray.length == 1 ? ', lower case' : ' lower case');
+	      }
+	      if (_lodash2.default.split(name, ' ', 2).length == 2 || _lodash2.default.trim(name) !== name) {
+	        if (messageArray.length == 0) {
+	          mustBeFlag = false;
+	        }
+	        messageArray.push((mustBeFlag ? ' and' : ' ') + ' cannot contain spaces or periods');
+	      }
+	      if (messageArray.length != 0) {
+	        var message = '';
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = messageArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var text = _step.value;
+
+	            message += text;
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+
+	        this.setState({ channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.' });
+	      }
 	    }
 	  }, {
 	    key: 'render',
@@ -57805,9 +57867,11 @@
 	        _react2.default.createElement(_textField2.default, {
 	          hintText: '# Enter name here',
 	          floatingLabelText: 'Channel name',
-	          errorText: 'Name must be 21 characters or less, lower case and cannot contain spaces or perioed',
+	          errorText: this.state.channelNameValidationMessage,
 	          fullWidth: true,
-	          id: 'channelName'
+	          id: 'channelName',
+	          onChange: this._handleChannelNameChange,
+	          value: this.state.channelName
 	        }),
 	        _react2.default.createElement(_textField2.default, {
 	          hintText: 'Search by name',
