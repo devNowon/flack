@@ -29298,17 +29298,25 @@
 
 	var _SideWrapper2 = _interopRequireDefault(_SideWrapper);
 
-	var _ContentWrapper = __webpack_require__(328);
+	var _ContentWrapper = __webpack_require__(327);
 
 	var _ContentWrapper2 = _interopRequireDefault(_ContentWrapper);
 
-	var _CreateChannelFormDialog = __webpack_require__(329);
+	var _CreateChannelFormDialog = __webpack_require__(328);
 
 	var _CreateChannelFormDialog2 = _interopRequireDefault(_CreateChannelFormDialog);
 
 	var _MessageWrapperComponent = __webpack_require__(159);
 
 	var _MessageWrapperComponent2 = _interopRequireDefault(_MessageWrapperComponent);
+
+	var _socket = __webpack_require__(160);
+
+	var _socket2 = _interopRequireDefault(_socket);
+
+	var _lodash = __webpack_require__(341);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29317,6 +29325,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
 
 	var AppWrapper = function (_React$Component) {
 	  _inherits(AppWrapper, _React$Component);
@@ -29329,7 +29339,8 @@
 	    _this.displayName = 'AppWrapper';
 	    _this.state = {
 	      contentComponent: _MessageWrapperComponent2.default,
-	      openCreateChannelForm: false
+	      openCreateChannelForm: false,
+	      channelArr: []
 	    };
 	    _this.handleChnlAddClick = _this.handleChnlAddClick.bind(_this);
 	    _this.handleChnlItemClick = _this.handleChnlItemClick.bind(_this);
@@ -29357,6 +29368,26 @@
 	      this.setState({ openCreateChannelForm: false });
 	    }
 	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      // 채널 리스트 받아오는 코드
+	      this._getChnlInformation();
+	    }
+	  }, {
+	    key: '_getChnlInformation',
+	    value: function _getChnlInformation() {
+	      var _this2 = this;
+
+	      SOCKET.on('roomInformation', function (obj) {
+	        var chnlObj = obj;
+	        var result = _lodash2.default.keys(chnlObj).filter(function (key) {
+	          return !_lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
+	        });
+	        _this2.setState({ channelArr: result });
+	      });
+	      SOCKET.emit('roomInformation');
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
@@ -29368,13 +29399,15 @@
 	        }),
 	        _react2.default.createElement(_SideWrapper2.default, {
 	          handleChnlAddClick: this.handleChnlAddClick,
-	          handleChnlItemClick: this.handleChnlItemClick
+	          handleChnlItemClick: this.handleChnlItemClick,
+	          channelArr: this.state.channelArr
 	        }),
 	        _react2.default.createElement(_CreateChannelFormDialog2.default, {
 	          modal: false,
 	          open: this.state.openCreateChannelForm,
 	          onRequestClose: this.handleCloseCreateChannelForm,
-	          handleClose: this.handleCloseCreateChannelForm
+	          handleClose: this.handleCloseCreateChannelForm,
+	          channelArr: this.state.channelArr
 	        })
 	      );
 	    }
@@ -29441,7 +29474,8 @@
 	        { open: true, docked: true },
 	        _react2.default.createElement(_ChannelWrapperComponent2.default, {
 	          handleChnlAddClick: this.props.handleChnlAddClick,
-	          handleChnlItemClick: this.props.handleChnlItemClick
+	          handleChnlItemClick: this.props.handleChnlItemClick,
+	          channelArr: this.props.channelArr
 	        }),
 	        _react2.default.createElement(_ListWrapperComponent2.default, null)
 	      );
@@ -39334,19 +39368,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _socket = __webpack_require__(160);
-
-	var _socket2 = _interopRequireDefault(_socket);
-
-	var _lodash = __webpack_require__(308);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	var _SideItemWrapper = __webpack_require__(309);
+	var _SideItemWrapper = __webpack_require__(308);
 
 	var _SideItemWrapper2 = _interopRequireDefault(_SideItemWrapper);
 
-	var _SideAppBar = __webpack_require__(325);
+	var _SideAppBar = __webpack_require__(324);
 
 	var _SideAppBar2 = _interopRequireDefault(_SideAppBar);
 
@@ -39361,8 +39387,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
 
 	var style = {
 	  leftIcon: {
@@ -39379,45 +39403,22 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ChannelWrapperComponent).call(this, props));
 
 	    _this.displayName = 'ChannelWrapperComponent';
-	    _this.state = {
-	      channelArr: []
-	    };
 	    return _this;
 	  }
 
 	  _createClass(ChannelWrapperComponent, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      // 채널 리스트 받아오는 코드
-	      this._getChnlInformation();
-	    }
-	  }, {
-	    key: '_getChnlInformation',
-	    value: function _getChnlInformation() {
-	      var _this2 = this;
-
-	      SOCKET.on('roomInformation', function (obj) {
-	        var CHNL_OBJ = obj;
-	        var result = _lodash2.default.keys(CHNL_OBJ).filter(function (key) {
-	          return !_lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
-	        });
-	        _this2.setState({ channelArr: result });
-	      });
-	      SOCKET.emit('roomInformation');
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
 	        null,
 	        _react2.default.createElement(_SideAppBar2.default, {
-	          itemLength: this.state.channelArr.length,
+	          itemLength: this.props.channelArr.length,
 	          title: 'CHANNELS',
 	          addToolTip: 'Add Channel',
 	          handleAddClick: this.props.handleChnlAddClick }),
 	        _react2.default.createElement(_SideItemWrapper2.default, {
-	          itemArr: this.state.channelArr,
+	          itemArr: this.props.channelArr,
 	          leftIcon: _react2.default.createElement(_fontIcon2.default, {
 	            className: 'fa fa-hashtag fa-1',
 	            style: style.leftIcon
@@ -39434,6 +39435,15694 @@
 
 /***/ },
 /* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _selectableEnhance = __webpack_require__(309);
+
+	var _list = __webpack_require__(310);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	var _listItem = __webpack_require__(311);
+
+	var _listItem2 = _interopRequireDefault(_listItem);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SelectableList = (0, _selectableEnhance.SelectableContainerEnhance)(_list2.default);
+
+	var style = {
+	  listItem: {
+	    // 아이템 스타일 작성
+
+	  }
+	};
+
+	function wrapState(ComposedComponent) {
+	  var StateWrapper = _react2.default.createClass({
+	    displayName: 'StateWrapper',
+	    getInitialState: function getInitialState() {
+	      return { selectedIndex: 1 };
+	    },
+	    handleUpdateSelectedIndex: function handleUpdateSelectedIndex(e, index) {
+	      this.setState({
+	        selectedIndex: index
+	      });
+	    },
+	    render: function render() {
+	      return _react2.default.createElement(ComposedComponent, _extends({}, this.props, this.state, {
+	        valueLink: { value: this.state.selectedIndex, requestChange: this.handleUpdateSelectedIndex }
+	      }));
+	    }
+	  });
+	  return StateWrapper;
+	}
+
+	SelectableList = wrapState(SelectableList);
+
+	var SideItemWrapper = function (_React$Component) {
+	  _inherits(SideItemWrapper, _React$Component);
+
+	  function SideItemWrapper(props) {
+	    _classCallCheck(this, SideItemWrapper);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SideItemWrapper).call(this, props));
+
+	    _this.displayName = 'SideItemWrapper';
+	    return _this;
+	  }
+
+	  _createClass(SideItemWrapper, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      // 채널 리스트를 뿌려주는 메소드
+	      var showItemList = function showItemList() {
+	        var itemDom = [];
+	        var items = _this2.props.itemArr; // 아이템 이름 배열
+	        if (items.length > 0) {
+	          var index = 1;
+	          var _iteratorNormalCompletion = true;
+	          var _didIteratorError = false;
+	          var _iteratorError = undefined;
+
+	          try {
+	            for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	              var item = _step.value;
+
+	              itemDom.push(_react2.default.createElement(_listItem2.default, {
+	                key: index,
+	                value: index++,
+	                leftIcon: _this2.props.leftIcon,
+	                primaryText: item,
+	                onClick: _this2.props.handleItemClick,
+	                style: style.listItem }));
+	            }
+	          } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion && _iterator.return) {
+	                _iterator.return();
+	              }
+	            } finally {
+	              if (_didIteratorError) {
+	                throw _iteratorError;
+	              }
+	            }
+	          }
+	        }
+	        return itemDom;
+	      };
+	      return _react2.default.createElement(
+	        SelectableList,
+	        null,
+	        showItemList()
+	      );
+	    }
+	  }]);
+
+	  return SideItemWrapper;
+	}(_react2.default.Component);
+
+	exports.default = SideItemWrapper;
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.SelectableContainerEnhance = undefined;
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _colorManipulator = __webpack_require__(274);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var SelectableContainerEnhance = exports.SelectableContainerEnhance = function SelectableContainerEnhance(Component) {
+	  var composed = _react2.default.createClass({
+
+	    displayName: 'Selectable' + Component.displayName,
+
+	    propTypes: {
+	      children: _react2.default.PropTypes.node,
+	      selectedItemStyle: _react2.default.PropTypes.object,
+	      valueLink: _react2.default.PropTypes.shape({
+	        value: _react2.default.PropTypes.any,
+	        requestChange: _react2.default.PropTypes.func
+	      }).isRequired
+	    },
+
+	    contextTypes: {
+	      muiTheme: _react2.default.PropTypes.object
+	    },
+
+	    childContextTypes: {
+	      muiTheme: _react2.default.PropTypes.object
+	    },
+
+	    mixins: [_stylePropable2.default],
+
+	    getInitialState: function getInitialState() {
+	      return {
+	        muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	      };
+	    },
+	    getChildContext: function getChildContext() {
+	      return {
+	        muiTheme: this.state.muiTheme
+	      };
+	    },
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	      var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	      this.setState({ muiTheme: newMuiTheme });
+	    },
+
+	    getValueLink: function getValueLink(props) {
+	      return props.valueLink || {
+	        value: props.value,
+	        requestChange: props.onChange
+	      };
+	    },
+
+	    extendChild: function extendChild(child, styles, selectedItemStyle) {
+	      var _this = this;
+
+	      if (child && child.type && child.type.displayName === 'ListItem') {
+	        var selected = this.isChildSelected(child, this.props);
+	        var selectedChildrenStyles = {};
+	        if (selected) {
+	          selectedChildrenStyles = this.mergeStyles(styles, selectedItemStyle);
+	        }
+
+	        var mergedChildrenStyles = this.mergeStyles(child.props.style || {}, selectedChildrenStyles);
+
+	        this.keyIndex += 1;
+
+	        return _react2.default.cloneElement(child, {
+	          onTouchTap: function onTouchTap(e) {
+	            _this.handleItemTouchTap(e, child);
+	            if (child.props.onTouchTap) {
+	              child.props.onTouchTap(e);
+	            }
+	          },
+	          key: this.keyIndex,
+	          style: mergedChildrenStyles,
+	          nestedItems: child.props.nestedItems.map(function (child) {
+	            return _this.extendChild(child, styles, selectedItemStyle);
+	          }),
+	          initiallyOpen: this.isInitiallyOpen(child)
+	        });
+	      } else {
+	        return child;
+	      }
+	    },
+	    isInitiallyOpen: function isInitiallyOpen(child) {
+	      if (child.props.initiallyOpen) {
+	        return child.props.initiallyOpen;
+	      }
+	      return this.hasSelectedDescendant(false, child);
+	    },
+	    hasSelectedDescendant: function hasSelectedDescendant(previousValue, child) {
+	      if (_react2.default.isValidElement(child) && child.props.nestedItems && child.props.nestedItems.length > 0) {
+	        return child.props.nestedItems.reduce(this.hasSelectedDescendant, previousValue);
+	      }
+	      return previousValue || this.isChildSelected(child, this.props);
+	    },
+	    isChildSelected: function isChildSelected(child, props) {
+	      var itemValue = this.getValueLink(props).value;
+	      var childValue = child.props.value;
+
+	      return itemValue === childValue;
+	    },
+	    handleItemTouchTap: function handleItemTouchTap(e, item) {
+	      var valueLink = this.getValueLink(this.props);
+	      var itemValue = item.props.value;
+	      var menuValue = valueLink.value;
+	      if (itemValue !== menuValue) {
+	        valueLink.requestChange(e, itemValue);
+	      }
+	    },
+	    render: function render() {
+	      var _this2 = this;
+
+	      var _props = this.props;
+	      var children = _props.children;
+	      var selectedItemStyle = _props.selectedItemStyle;
+
+	      this.keyIndex = 0;
+	      var styles = {};
+
+	      if (!selectedItemStyle) {
+	        var textColor = this.state.muiTheme.rawTheme.palette.textColor;
+	        var selectedColor = _colorManipulator2.default.fade(textColor, 0.2);
+	        styles = {
+	          backgroundColor: selectedColor
+	        };
+	      }
+
+	      var newChildren = _react2.default.Children.map(children, function (child) {
+	        return _this2.extendChild(child, styles, selectedItemStyle);
+	      });
+
+	      return _react2.default.createElement(
+	        Component,
+	        _extends({}, this.props, this.state),
+	        newChildren
+	      );
+	    }
+	  });
+
+	  return composed;
+	};
+
+	exports.default = SelectableContainerEnhance;
+
+/***/ },
+/* 310 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _propTypes = __webpack_require__(255);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _typography = __webpack_require__(305);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _paper = __webpack_require__(251);
+
+	var _paper2 = _interopRequireDefault(_paper);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var List = _react2.default.createClass({
+	  displayName: 'List',
+
+	  propTypes: {
+	    /**
+	     * These are usually ListItems that are passed to
+	     * be part of the list.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * If true, the subheader will be indented by 72px.
+	     */
+	    insetSubheader: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * The subheader string that will be displayed at the top of the list.
+	     */
+	    subheader: _react2.default.PropTypes.node,
+
+	    /**
+	     * The style object to override subheader styles.
+	     */
+	    subheaderStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The zDepth prop passed to the Paper element inside list.
+	     */
+	    zDepth: _propTypes2.default.zDepth
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      insetSubheader: false,
+	      zDepth: 0
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var children = _props.children;
+	    var insetSubheader = _props.insetSubheader;
+	    var style = _props.style;
+	    var subheader = _props.subheader;
+	    var subheaderStyle = _props.subheaderStyle;
+	    var zDepth = _props.zDepth;
+
+	    var other = _objectWithoutProperties(_props, ['children', 'insetSubheader', 'style', 'subheader', 'subheaderStyle', 'zDepth']);
+
+	    var styles = {
+	      root: {
+	        padding: 0,
+	        paddingBottom: 8,
+	        paddingTop: subheader ? 0 : 8
+	      },
+
+	      subheader: {
+	        color: _typography2.default.textLightBlack,
+	        fontSize: 14,
+	        fontWeight: _typography2.default.fontWeightMedium,
+	        lineHeight: '48px',
+	        paddingLeft: insetSubheader ? 72 : 16
+	      }
+	    };
+
+	    var subheaderElement = undefined;
+	    if (subheader) {
+	      var mergedSubheaderStyles = this.mergeStyles(styles.subheader, subheaderStyle);
+	      subheaderElement = _react2.default.createElement(
+	        'div',
+	        { style: this.prepareStyles(mergedSubheaderStyles) },
+	        subheader
+	      );
+	    }
+
+	    return _react2.default.createElement(
+	      _paper2.default,
+	      _extends({}, other, {
+	        style: this.mergeStyles(styles.root, style),
+	        zDepth: zDepth
+	      }),
+	      subheaderElement,
+	      children
+	    );
+	  }
+	});
+
+	exports.default = List;
+	module.exports = exports['default'];
+
+/***/ },
+/* 311 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _colorManipulator = __webpack_require__(274);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _colors = __webpack_require__(250);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _typography = __webpack_require__(305);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _enhancedButton = __webpack_require__(312);
+
+	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
+
+	var _iconButton = __webpack_require__(316);
+
+	var _iconButton2 = _interopRequireDefault(_iconButton);
+
+	var _arrowDropUp = __webpack_require__(320);
+
+	var _arrowDropUp2 = _interopRequireDefault(_arrowDropUp);
+
+	var _arrowDropDown = __webpack_require__(322);
+
+	var _arrowDropDown2 = _interopRequireDefault(_arrowDropDown);
+
+	var _nestedList = __webpack_require__(323);
+
+	var _nestedList2 = _interopRequireDefault(_nestedList);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var ListItem = _react2.default.createClass({
+	  displayName: 'ListItem',
+
+	  propTypes: {
+	    /**
+	     * Generate a nested list indicator icon when
+	     * nested list items are detected. Set to false
+	     * if you do not want an indicator auto-generated.
+	     * Note that an indicator will not be created if a
+	     * rightIcon/Button has been specified.
+	     */
+	    autoGenerateNestedIndicator: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Children passed into the ListItem.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * Does not allow the element to be focused by the keyboard.
+	     */
+	    disableKeyboardFocus: _react2.default.PropTypes.bool,
+
+	    /**
+	     * If true, the list-item will not be clickable
+	     * and will not display hover affects.
+	     * This is automatically disabled if leftCheckbox
+	     * or rightToggle is set.
+	     */
+	    disabled: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Controls whether or not the child ListItems are initially displayed.
+	     */
+	    initiallyOpen: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Style prop for the innder div element.
+	     */
+	    innerDivStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * If true, the children will be indented by 72px.
+	     * Only needed if there is no left avatar or left icon.
+	     */
+	    insetChildren: _react2.default.PropTypes.bool,
+
+	    /**
+	     * This is the Avatar element to be displayed on the left side.
+	     */
+	    leftAvatar: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the Checkbox element to be displayed on the left side.
+	     */
+	    leftCheckbox: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the SvgIcon or FontIcon to be displayed on the left side.
+	     */
+	    leftIcon: _react2.default.PropTypes.element,
+
+	    /**
+	     * An array of ListItems to nest underneath the current ListItem.
+	     */
+	    nestedItems: _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.element),
+
+	    /**
+	     * Controls how deep a ListItem appears.
+	     * This property is automatically managed so modify at your own risk.
+	     */
+	    nestedLevel: _react2.default.PropTypes.number,
+
+	    /**
+	     * Override the inline-styles of the nestedItems NestedList.
+	     */
+	    nestedListStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Called when the ListItem has keyboard focus.
+	     */
+	    onKeyboardFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse is over the ListItem.
+	     */
+	    onMouseEnter: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse is no longer over the ListItem.
+	     */
+	    onMouseLeave: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the ListItem toggles its nested ListItems.
+	     */
+	    onNestedListToggle: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when touches start.
+	     */
+	    onTouchStart: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when a touch tap event occures on the component.
+	     */
+	    onTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * This is the block element that contains the primary text.
+	     * If a string is passed in, a div tag will be rendered.
+	     */
+	    primaryText: _react2.default.PropTypes.node,
+
+	    /**
+	     * If provided, tapping on the primary text
+	     * of the item toggles the nested list.
+	     */
+	    primaryTogglesNestedList: _react2.default.PropTypes.bool,
+
+	    /**
+	     * This is the avatar element to be displayed on the right side.
+	     */
+	    rightAvatar: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the SvgIcon or FontIcon to be displayed on the right side.
+	     */
+	    rightIcon: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the IconButton to be displayed on the right side.
+	     * Hovering over this button will remove the ListItem hover.
+	     * Also, clicking on this button will not trigger a
+	     * ListItem ripple. The event will be stopped and prevented
+	     * from bubbling up to cause a ListItem click.
+	     */
+	    rightIconButton: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the Toggle element to display on the right side.
+	     */
+	    rightToggle: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the block element that contains the secondary text.
+	     * If a string is passed in, a div tag will be rendered.
+	     */
+	    secondaryText: _react2.default.PropTypes.node,
+
+	    /**
+	     * Can be 1 or 2. This is the number of secondary
+	     * text lines before ellipsis will show.
+	     */
+	    secondaryTextLines: _react2.default.PropTypes.oneOf([1, 2]),
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      autoGenerateNestedIndicator: true,
+	      disableKeyboardFocus: false,
+	      disabled: false,
+	      initiallyOpen: false,
+	      insetChildren: false,
+	      nestedItems: [],
+	      nestedLevel: 0,
+	      onKeyboardFocus: function onKeyboardFocus() {},
+	      onMouseEnter: function onMouseEnter() {},
+	      onMouseLeave: function onMouseLeave() {},
+	      onNestedListToggle: function onNestedListToggle() {},
+	      onTouchStart: function onTouchStart() {},
+	      primaryTogglesNestedList: false,
+	      secondaryTextLines: 1
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      hovered: false,
+	      isKeyboardFocused: false,
+	      open: this.props.initiallyOpen,
+	      rightIconButtonHovered: false,
+	      rightIconButtonKeyboardFocused: false,
+	      touch: false,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  applyFocusState: function applyFocusState(focusState) {
+	    var button = this.refs.enhancedButton;
+	    var buttonEl = _reactDom2.default.findDOMNode(button);
+
+	    if (button) {
+	      switch (focusState) {
+	        case 'none':
+	          buttonEl.blur();
+	          break;
+	        case 'focused':
+	          buttonEl.focus();
+	          break;
+	        case 'keyboard-focused':
+	          button.setKeyboardFocus();
+	          buttonEl.focus();
+	          break;
+	      }
+	    }
+	  },
+	  _createDisabledElement: function _createDisabledElement(styles, contentChildren, additionalProps) {
+	    var _props = this.props;
+	    var innerDivStyle = _props.innerDivStyle;
+	    var style = _props.style;
+
+	    var mergedDivStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, style);
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, additionalProps, {
+	        style: this.prepareStyles(mergedDivStyles)
+	      }),
+	      contentChildren
+	    );
+	  },
+	  _createLabelElement: function _createLabelElement(styles, contentChildren, additionalProps) {
+	    var _props2 = this.props;
+	    var innerDivStyle = _props2.innerDivStyle;
+	    var style = _props2.style;
+
+	    var mergedLabelStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, styles.label, style);
+
+	    return _react2.default.createElement(
+	      'label',
+	      _extends({}, additionalProps, {
+	        style: this.prepareStyles(mergedLabelStyles)
+	      }),
+	      contentChildren
+	    );
+	  },
+	  _createTextElement: function _createTextElement(styles, data, key) {
+	    var isAnElement = _react2.default.isValidElement(data);
+	    var mergedStyles = isAnElement ? this.mergeStyles(styles, data.props.style) : null;
+
+	    return isAnElement ? _react2.default.cloneElement(data, {
+	      key: key,
+	      style: this.prepareStyles(mergedStyles)
+	    }) : _react2.default.createElement(
+	      'div',
+	      { key: key, style: this.prepareStyles(styles) },
+	      data
+	    );
+	  },
+	  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
+	    this.setState({ isKeyboardFocused: isKeyboardFocused });
+	    this.props.onKeyboardFocus(e, isKeyboardFocused);
+	  },
+	  _handleMouseEnter: function _handleMouseEnter(e) {
+	    if (!this.state.touch) this.setState({ hovered: true });
+	    this.props.onMouseEnter(e);
+	  },
+	  _handleMouseLeave: function _handleMouseLeave(e) {
+	    this.setState({ hovered: false });
+	    this.props.onMouseLeave(e);
+	  },
+	  _handleNestedListToggle: function _handleNestedListToggle(e) {
+	    e.stopPropagation();
+	    this.setState({ open: !this.state.open });
+	    this.props.onNestedListToggle(this);
+	  },
+	  _handleRightIconButtonKeyboardFocus: function _handleRightIconButtonKeyboardFocus(e, isKeyboardFocused) {
+	    var iconButton = this.props.rightIconButton;
+	    var newState = {};
+
+	    newState.rightIconButtonKeyboardFocused = isKeyboardFocused;
+	    if (isKeyboardFocused) newState.isKeyboardFocused = false;
+	    this.setState(newState);
+
+	    if (iconButton && iconButton.props.onKeyboardFocus) iconButton.props.onKeyboardFocus(e, isKeyboardFocused);
+	  },
+	  _handleRightIconButtonMouseDown: function _handleRightIconButtonMouseDown(e) {
+	    var iconButton = this.props.rightIconButton;
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onMouseDown) iconButton.props.onMouseDown(e);
+	  },
+	  _handleRightIconButtonMouseLeave: function _handleRightIconButtonMouseLeave(e) {
+	    var iconButton = this.props.rightIconButton;
+	    this.setState({ rightIconButtonHovered: false });
+	    if (iconButton && iconButton.props.onMouseLeave) iconButton.props.onMouseLeave(e);
+	  },
+	  _handleRightIconButtonMouseEnter: function _handleRightIconButtonMouseEnter(e) {
+	    var iconButton = this.props.rightIconButton;
+	    this.setState({ rightIconButtonHovered: true });
+	    if (iconButton && iconButton.props.onMouseEnter) iconButton.props.onMouseEnter(e);
+	  },
+	  _handleRightIconButtonMouseUp: function _handleRightIconButtonMouseUp(e) {
+	    var iconButton = this.props.rightIconButton;
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onMouseUp) iconButton.props.onMouseUp(e);
+	  },
+	  _handleRightIconButtonTouchTap: function _handleRightIconButtonTouchTap(e) {
+	    var iconButton = this.props.rightIconButton;
+
+	    //Stop the event from bubbling up to the list-item
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onTouchTap) iconButton.props.onTouchTap(e);
+	  },
+	  _handleTouchStart: function _handleTouchStart(e) {
+	    this.setState({ touch: true });
+	    this.props.onTouchStart(e);
+	  },
+	  _pushElement: function _pushElement(children, element, baseStyles, additionalProps) {
+	    if (element) {
+	      var styles = this.mergeStyles(baseStyles, element.props.style);
+	      children.push(_react2.default.cloneElement(element, _extends({
+	        key: children.length,
+	        style: styles
+	      }, additionalProps)));
+	    }
+	  },
+	  render: function render() {
+	    var _props3 = this.props;
+	    var autoGenerateNestedIndicator = _props3.autoGenerateNestedIndicator;
+	    var children = _props3.children;
+	    var disabled = _props3.disabled;
+	    var disableKeyboardFocus = _props3.disableKeyboardFocus;
+	    var innerDivStyle = _props3.innerDivStyle;
+	    var insetChildren = _props3.insetChildren;
+	    var leftAvatar = _props3.leftAvatar;
+	    var leftCheckbox = _props3.leftCheckbox;
+	    var leftIcon = _props3.leftIcon;
+	    var nestedItems = _props3.nestedItems;
+	    var nestedLevel = _props3.nestedLevel;
+	    var nestedListStyle = _props3.nestedListStyle;
+	    var onKeyboardFocus = _props3.onKeyboardFocus;
+	    var onMouseLeave = _props3.onMouseLeave;
+	    var onMouseEnter = _props3.onMouseEnter;
+	    var onTouchStart = _props3.onTouchStart;
+	    var onTouchTap = _props3.onTouchTap;
+	    var rightAvatar = _props3.rightAvatar;
+	    var rightIcon = _props3.rightIcon;
+	    var rightIconButton = _props3.rightIconButton;
+	    var rightToggle = _props3.rightToggle;
+	    var primaryText = _props3.primaryText;
+	    var primaryTogglesNestedList = _props3.primaryTogglesNestedList;
+	    var secondaryText = _props3.secondaryText;
+	    var secondaryTextLines = _props3.secondaryTextLines;
+	    var style = _props3.style;
+
+	    var other = _objectWithoutProperties(_props3, ['autoGenerateNestedIndicator', 'children', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedItems', 'nestedLevel', 'nestedListStyle', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'onTouchTap', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'primaryTogglesNestedList', 'secondaryText', 'secondaryTextLines', 'style']);
+
+	    var textColor = this.state.muiTheme.rawTheme.palette.textColor;
+	    var hoverColor = _colorManipulator2.default.fade(textColor, 0.1);
+	    var singleAvatar = !secondaryText && (leftAvatar || rightAvatar);
+	    var singleNoAvatar = !secondaryText && !(leftAvatar || rightAvatar);
+	    var twoLine = secondaryText && secondaryTextLines === 1;
+	    var threeLine = secondaryText && secondaryTextLines > 1;
+	    var hasCheckbox = leftCheckbox || rightToggle;
+
+	    var styles = {
+	      root: {
+	        backgroundColor: (this.state.isKeyboardFocused || this.state.hovered) && !this.state.rightIconButtonHovered && !this.state.rightIconButtonKeyboardFocused ? hoverColor : null,
+	        color: textColor,
+	        display: 'block',
+	        fontSize: 16,
+	        lineHeight: '16px',
+	        position: 'relative',
+	        transition: _transitions2.default.easeOut()
+	      },
+
+	      //This inner div is needed so that ripples will span the entire container
+	      innerDiv: {
+	        marginLeft: nestedLevel * this.state.muiTheme.listItem.nestedLevelDepth,
+	        paddingLeft: leftIcon || leftAvatar || leftCheckbox || insetChildren ? 72 : 16,
+	        paddingRight: rightIcon || rightAvatar || rightIconButton ? 56 : rightToggle ? 72 : 16,
+	        paddingBottom: singleAvatar ? 20 : 16,
+	        paddingTop: singleNoAvatar || threeLine ? 16 : 20,
+	        position: 'relative'
+	      },
+
+	      icons: {
+	        height: 24,
+	        width: 24,
+	        display: 'block',
+	        position: 'absolute',
+	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+	        margin: 12
+	      },
+
+	      leftIcon: {
+	        color: _colors2.default.grey600,
+	        fill: _colors2.default.grey600,
+	        left: 4
+	      },
+
+	      rightIcon: {
+	        color: _colors2.default.grey400,
+	        fill: _colors2.default.grey400,
+	        right: 4
+	      },
+
+	      avatars: {
+	        position: 'absolute',
+	        top: singleAvatar ? 8 : 16
+	      },
+
+	      label: {
+	        cursor: 'pointer'
+	      },
+
+	      leftAvatar: {
+	        left: 16
+	      },
+
+	      rightAvatar: {
+	        right: 16
+	      },
+
+	      leftCheckbox: {
+	        position: 'absolute',
+	        display: 'block',
+	        width: 24,
+	        top: twoLine ? 24 : singleAvatar ? 16 : 12,
+	        left: 16
+	      },
+
+	      primaryText: {},
+
+	      rightIconButton: {
+	        position: 'absolute',
+	        display: 'block',
+	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+	        right: 4
+	      },
+
+	      rightToggle: {
+	        position: 'absolute',
+	        display: 'block',
+	        width: 54,
+	        top: twoLine ? 25 : singleAvatar ? 17 : 13,
+	        right: 8
+	      },
+
+	      secondaryText: {
+	        fontSize: 14,
+	        lineHeight: threeLine ? '18px' : '16px',
+	        height: threeLine ? 36 : 16,
+	        margin: 0,
+	        marginTop: 4,
+	        color: _typography2.default.textLightBlack,
+
+	        //needed for 2 and 3 line ellipsis
+	        overflow: 'hidden',
+	        textOverflow: 'ellipsis',
+	        whiteSpace: threeLine ? null : 'nowrap',
+	        display: threeLine ? '-webkit-box' : null,
+	        WebkitLineClamp: threeLine ? 2 : null,
+	        WebkitBoxOrient: threeLine ? 'vertical' : null
+	      }
+	    };
+
+	    var contentChildren = [children];
+
+	    if (leftIcon) {
+	      this._pushElement(contentChildren, leftIcon, this.mergeStyles(styles.icons, styles.leftIcon));
+	    }
+
+	    if (rightIcon) {
+	      this._pushElement(contentChildren, rightIcon, this.mergeStyles(styles.icons, styles.rightIcon));
+	    }
+
+	    if (leftAvatar) {
+	      this._pushElement(contentChildren, leftAvatar, this.mergeStyles(styles.avatars, styles.leftAvatar));
+	    }
+
+	    if (rightAvatar) {
+	      this._pushElement(contentChildren, rightAvatar, this.mergeStyles(styles.avatars, styles.rightAvatar));
+	    }
+
+	    if (leftCheckbox) {
+	      this._pushElement(contentChildren, leftCheckbox, this.mergeStyles(styles.leftCheckbox));
+	    }
+
+	    //RightIconButtonElement
+	    var hasNestListItems = nestedItems.length;
+	    var hasRightElement = rightAvatar || rightIcon || rightIconButton || rightToggle;
+	    var needsNestedIndicator = hasNestListItems && autoGenerateNestedIndicator && !hasRightElement;
+
+	    if (rightIconButton || needsNestedIndicator) {
+	      var rightIconButtonElement = rightIconButton;
+	      var rightIconButtonHandlers = {
+	        onKeyboardFocus: this._handleRightIconButtonKeyboardFocus,
+	        onMouseEnter: this._handleRightIconButtonMouseEnter,
+	        onMouseLeave: this._handleRightIconButtonMouseLeave,
+	        onTouchTap: this._handleRightIconButtonTouchTap,
+	        onMouseDown: this._handleRightIconButtonMouseUp,
+	        onMouseUp: this._handleRightIconButtonMouseUp
+	      };
+
+	      // Create a nested list indicator icon if we don't have an icon on the right
+	      if (needsNestedIndicator) {
+	        rightIconButtonElement = this.state.open ? _react2.default.createElement(
+	          _iconButton2.default,
+	          null,
+	          _react2.default.createElement(_arrowDropUp2.default, null)
+	        ) : _react2.default.createElement(
+	          _iconButton2.default,
+	          null,
+	          _react2.default.createElement(_arrowDropDown2.default, null)
+	        );
+	        rightIconButtonHandlers.onTouchTap = this._handleNestedListToggle;
+	      }
+
+	      this._pushElement(contentChildren, rightIconButtonElement, this.mergeStyles(styles.rightIconButton), rightIconButtonHandlers);
+	    }
+
+	    if (rightToggle) {
+	      this._pushElement(contentChildren, rightToggle, this.mergeStyles(styles.rightToggle));
+	    }
+
+	    if (primaryText) {
+	      var secondaryTextElement = this._createTextElement(styles.primaryText, primaryText, 'primaryText');
+	      contentChildren.push(secondaryTextElement);
+	    }
+
+	    if (secondaryText) {
+	      var secondaryTextElement = this._createTextElement(styles.secondaryText, secondaryText, 'secondaryText');
+	      contentChildren.push(secondaryTextElement);
+	    }
+
+	    var nestedList = nestedItems.length ? _react2.default.createElement(
+	      _nestedList2.default,
+	      { nestedLevel: nestedLevel + 1, open: this.state.open, style: nestedListStyle },
+	      nestedItems
+	    ) : undefined;
+
+	    return _react2.default.createElement(
+	      'div',
+	      null,
+	      hasCheckbox ? this._createLabelElement(styles, contentChildren, other) : disabled ? this._createDisabledElement(styles, contentChildren, other) : _react2.default.createElement(
+	        _enhancedButton2.default,
+	        _extends({}, other, {
+	          disabled: disabled,
+	          disableKeyboardFocus: disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused,
+	          linkButton: true,
+	          onKeyboardFocus: this._handleKeyboardFocus,
+	          onMouseLeave: this._handleMouseLeave,
+	          onMouseEnter: this._handleMouseEnter,
+	          onTouchStart: this._handleTouchStart,
+	          onTouchTap: primaryTogglesNestedList ? this._handleNestedListToggle : onTouchTap,
+	          ref: 'enhancedButton',
+	          style: this.mergeStyles(styles.root, style)
+	        }),
+	        _react2.default.createElement(
+	          'div',
+	          { style: this.prepareStyles(styles.innerDiv, innerDivStyle) },
+	          contentChildren
+	        )
+	      ),
+	      nestedList
+	    );
+	  }
+	});
+
+	exports.default = ListItem;
+	module.exports = exports['default'];
+
+/***/ },
+/* 312 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _colors = __webpack_require__(250);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _children = __webpack_require__(313);
+
+	var _children2 = _interopRequireDefault(_children);
+
+	var _events = __webpack_require__(248);
+
+	var _events2 = _interopRequireDefault(_events);
+
+	var _keyCode = __webpack_require__(221);
+
+	var _keyCode2 = _interopRequireDefault(_keyCode);
+
+	var _focusRipple = __webpack_require__(295);
+
+	var _focusRipple2 = _interopRequireDefault(_focusRipple);
+
+	var _touchRipple = __webpack_require__(301);
+
+	var _touchRipple2 = _interopRequireDefault(_touchRipple);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var styleInjected = false;
+	var listening = false;
+	var tabPressed = false;
+
+	function injectStyle() {
+	  if (!styleInjected) {
+	    // Remove inner padding and border in Firefox 4+.
+	    var style = document.createElement('style');
+	    style.innerHTML = '\n      button::-moz-focus-inner,\n      input::-moz-focus-inner {\n        border: 0;\n        padding: 0;\n      }\n    ';
+
+	    document.body.appendChild(style);
+	    styleInjected = true;
+	  }
+	}
+
+	function listenForTabPresses() {
+	  if (!listening) {
+	    _events2.default.on(window, 'keydown', function (e) {
+	      tabPressed = e.keyCode === _keyCode2.default.TAB;
+	    });
+	    listening = true;
+	  }
+	}
+
+	var EnhancedButton = _react2.default.createClass({
+	  displayName: 'EnhancedButton',
+
+	  propTypes: {
+	    centerRipple: _react2.default.PropTypes.bool,
+	    children: _react2.default.PropTypes.node,
+	    containerElement: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.element]),
+	    disableFocusRipple: _react2.default.PropTypes.bool,
+	    disableKeyboardFocus: _react2.default.PropTypes.bool,
+	    disableTouchRipple: _react2.default.PropTypes.bool,
+	    disabled: _react2.default.PropTypes.bool,
+	    focusRippleColor: _react2.default.PropTypes.string,
+	    focusRippleOpacity: _react2.default.PropTypes.number,
+	    keyboardFocused: _react2.default.PropTypes.bool,
+	    linkButton: _react2.default.PropTypes.bool,
+	    onBlur: _react2.default.PropTypes.func,
+	    onFocus: _react2.default.PropTypes.func,
+	    onKeyDown: _react2.default.PropTypes.func,
+	    onKeyUp: _react2.default.PropTypes.func,
+	    onKeyboardFocus: _react2.default.PropTypes.func,
+	    onTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+	    tabIndex: _react2.default.PropTypes.number,
+	    touchRippleColor: _react2.default.PropTypes.string,
+	    touchRippleOpacity: _react2.default.PropTypes.number,
+	    type: _react2.default.PropTypes.string
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      containerElement: 'button',
+	      onBlur: function onBlur() {},
+	      onFocus: function onFocus() {},
+	      onKeyboardFocus: function onKeyboardFocus() {},
+	      onKeyDown: function onKeyDown() {},
+	      onKeyUp: function onKeyUp() {},
+	      onTouchTap: function onTouchTap() {},
+	      tabIndex: 0,
+	      type: 'button'
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      isKeyboardFocused: !this.props.disabled && this.props.keyboardFocused && !this.props.disableKeyboardFocus,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    injectStyle();
+	    listenForTabPresses();
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+
+	    if ((nextProps.disabled || nextProps.disableKeyboardFocus) && this.state.isKeyboardFocused) {
+	      this.setState({ isKeyboardFocused: false });
+	      if (nextProps.onKeyboardFocus) {
+	        nextProps.onKeyboardFocus(null, false);
+	      }
+	    }
+	  },
+	  isKeyboardFocused: function isKeyboardFocused() {
+	    return this.state.isKeyboardFocused;
+	  },
+	  removeKeyboardFocus: function removeKeyboardFocus(e) {
+	    if (this.state.isKeyboardFocused) {
+	      this.setState({ isKeyboardFocused: false });
+	      this.props.onKeyboardFocus(e, false);
+	    }
+	  },
+	  setKeyboardFocus: function setKeyboardFocus(e) {
+	    if (!this.state.isKeyboardFocused) {
+	      this.setState({ isKeyboardFocused: true });
+	      this.props.onKeyboardFocus(e, true);
+	    }
+	  },
+	  _cancelFocusTimeout: function _cancelFocusTimeout() {
+	    if (this._focusTimeout) {
+	      clearTimeout(this._focusTimeout);
+	      this._focusTimeout = null;
+	    }
+	  },
+	  _createButtonChildren: function _createButtonChildren() {
+	    var _props = this.props;
+	    var centerRipple = _props.centerRipple;
+	    var children = _props.children;
+	    var disabled = _props.disabled;
+	    var disableFocusRipple = _props.disableFocusRipple;
+	    var disableKeyboardFocus = _props.disableKeyboardFocus;
+	    var disableTouchRipple = _props.disableTouchRipple;
+	    var focusRippleColor = _props.focusRippleColor;
+	    var focusRippleOpacity = _props.focusRippleOpacity;
+	    var touchRippleColor = _props.touchRippleColor;
+	    var touchRippleOpacity = _props.touchRippleOpacity;
+	    var isKeyboardFocused = this.state.isKeyboardFocused;
+
+	    //Focus Ripple
+
+	    var focusRipple = isKeyboardFocused && !disabled && !disableFocusRipple && !disableKeyboardFocus ? _react2.default.createElement(_focusRipple2.default, {
+	      color: focusRippleColor,
+	      muiTheme: this.state.muiTheme,
+	      opacity: focusRippleOpacity,
+	      show: isKeyboardFocused
+	    }) : undefined;
+
+	    //Touch Ripple
+	    var touchRipple = !disabled && !disableTouchRipple ? _react2.default.createElement(
+	      _touchRipple2.default,
+	      {
+	        centerRipple: centerRipple,
+	        color: touchRippleColor,
+	        muiTheme: this.state.muiTheme,
+	        opacity: touchRippleOpacity
+	      },
+	      children
+	    ) : undefined;
+
+	    return _children2.default.create({
+	      focusRipple: focusRipple,
+	      touchRipple: touchRipple,
+	      children: touchRipple ? undefined : children
+	    });
+	  },
+	  _handleKeyDown: function _handleKeyDown(e) {
+	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
+	      if (e.keyCode === _keyCode2.default.ENTER && this.state.isKeyboardFocused) {
+	        this._handleTouchTap(e);
+	      }
+	    }
+	    this.props.onKeyDown(e);
+	  },
+	  _handleKeyUp: function _handleKeyUp(e) {
+	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
+	      if (e.keyCode === _keyCode2.default.SPACE && this.state.isKeyboardFocused) {
+	        this._handleTouchTap(e);
+	      }
+	    }
+	    this.props.onKeyUp(e);
+	  },
+	  _handleBlur: function _handleBlur(e) {
+	    this._cancelFocusTimeout();
+	    this.removeKeyboardFocus(e);
+	    this.props.onBlur(e);
+	  },
+	  _handleFocus: function _handleFocus(e) {
+	    var _this = this;
+
+	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
+	      //setTimeout is needed because the focus event fires first
+	      //Wait so that we can capture if this was a keyboard focus
+	      //or touch focus
+	      this._focusTimeout = setTimeout(function () {
+	        if (tabPressed) {
+	          _this.setKeyboardFocus(e);
+	        }
+	      }, 150);
+
+	      this.props.onFocus(e);
+	    }
+	  },
+	  _handleTouchTap: function _handleTouchTap(e) {
+	    this._cancelFocusTimeout();
+	    if (!this.props.disabled) {
+	      tabPressed = false;
+	      this.removeKeyboardFocus(e);
+	      this.props.onTouchTap(e);
+	    }
+	  },
+	  render: function render() {
+	    var _props2 = this.props;
+	    var centerRipple = _props2.centerRipple;
+	    var children = _props2.children;
+	    var containerElement = _props2.containerElement;
+	    var disabled = _props2.disabled;
+	    var disableFocusRipple = _props2.disableFocusRipple;
+	    var disableKeyboardFocus = _props2.disableKeyboardFocus;
+	    var disableTouchRipple = _props2.disableTouchRipple;
+	    var focusRippleColor = _props2.focusRippleColor;
+	    var focusRippleOpacity = _props2.focusRippleOpacity;
+	    var linkButton = _props2.linkButton;
+	    var touchRippleColor = _props2.touchRippleColor;
+	    var touchRippleOpacity = _props2.touchRippleOpacity;
+	    var onBlur = _props2.onBlur;
+	    var onFocus = _props2.onFocus;
+	    var onKeyUp = _props2.onKeyUp;
+	    var onKeyDown = _props2.onKeyDown;
+	    var onTouchTap = _props2.onTouchTap;
+	    var style = _props2.style;
+	    var tabIndex = _props2.tabIndex;
+	    var type = _props2.type;
+
+	    var other = _objectWithoutProperties(_props2, ['centerRipple', 'children', 'containerElement', 'disabled', 'disableFocusRipple', 'disableKeyboardFocus', 'disableTouchRipple', 'focusRippleColor', 'focusRippleOpacity', 'linkButton', 'touchRippleColor', 'touchRippleOpacity', 'onBlur', 'onFocus', 'onKeyUp', 'onKeyDown', 'onTouchTap', 'style', 'tabIndex', 'type']);
+
+	    var mergedStyles = this.mergeStyles({
+	      border: 10,
+	      background: 'none',
+	      boxSizing: 'border-box',
+	      display: 'inline-block',
+	      font: 'inherit',
+	      fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+	      tapHighlightColor: _colors2.default.transparent,
+	      appearance: linkButton ? null : 'button',
+	      cursor: disabled ? 'default' : 'pointer',
+	      textDecoration: 'none',
+	      outline: 'none',
+	      /*
+	        This is needed so that ripples do not bleed
+	        past border radius.
+	        See: http://stackoverflow.com/questions/17298739/
+	          css-overflow-hidden-not-working-in-chrome-when-parent-has-border-radius-and-chil
+	       */
+	      transform: disableTouchRipple && disableFocusRipple ? null : 'translate3d(0, 0, 0)',
+	      verticalAlign: other.hasOwnProperty('href') ? 'middle' : null
+	    }, style);
+
+	    if (disabled && linkButton) {
+	      return _react2.default.createElement(
+	        'span',
+	        _extends({}, other, {
+	          style: mergedStyles
+	        }),
+	        children
+	      );
+	    }
+
+	    var buttonProps = _extends({}, other, {
+	      style: this.prepareStyles(mergedStyles),
+	      disabled: disabled,
+	      onBlur: this._handleBlur,
+	      onFocus: this._handleFocus,
+	      onTouchTap: this._handleTouchTap,
+	      onKeyUp: this._handleKeyUp,
+	      onKeyDown: this._handleKeyDown,
+	      tabIndex: tabIndex,
+	      type: type
+	    });
+	    var buttonChildren = this._createButtonChildren();
+
+	    // Provides backward compatibity. Added to support wrapping around <a> element.
+	    var targetLinkElement = buttonProps.hasOwnProperty('href') ? 'a' : 'span';
+
+	    return _react2.default.isValidElement(containerElement) ? _react2.default.cloneElement(containerElement, buttonProps, buttonChildren) : _react2.default.createElement(linkButton ? targetLinkElement : containerElement, buttonProps, buttonChildren);
+	  }
+	});
+
+	exports.default = EnhancedButton;
+	module.exports = exports['default'];
+
+/***/ },
+/* 313 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsCreateFragment = __webpack_require__(314);
+
+	var _reactAddonsCreateFragment2 = _interopRequireDefault(_reactAddonsCreateFragment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  create: function create(fragments) {
+	    var newFragments = {};
+	    var validChildrenCount = 0;
+	    var firstKey = undefined;
+
+	    //Only create non-empty key fragments
+	    for (var key in fragments) {
+	      var currentChild = fragments[key];
+
+	      if (currentChild) {
+	        if (validChildrenCount === 0) firstKey = key;
+	        newFragments[key] = currentChild;
+	        validChildrenCount++;
+	      }
+	    }
+
+	    if (validChildrenCount === 0) return undefined;
+	    if (validChildrenCount === 1) return newFragments[firstKey];
+	    return (0, _reactAddonsCreateFragment2.default)(newFragments);
+	  },
+	  extend: function extend(children, extendedProps, extendedChildren) {
+
+	    return _react2.default.isValidElement(children) ? _react2.default.Children.map(children, function (child) {
+
+	      var newProps = typeof extendedProps === 'function' ? extendedProps(child) : extendedProps;
+
+	      var newChildren = typeof extendedChildren === 'function' ? extendedChildren(child) : extendedChildren ? extendedChildren : child.props.children;
+
+	      return _react2.default.cloneElement(child, newProps, newChildren);
+	    }) : children;
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(315).create;
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactFragment
+	 */
+
+	'use strict';
+
+	var ReactChildren = __webpack_require__(109);
+	var ReactElement = __webpack_require__(41);
+
+	var emptyFunction = __webpack_require__(14);
+	var invariant = __webpack_require__(12);
+	var warning = __webpack_require__(24);
+
+	/**
+	 * We used to allow keyed objects to serve as a collection of ReactElements,
+	 * or nested sets. This allowed us a way to explicitly key a set a fragment of
+	 * components. This is now being replaced with an opaque data structure.
+	 * The upgrade path is to call React.addons.createFragment({ key: value }) to
+	 * create a keyed fragment. The resulting data structure is an array.
+	 */
+
+	var numericPropertyRegex = /^\d+$/;
+
+	var warnedAboutNumeric = false;
+
+	var ReactFragment = {
+	  // Wrap a keyed object in an opaque proxy that warns you if you access any
+	  // of its properties.
+	  create: function (object) {
+	    if (typeof object !== 'object' || !object || Array.isArray(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment only accepts a single object. Got: %s', object) : undefined;
+	      return object;
+	    }
+	    if (ReactElement.isValidElement(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment does not accept a ReactElement ' + 'without a wrapper object.') : undefined;
+	      return object;
+	    }
+
+	    !(object.nodeType !== 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'React.addons.createFragment(...): Encountered an invalid child; DOM ' + 'elements are not valid children of React components.') : invariant(false) : undefined;
+
+	    var result = [];
+
+	    for (var key in object) {
+	      if (process.env.NODE_ENV !== 'production') {
+	        if (!warnedAboutNumeric && numericPropertyRegex.test(key)) {
+	          process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment(...): Child objects should have ' + 'non-numeric keys so ordering is preserved.') : undefined;
+	          warnedAboutNumeric = true;
+	        }
+	      }
+	      ReactChildren.mapIntoWithKeyPrefixInternal(object[key], result, key, emptyFunction.thatReturnsArgument);
+	    }
+
+	    return result;
+	  }
+	};
+
+	module.exports = ReactFragment;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 316 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _contextPure = __webpack_require__(317);
+
+	var _contextPure2 = _interopRequireDefault(_contextPure);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _propTypes = __webpack_require__(255);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _enhancedButton = __webpack_require__(312);
+
+	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
+
+	var _fontIcon = __webpack_require__(289);
+
+	var _fontIcon2 = _interopRequireDefault(_fontIcon);
+
+	var _tooltip = __webpack_require__(319);
+
+	var _tooltip2 = _interopRequireDefault(_tooltip);
+
+	var _children = __webpack_require__(313);
+
+	var _children2 = _interopRequireDefault(_children);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var IconButton = _react2.default.createClass({
+	  displayName: 'IconButton',
+
+	  propTypes: {
+	    /**
+	     * Can be used to pass a font icon as the icon for the button.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * The css class name of the root element.
+	     */
+	    className: _react2.default.PropTypes.string,
+
+	    /**
+	     * Disables the icon button.
+	     */
+	    disabled: _react2.default.PropTypes.bool,
+
+	    /**
+	     * If you are using a stylesheet for your
+	     * icons, enter the class name for the icon to be used here.
+	     */
+	    iconClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the icon element.
+	     */
+	    iconStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Callback function for when the component loses focus.
+	     */
+	    onBlur: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when the component gains focus.
+	     */
+	    onFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when the component
+	     * receives keyboard focus.
+	     */
+	    onKeyboardFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when mouse enters element.
+	     */
+	    onMouseEnter: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when mouse leaves element.
+	     */
+	    onMouseLeave: _react2.default.PropTypes.func,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * The tooltip text to show.
+	     */
+	    tooltip: _react2.default.PropTypes.node,
+
+	    /**
+	     * Allows the tooltip to be viewed with different
+	     * alignments: "bottom-center", "top-center",
+	     * "bottom-right", "top-right", "bottom-left" and "top-left".
+	     */
+	    tooltipPosition: _propTypes2.default.cornersAndCenter,
+
+	    /**
+	     * Styles prop passed down to the tooltip.
+	     */
+	    tooltipStyles: _react2.default.PropTypes.object,
+
+	    /**
+	     * Prop for tooltip to make it larger for mobile.
+	     */
+	    touch: _react2.default.PropTypes.bool
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default, _contextPure2.default],
+
+	  statics: {
+	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+	      var spacing = muiTheme.rawTheme.spacing;
+	      var palette = muiTheme.rawTheme.palette;
+
+	      return {
+	        iconSize: spacing.iconSize,
+	        textColor: palette.textColor,
+	        disabledColor: palette.disabledColor
+	      };
+	    },
+	    getChildrenClasses: function getChildrenClasses() {
+	      return [_enhancedButton2.default, _fontIcon2.default, _tooltip2.default];
+	    }
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      disabled: false,
+	      iconStyle: {},
+	      tooltipPosition: 'bottom-center',
+	      touch: false
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      tooltipShown: false,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  getStyles: function getStyles() {
+	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+	    var iconSize = _constructor$getRelev.iconSize;
+	    var textColor = _constructor$getRelev.textColor;
+	    var disabledColor = _constructor$getRelev.disabledColor;
+
+	    var styles = {
+	      root: {
+	        position: 'relative',
+	        boxSizing: 'border-box',
+	        transition: _transitions2.default.easeOut(),
+	        padding: iconSize / 2,
+	        width: iconSize * 2,
+	        height: iconSize * 2,
+	        fontSize: 0
+	      },
+	      tooltip: {
+	        boxSizing: 'border-box'
+	      },
+	      icon: {
+	        color: textColor,
+	        fill: textColor
+	      },
+	      overlay: {
+	        position: 'relative',
+	        top: 0,
+	        width: '100%',
+	        height: '100%',
+	        background: disabledColor
+	      },
+	      disabled: {
+	        color: disabledColor,
+	        fill: disabledColor
+	      }
+	    };
+
+	    return styles;
+	  },
+	  setKeyboardFocus: function setKeyboardFocus() {
+	    this.refs.button.setKeyboardFocus();
+	  },
+	  _showTooltip: function _showTooltip() {
+	    if (this.props.tooltip) {
+	      this.setState({ tooltipShown: true });
+	    }
+	  },
+	  _hideTooltip: function _hideTooltip() {
+	    if (this.props.tooltip) this.setState({ tooltipShown: false });
+	  },
+	  _handleBlur: function _handleBlur(e) {
+	    this._hideTooltip();
+	    if (this.props.onBlur) this.props.onBlur(e);
+	  },
+	  _handleFocus: function _handleFocus(e) {
+	    this._showTooltip();
+	    if (this.props.onFocus) this.props.onFocus(e);
+	  },
+	  _handleMouseLeave: function _handleMouseLeave(e) {
+	    if (!this.refs.button.isKeyboardFocused()) this._hideTooltip();
+	    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
+	  },
+	  _handleMouseEnter: function _handleMouseEnter(e) {
+	    this._showTooltip();
+	    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
+	  },
+	  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
+	    if (keyboardFocused && !this.props.disabled) {
+	      this._showTooltip();
+	      if (this.props.onFocus) this.props.onFocus(e);
+	    } else if (!this.state.hovered) {
+	      this._hideTooltip();
+	      if (this.props.onBlur) this.props.onBlur(e);
+	    }
+
+	    if (this.props.onKeyboardFocus) this.props.onKeyboardFocus(e, keyboardFocused);
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var disabled = _props.disabled;
+	    var iconClassName = _props.iconClassName;
+	    var tooltip = _props.tooltip;
+	    var touch = _props.touch;
+	    var iconStyle = _props.iconStyle;
+
+	    var other = _objectWithoutProperties(_props, ['disabled', 'iconClassName', 'tooltip', 'touch', 'iconStyle']);
+
+	    var fonticon = undefined;
+
+	    var styles = this.getStyles();
+	    var tooltipPosition = this.props.tooltipPosition.split('-');
+
+	    var tooltipElement = tooltip ? _react2.default.createElement(_tooltip2.default, {
+	      ref: 'tooltip',
+	      label: tooltip,
+	      show: this.state.tooltipShown,
+	      touch: touch,
+	      style: this.mergeStyles(styles.tooltip, this.props.tooltipStyles),
+	      verticalPosition: tooltipPosition[0],
+	      horizontalPosition: tooltipPosition[1]
+	    }) : null;
+
+	    if (iconClassName) {
+	      var iconHoverColor = iconStyle.iconHoverColor;
+
+	      var iconStyleFontIcon = _objectWithoutProperties(iconStyle, ['iconHoverColor']);
+
+	      fonticon = _react2.default.createElement(
+	        _fontIcon2.default,
+	        {
+	          className: iconClassName,
+	          hoverColor: disabled ? null : iconHoverColor,
+	          style: this.mergeStyles(styles.icon, disabled ? styles.disabled : {}, iconStyleFontIcon)
+	        },
+	        this.props.children
+	      );
+	    }
+
+	    var childrenStyle = disabled ? this.mergeStyles(iconStyle, styles.disabled) : iconStyle;
+
+	    return _react2.default.createElement(
+	      _enhancedButton2.default,
+	      _extends({}, other, {
+	        ref: 'button',
+	        centerRipple: true,
+	        disabled: disabled,
+	        style: this.mergeStyles(styles.root, this.props.style),
+	        onBlur: this._handleBlur,
+	        onFocus: this._handleFocus,
+	        onMouseLeave: this._handleMouseLeave,
+	        onMouseEnter: this._handleMouseEnter,
+	        onKeyboardFocus: this._handleKeyboardFocus
+	      }),
+	      tooltipElement,
+	      fonticon,
+	      _children2.default.extend(this.props.children, {
+	        style: childrenStyle
+	      })
+	    );
+	  }
+	});
+
+	exports.default = IconButton;
+	module.exports = exports['default'];
+
+/***/ },
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _shallowEqual = __webpack_require__(318);
+
+	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function relevantContextKeysEqual(classObject, currentContext, nextContext) {
+
+	  //Get those keys from current object's context that we care
+	  //about and check whether those keys have changed or not
+	  if (classObject.getRelevantContextKeys) {
+	    var currentContextKeys = classObject.getRelevantContextKeys(currentContext);
+	    var nextContextKeys = classObject.getRelevantContextKeys(nextContext);
+
+	    if (!(0, _shallowEqual2.default)(currentContextKeys, nextContextKeys)) {
+	      return false;
+	    }
+	  }
+
+	  //Check if children context keys changed
+	  if (classObject.getChildrenClasses) {
+	    var childrenArray = classObject.getChildrenClasses();
+	    for (var i = 0; i < childrenArray.length; i++) {
+	      if (!relevantContextKeysEqual(childrenArray[i], currentContext, nextContext)) {
+	        return false;
+	      }
+	    }
+	  }
+
+	  //context keys are equal
+	  return true;
+	}
+
+	exports.default = {
+
+	  //Don't update if state, prop, and context are equal
+
+	  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState, nextContext) {
+
+	    //If either the props or state have changed, component should update
+	    if (!(0, _shallowEqual2.default)(this.props, nextProps) || !(0, _shallowEqual2.default)(this.state, nextState)) {
+	      return true;
+	    }
+
+	    //If current theme and next theme are both undefined, do not update
+	    if (!this.context.muiTheme && !nextContext.muiTheme) {
+	      return false;
+	    }
+
+	    //If both themes exist, compare keys only if current theme is not static
+	    if (this.context.muiTheme && nextContext.muiTheme) {
+	      return !this.context.muiTheme.static && !relevantContextKeysEqual(this.constructor, this.context.muiTheme, nextContext.muiTheme);
+	    }
+
+	    //At this point it is guaranteed that exactly one theme is undefined so simply update
+	    return true;
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 318 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = shallowEqual;
+	function shallowEqual(objA, objB) {
+	  if (objA === objB) {
+	    return true;
+	  }
+
+	  if ((typeof objA === 'undefined' ? 'undefined' : _typeof(objA)) !== 'object' || objA === null || (typeof objB === 'undefined' ? 'undefined' : _typeof(objB)) !== 'object' || objB === null) {
+	    return false;
+	  }
+
+	  var keysA = Object.keys(objA);
+	  var keysB = Object.keys(objB);
+
+	  if (keysA.length !== keysB.length) {
+	    return false;
+	  }
+
+	  // Test for A's keys different from B.
+	  var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
+	  for (var i = 0; i < keysA.length; i++) {
+	    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _colors = __webpack_require__(250);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var Tooltip = _react2.default.createClass({
+	  displayName: 'Tooltip',
+
+	  propTypes: {
+	    /**
+	     * The css class name of the root element.
+	     */
+	    className: _react2.default.PropTypes.string,
+	    horizontalPosition: _react2.default.PropTypes.oneOf(['left', 'right', 'center']),
+	    label: _react2.default.PropTypes.node.isRequired,
+	    show: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+	    touch: _react2.default.PropTypes.bool,
+	    verticalPosition: _react2.default.PropTypes.oneOf(['top', 'bottom'])
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      offsetWidth: null,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this._setRippleSize();
+	    this._setTooltipPosition();
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    this._setTooltipPosition();
+
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  componentDidUpdate: function componentDidUpdate() {
+	    this._setRippleSize();
+	  },
+	  getStyles: function getStyles() {
+	    var verticalPosition = this.props.verticalPosition;
+	    var horizontalPosition = this.props.horizontalPosition;
+	    var touchMarginOffset = this.props.touch ? 10 : 0;
+	    var touchOffsetTop = this.props.touch ? -20 : -10;
+	    var offset = verticalPosition === 'bottom' ? 14 + touchMarginOffset : -14 - touchMarginOffset;
+
+	    var muiTheme = this.state.muiTheme;
+	    var rawTheme = muiTheme.rawTheme;
+
+	    var styles = {
+	      root: {
+	        position: 'absolute',
+	        fontFamily: rawTheme.fontFamily,
+	        fontSize: '10px',
+	        lineHeight: '22px',
+	        padding: '0 8px',
+	        zIndex: muiTheme.zIndex.tooltip,
+	        color: _colors2.default.white,
+	        overflow: 'hidden',
+	        top: -10000,
+	        borderRadius: 2,
+	        userSelect: 'none',
+	        opacity: 0,
+	        right: horizontalPosition === 'left' ? 12 : null,
+	        left: horizontalPosition === 'center' ? (this.state.offsetWidth - 48) / 2 * -1 : null,
+	        transition: _transitions2.default.easeOut('0ms', 'top', '450ms') + ',' + _transitions2.default.easeOut('450ms', 'transform', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'opacity', '0ms')
+	      },
+	      label: {
+	        position: 'relative',
+	        whiteSpace: 'nowrap'
+	      },
+	      ripple: {
+	        position: 'absolute',
+	        left: horizontalPosition === 'center' ? '50%' : horizontalPosition === 'left' ? '100%' : '0%',
+	        top: verticalPosition === 'bottom' ? 0 : '100%',
+	        transform: 'translate(-50%, -50%)',
+	        borderRadius: '50%',
+	        backgroundColor: 'transparent',
+	        transition: _transitions2.default.easeOut('0ms', 'width', '450ms') + ',' + _transitions2.default.easeOut('0ms', 'height', '450ms') + ',' + _transitions2.default.easeOut('450ms', 'backgroundColor', '0ms')
+	      },
+	      rootWhenShown: {
+	        top: verticalPosition === 'top' ? touchOffsetTop : 36,
+	        opacity: 0.9,
+	        transform: 'translate3d(0px, ' + offset + 'px, 0px)',
+	        transition: _transitions2.default.easeOut('0ms', 'top', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'transform', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'opacity', '0ms')
+	      },
+	      rootWhenTouched: {
+	        fontSize: '14px',
+	        lineHeight: '32px',
+	        padding: '0 16px'
+	      },
+	      rippleWhenShown: {
+	        backgroundColor: _colors2.default.grey700,
+	        transition: _transitions2.default.easeOut('450ms', 'width', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'height', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'backgroundColor', '0ms')
+	      }
+	    };
+
+	    return styles;
+	  },
+	  _setRippleSize: function _setRippleSize() {
+	    var ripple = _reactDom2.default.findDOMNode(this.refs.ripple);
+	    var tooltip = window.getComputedStyle(_reactDom2.default.findDOMNode(this));
+	    var tooltipWidth = parseInt(tooltip.getPropertyValue('width'), 10) / (this.props.horizontalPosition === 'center' ? 2 : 1);
+	    var tooltipHeight = parseInt(tooltip.getPropertyValue('height'), 10);
+
+	    var rippleDiameter = Math.ceil(Math.sqrt(Math.pow(tooltipHeight, 2) + Math.pow(tooltipWidth, 2)) * 2);
+	    if (this.props.show) {
+	      ripple.style.height = rippleDiameter + 'px';
+	      ripple.style.width = rippleDiameter + 'px';
+	    } else {
+	      ripple.style.width = '0px';
+	      ripple.style.height = '0px';
+	    }
+	  },
+	  _setTooltipPosition: function _setTooltipPosition() {
+	    var tooltip = _reactDom2.default.findDOMNode(this);
+	    this.setState({ offsetWidth: tooltip.offsetWidth });
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var label = _props.label;
+
+	    var other = _objectWithoutProperties(_props, ['label']);
+
+	    var styles = this.getStyles();
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, other, {
+	        style: this.prepareStyles(styles.root, this.props.show && styles.rootWhenShown, this.props.touch && styles.rootWhenTouched, this.props.style)
+	      }),
+	      _react2.default.createElement('div', {
+	        ref: 'ripple',
+	        style: this.prepareStyles(styles.ripple, this.props.show && styles.rippleWhenShown)
+	      }),
+	      _react2.default.createElement(
+	        'span',
+	        { style: this.prepareStyles(styles.label) },
+	        label
+	      )
+	    );
+	  }
+	});
+
+	exports.default = Tooltip;
+	module.exports = exports['default'];
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(321);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavigationArrowDropUp = _react2.default.createClass({
+	  displayName: 'NavigationArrowDropUp',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7 14l5-5 5 5z' })
+	    );
+	  }
+	});
+
+	exports.default = NavigationArrowDropUp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 321 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var SvgIcon = _react2.default.createClass({
+	  displayName: 'SvgIcon',
+
+	  propTypes: {
+	    /**
+	     * Elements passed into the SVG Icon.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * This is the fill color of the svg icon.
+	     * If not specified, this component will default
+	     * to muiTheme.palette.textColor.
+	     */
+	    color: _react2.default.PropTypes.string,
+
+	    /**
+	     * This is the icon color when the mouse hovers over the icon.
+	     */
+	    hoverColor: _react2.default.PropTypes.string,
+
+	    /**
+	     * Function called when mouse enters this element.
+	     */
+	    onMouseEnter: _react2.default.PropTypes.func,
+
+	    /**
+	     * Function called when mouse leaves this element.
+	     */
+	    onMouseLeave: _react2.default.PropTypes.func,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * Allows you to redifine what the coordinates
+	     * without units mean inside an svg element. For example,
+	     * if the SVG element is 500 (width) by 200 (height), and you
+	     * pass viewBox="0 0 50 20", this means that the coordinates inside
+	     * the svg will go from the top left corner (0,0) to bottom right (50,20)
+	     * and each unit will be worth 10px.
+	     */
+	    viewBox: _react2.default.PropTypes.string
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      onMouseEnter: function onMouseEnter() {},
+	      onMouseLeave: function onMouseLeave() {},
+	      viewBox: '0 0 24 24'
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      hovered: false,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  _handleMouseLeave: function _handleMouseLeave(e) {
+	    this.setState({ hovered: false });
+	    this.props.onMouseLeave(e);
+	  },
+	  _handleMouseEnter: function _handleMouseEnter(e) {
+	    this.setState({ hovered: true });
+	    this.props.onMouseEnter(e);
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var children = _props.children;
+	    var color = _props.color;
+	    var hoverColor = _props.hoverColor;
+	    var onMouseEnter = _props.onMouseEnter;
+	    var onMouseLeave = _props.onMouseLeave;
+	    var style = _props.style;
+	    var viewBox = _props.viewBox;
+
+	    var other = _objectWithoutProperties(_props, ['children', 'color', 'hoverColor', 'onMouseEnter', 'onMouseLeave', 'style', 'viewBox']);
+
+	    var offColor = color ? color : style && style.fill ? style.fill : this.state.muiTheme.rawTheme.palette.textColor;
+	    var onColor = hoverColor ? hoverColor : offColor;
+
+	    var mergedStyles = this.mergeStyles({
+	      display: 'inline-block',
+	      height: 24,
+	      width: 24,
+	      userSelect: 'none',
+	      transition: _transitions2.default.easeOut()
+	    }, style, {
+	      // Make sure our fill color overrides fill provided in props.style
+	      fill: this.state.hovered ? onColor : offColor
+	    });
+
+	    var events = hoverColor ? {
+	      onMouseEnter: this._handleMouseEnter,
+	      onMouseLeave: this._handleMouseLeave
+	    } : {};
+
+	    return _react2.default.createElement(
+	      'svg',
+	      _extends({}, other, events, {
+	        style: this.prepareStyles(mergedStyles),
+	        viewBox: viewBox
+	      }),
+	      children
+	    );
+	  }
+	});
+
+	exports.default = SvgIcon;
+	module.exports = exports['default'];
+
+/***/ },
+/* 322 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(321);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavigationArrowDropDown = _react2.default.createClass({
+	  displayName: 'NavigationArrowDropDown',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7 10l5 5 5-5z' })
+	    );
+	  }
+	});
+
+	exports.default = NavigationArrowDropDown;
+	module.exports = exports['default'];
+
+/***/ },
+/* 323 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _styles = __webpack_require__(223);
+
+	var _list = __webpack_require__(310);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var NestedList = function (_React$Component) {
+	  _inherits(NestedList, _React$Component);
+
+	  function NestedList() {
+	    _classCallCheck(this, NestedList);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NestedList).apply(this, arguments));
+	  }
+
+	  _createClass(NestedList, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var children = _props.children;
+	      var open = _props.open;
+	      var nestedLevel = _props.nestedLevel;
+	      var style = _props.style;
+
+	      var styles = {
+	        root: {
+	          display: open ? null : 'none'
+	        }
+	      };
+
+	      return _react2.default.createElement(
+	        _list2.default,
+	        { style: (0, _styles.mergeStyles)(styles.root, style) },
+	        _react2.default.Children.map(children, function (child) {
+	          return _react2.default.isValidElement(child) ? _react2.default.cloneElement(child, {
+	            nestedLevel: nestedLevel + 1
+	          }) : child;
+	        })
+	      );
+	    }
+	  }]);
+
+	  return NestedList;
+	}(_react2.default.Component);
+
+	NestedList.propTypes = {
+	  children: _react2.default.PropTypes.node,
+	  nestedLevel: _react2.default.PropTypes.number,
+	  open: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react2.default.PropTypes.object
+	};
+	NestedList.defaultProps = {
+	  nestedLevel: 1,
+	  open: false
+	};
+	exports.default = NestedList;
+	module.exports = exports['default'];
+
+/***/ },
+/* 324 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _appBar = __webpack_require__(325);
+
+	var _appBar2 = _interopRequireDefault(_appBar);
+
+	var _iconButton = __webpack_require__(316);
+
+	var _iconButton2 = _interopRequireDefault(_iconButton);
+
+	var _fontIcon = __webpack_require__(289);
+
+	var _fontIcon2 = _interopRequireDefault(_fontIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var style = {
+	  appBar: {
+	    // 앱바 스타일 작성
+	  }
+	};
+
+	var SideAppBar = function (_React$Component) {
+	  _inherits(SideAppBar, _React$Component);
+
+	  function SideAppBar(props) {
+	    _classCallCheck(this, SideAppBar);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SideAppBar).call(this, props));
+
+	    _this.displayName = 'SideAppBar';
+	    return _this;
+	  }
+
+	  _createClass(SideAppBar, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(_appBar2.default, {
+	        title: this.props.title + '(' + this.props.itemLength + ')',
+	        iconElementLeft: _react2.default.createElement('i', null),
+	        iconElementRight: _react2.default.createElement(
+	          _iconButton2.default,
+	          { tooltip: this.props.addToolTip, onClick: this.props.handleAddClick },
+	          _react2.default.createElement(_fontIcon2.default, { className: 'fa fa-plus-circle' })
+	        ),
+	        style: style.appBar });
+	    }
+	  }]);
+
+	  return SideAppBar;
+	}(_react2.default.Component);
+
+	exports.default = SideAppBar;
+
+/***/ },
+/* 325 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _typography = __webpack_require__(305);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _iconButton = __webpack_require__(316);
+
+	var _iconButton2 = _interopRequireDefault(_iconButton);
+
+	var _menu = __webpack_require__(326);
+
+	var _menu2 = _interopRequireDefault(_menu);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _paper = __webpack_require__(251);
+
+	var _paper2 = _interopRequireDefault(_paper);
+
+	var _propTypes = __webpack_require__(255);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _warning = __webpack_require__(243);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var AppBar = _react2.default.createClass({
+	  displayName: 'AppBar',
+
+	  propTypes: {
+	    /**
+	     * Can be used to render a tab inside an app bar for instance.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * Applied to the app bar's root element.
+	     */
+	    className: _react2.default.PropTypes.string,
+
+	    /**
+	     * The classname of the icon on the left of the app bar.
+	     * If you are using a stylesheet for your icons, enter the class name for the icon to be used here.
+	     */
+	    iconClassNameLeft: _react2.default.PropTypes.string,
+
+	    /**
+	     * Similiar to the iconClassNameLeft prop except that
+	     * it applies to the icon displayed on the right of the app bar.
+	     */
+	    iconClassNameRight: _react2.default.PropTypes.string,
+
+	    /**
+	     * The custom element to be displayed on the left side of the
+	     * app bar such as an SvgIcon.
+	     */
+	    iconElementLeft: _react2.default.PropTypes.element,
+
+	    /**
+	     * Similiar to the iconElementLeft prop except that this element is displayed on the right of the app bar.
+	     */
+	    iconElementRight: _react2.default.PropTypes.element,
+
+	    /**
+	     * Override the inline-styles of the element displayed on the right side of the app bar.
+	     */
+	    iconStyleRight: _react2.default.PropTypes.object,
+
+	    /**
+	     * Callback function for when the left icon is selected via a touch tap.
+	     */
+	    onLeftIconButtonTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when the right icon is selected via a touch tap.
+	     */
+	    onRightIconButtonTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function for when the title text is selected via a touch tap.
+	     */
+	    onTitleTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * Determines whether or not to display the Menu icon next to the title.
+	     * Setting this prop to false will hide the icon.
+	     */
+	    showMenuIconButton: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * The title to display on the app bar.
+	     */
+	    title: _react2.default.PropTypes.node,
+
+	    /**
+	     * Override the inline-styles of the app bar's title element.
+	     */
+	    titleStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The zDepth of the component.
+	     * The shadow of the app bar is also dependent on this property.
+	     */
+	    zDepth: _propTypes2.default.zDepth
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      showMenuIconButton: true,
+	      title: '',
+	      zDepth: 1
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(!this.props.iconElementLeft || !this.props.iconClassNameLeft, 'Properties iconElementLeft\n      and iconClassNameLeft cannot be simultaneously defined. Please use one or the other.') : undefined;
+
+	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(!this.props.iconElementRight || !this.props.iconClassNameRight, 'Properties iconElementRight\n      and iconClassNameRight cannot be simultaneously defined. Please use one or the other.') : undefined;
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  getStyles: function getStyles() {
+	    var muiTheme = this.state.muiTheme;
+	    var rawTheme = muiTheme.rawTheme;
+
+	    var themeVariables = muiTheme.appBar;
+	    var iconButtonSize = muiTheme.button.iconButtonSize;
+	    var flatButtonSize = 36;
+
+	    var styles = {
+	      root: {
+	        position: 'relative',
+	        zIndex: muiTheme.zIndex.appBar,
+	        width: '100%',
+	        display: 'flex',
+	        minHeight: themeVariables.height,
+	        backgroundColor: themeVariables.color,
+	        paddingLeft: rawTheme.spacing.desktopGutter,
+	        paddingRight: rawTheme.spacing.desktopGutter
+	      },
+	      title: {
+	        whiteSpace: 'nowrap',
+	        overflow: 'hidden',
+	        textOverflow: 'ellipsis',
+	        margin: 0,
+	        paddingTop: 0,
+	        letterSpacing: 0,
+	        fontSize: 24,
+	        fontWeight: _typography2.default.fontWeightNormal,
+	        color: themeVariables.textColor,
+	        lineHeight: themeVariables.height + 'px'
+	      },
+	      mainElement: {
+	        boxFlex: 1,
+	        flex: '1'
+	      },
+	      iconButton: {
+	        style: {
+	          marginTop: (themeVariables.height - iconButtonSize) / 2,
+	          marginRight: 8,
+	          marginLeft: -16
+	        },
+	        iconStyle: {
+	          fill: themeVariables.textColor,
+	          color: themeVariables.textColor
+	        }
+	      },
+	      flatButton: {
+	        color: themeVariables.textColor,
+	        marginTop: (iconButtonSize - flatButtonSize) / 2 + 2
+	      }
+	    };
+
+	    return styles;
+	  },
+	  _onLeftIconButtonTouchTap: function _onLeftIconButtonTouchTap(event) {
+	    if (this.props.onLeftIconButtonTouchTap) {
+	      this.props.onLeftIconButtonTouchTap(event);
+	    }
+	  },
+	  _onRightIconButtonTouchTap: function _onRightIconButtonTouchTap(event) {
+	    if (this.props.onRightIconButtonTouchTap) {
+	      this.props.onRightIconButtonTouchTap(event);
+	    }
+	  },
+	  _onTitleTouchTap: function _onTitleTouchTap(event) {
+	    if (this.props.onTitleTouchTap) {
+	      this.props.onTitleTouchTap(event);
+	    }
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var title = _props.title;
+	    var titleStyle = _props.titleStyle;
+	    var iconStyleRight = _props.iconStyleRight;
+	    var showMenuIconButton = _props.showMenuIconButton;
+	    var iconElementLeft = _props.iconElementLeft;
+	    var iconElementRight = _props.iconElementRight;
+	    var iconClassNameLeft = _props.iconClassNameLeft;
+	    var iconClassNameRight = _props.iconClassNameRight;
+	    var className = _props.className;
+	    var style = _props.style;
+	    var zDepth = _props.zDepth;
+	    var children = _props.children;
+
+	    var other = _objectWithoutProperties(_props, ['title', 'titleStyle', 'iconStyleRight', 'showMenuIconButton', 'iconElementLeft', 'iconElementRight', 'iconClassNameLeft', 'iconClassNameRight', 'className', 'style', 'zDepth', 'children']);
+
+	    var menuElementLeft = undefined;
+	    var menuElementRight = undefined;
+	    var styles = this.getStyles();
+	    var iconRightStyle = this.mergeStyles(styles.iconButton.style, {
+	      marginRight: -16,
+	      marginLeft: 'auto'
+	    }, iconStyleRight);
+	    var titleElement = undefined;
+
+	    if (title) {
+	      // If the title is a string, wrap in an h1 tag.
+	      // If not, just use it as a node.
+	      titleElement = typeof title === 'string' || title instanceof String ? _react2.default.createElement(
+	        'h1',
+	        {
+	          onTouchTap: this._onTitleTouchTap,
+	          style: this.prepareStyles(styles.title, styles.mainElement, titleStyle)
+	        },
+	        title
+	      ) : _react2.default.createElement(
+	        'div',
+	        {
+	          onTouchTap: this._onTitleTouchTap,
+	          style: this.prepareStyles(styles.title, styles.mainElement, titleStyle)
+	        },
+	        title
+	      );
+	    }
+
+	    if (showMenuIconButton) {
+	      if (iconElementLeft) {
+	        switch (iconElementLeft.type.displayName) {
+	          case 'IconButton':
+	            iconElementLeft = _react2.default.cloneElement(iconElementLeft, {
+	              iconStyle: this.mergeStyles(styles.iconButton.iconStyle, iconElementLeft.props.iconStyle)
+	            });
+	            break;
+	        }
+
+	        menuElementLeft = _react2.default.createElement(
+	          'div',
+	          { style: this.prepareStyles(styles.iconButton.style) },
+	          iconElementLeft
+	        );
+	      } else {
+	        var child = iconClassNameLeft ? '' : _react2.default.createElement(_menu2.default, { style: this.mergeStyles(styles.iconButton.iconStyle) });
+	        menuElementLeft = _react2.default.createElement(
+	          _iconButton2.default,
+	          {
+	            style: this.mergeStyles(styles.iconButton.style),
+	            iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
+	            iconClassName: iconClassNameLeft,
+	            onTouchTap: this._onLeftIconButtonTouchTap
+	          },
+	          child
+	        );
+	      }
+	    }
+
+	    if (iconElementRight) {
+	      switch (iconElementRight.type.displayName) {
+	        case 'IconMenu':
+	        case 'IconButton':
+	          iconElementRight = _react2.default.cloneElement(iconElementRight, {
+	            iconStyle: this.mergeStyles(styles.iconButton.iconStyle, iconElementRight.props.iconStyle)
+	          });
+	          break;
+
+	        case 'FlatButton':
+	          iconElementRight = _react2.default.cloneElement(iconElementRight, {
+	            style: this.mergeStyles(styles.flatButton, iconElementRight.props.style)
+	          });
+	          break;
+	      }
+
+	      menuElementRight = _react2.default.createElement(
+	        'div',
+	        { style: this.prepareStyles(iconRightStyle) },
+	        iconElementRight
+	      );
+	    } else if (iconClassNameRight) {
+	      menuElementRight = _react2.default.createElement(_iconButton2.default, {
+	        style: iconRightStyle,
+	        iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
+	        iconClassName: iconClassNameRight,
+	        onTouchTap: this._onRightIconButtonTouchTap
+	      });
+	    }
+
+	    return _react2.default.createElement(
+	      _paper2.default,
+	      _extends({}, other, {
+	        rounded: false,
+	        className: className,
+	        style: this.mergeStyles(styles.root, style),
+	        zDepth: zDepth
+	      }),
+	      menuElementLeft,
+	      titleElement,
+	      menuElementRight,
+	      children
+	    );
+	  }
+	});
+
+	exports.default = AppBar;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 326 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(252);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(321);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavigationMenu = _react2.default.createClass({
+	  displayName: 'NavigationMenu',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z' })
+	    );
+	  }
+	});
+
+	exports.default = NavigationMenu;
+	module.exports = exports['default'];
+
+/***/ },
+/* 327 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _MessageWrapperComponent = __webpack_require__(159);
+
+	var _MessageWrapperComponent2 = _interopRequireDefault(_MessageWrapperComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ContentWrapper = function (_React$Component) {
+	  _inherits(ContentWrapper, _React$Component);
+
+	  function ContentWrapper(props) {
+	    _classCallCheck(this, ContentWrapper);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ContentWrapper).call(this, props));
+
+	    _this.displayName = 'ContentWrapper';
+	    return _this;
+	  }
+
+	  _createClass(ContentWrapper, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var renderContent = function renderContent() {
+	        var Component = _this2.props.contentComponent;
+	        return _react2.default.createElement(Component, {
+	          className: _this2.props.className
+	        });
+	      };
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        renderContent()
+	      );
+	    }
+	  }]);
+
+	  return ContentWrapper;
+	}(_react2.default.Component);
+
+	exports.default = ContentWrapper;
+
+/***/ },
+/* 328 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _textField = __webpack_require__(329);
+
+	var _textField2 = _interopRequireDefault(_textField);
+
+	var _toggle = __webpack_require__(290);
+
+	var _toggle2 = _interopRequireDefault(_toggle);
+
+	var _flatButton = __webpack_require__(336);
+
+	var _flatButton2 = _interopRequireDefault(_flatButton);
+
+	var _dialog = __webpack_require__(338);
+
+	var _dialog2 = _interopRequireDefault(_dialog);
+
+	var _socket = __webpack_require__(160);
+
+	var _socket2 = _interopRequireDefault(_socket);
+
+	var _jquery = __webpack_require__(340);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _lodash = __webpack_require__(341);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
+
+	var styles = {
+	  block: {
+	    maxWidth: '250px'
+	  }
+	};
+
+	var channelTypeMessage = {
+	  public: "Anyone on your team can join",
+	  private: "Restricted to invited members"
+	};
+
+	var CreateChannelFormDialog = function (_React$Component) {
+	  _inherits(CreateChannelFormDialog, _React$Component);
+
+	  function CreateChannelFormDialog(props) {
+	    _classCallCheck(this, CreateChannelFormDialog);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CreateChannelFormDialog).call(this, props));
+
+	    _this.displayName = 'CreateChannelFormDialog';
+	    _this._initializeStates = _this._initializeStates.bind(_this);
+	    _this._initializeStates();
+	    _this._toggleChannelType = _this._toggleChannelType.bind(_this);
+	    _this._createChannel = _this._createChannel.bind(_this);
+	    _this._closeForm = _this._closeForm.bind(_this);
+	    _this._handleChannelNameChange = _this._handleChannelNameChange.bind(_this);
+	    _this._validateChannelName = _this._validateChannelName.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(CreateChannelFormDialog, [{
+	    key: '_initializeStates',
+	    value: function _initializeStates() {
+	      this.state = {
+	        channelType: "public",
+	        channelName: "",
+	        channelNameValidationMessage: ""
+	      };
+	    }
+	  }, {
+	    key: '_toggleChannelType',
+	    value: function _toggleChannelType() {
+	      var channelType = this.state.channelType;
+	      this.setState({ channelType: channelType === "public" ? "private" : "public" });
+	      (0, _jquery2.default)('.private-desc').toggle();
+	    }
+	  }, {
+	    key: '_createChannel',
+	    value: function _createChannel() {
+	      SOCKET.emit('joinRoom', (0, _jquery2.default)('#channelName').val());
+	      this._initializeStates();
+	      this._closeForm();
+	    }
+	  }, {
+	    key: '_closeForm',
+	    value: function _closeForm() {
+	      this._initializeStates();
+	      this.props.handleClose();
+	    }
+	  }, {
+	    key: '_handleChannelNameChange',
+	    value: function _handleChannelNameChange(e) {
+	      var inputedName = e.target.value;
+	      this.setState({ channelName: inputedName, channelNameValidationMessage: '' });
+	      this._validateChannelName(inputedName);
+	      this._checkDupChannelName(inputedName);
+	    }
+	  }, {
+	    key: '_validateChannelName',
+	    value: function _validateChannelName(name) {
+	      var messageArray = [];
+	      var mustBeFlag = true;
+	      if (name.length > 20) {
+	        messageArray.push(' 21 characters or less');
+	      }
+	      if (_lodash2.default.toLower(name) !== name) {
+	        messageArray.push(messageArray.length == 1 ? ', lower case' : ' lower case');
+	      }
+	      if (_lodash2.default.split(name, ' ', 2).length == 2 || _lodash2.default.trim(name) !== name) {
+	        if (messageArray.length == 0) {
+	          mustBeFlag = false;
+	        }
+	        messageArray.push((mustBeFlag ? ' and' : '') + ' cannot contain spaces or periods');
+	      }
+	      if (messageArray.length != 0) {
+	        var message = '';
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = messageArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var text = _step.value;
+
+	            message += text;
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+
+	        this.setState({ channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.' });
+	      }
+	    }
+	  }, {
+	    key: '_checkDupChannelName',
+	    value: function _checkDupChannelName(name) {
+	      var channelArr = this.props.channelArr;
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+
+	      try {
+	        for (var _iterator2 = channelArr[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var item = _step2.value;
+
+	          if (item === name) {
+	            this.setState({ channelNameValidationMessage: 'Name is duplicated.' });
+	            break;
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	            _iterator2.return();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var actions = [_react2.default.createElement(_flatButton2.default, {
+	        label: 'Cancel',
+	        secondary: true,
+	        onTouchTap: this._closeForm
+	      }), _react2.default.createElement(_flatButton2.default, {
+	        label: 'Create channel',
+	        primary: true,
+	        keyboardFocused: true,
+	        onTouchTap: this._createChannel
+	      })];
+	      return _react2.default.createElement(
+	        _dialog2.default,
+	        _extends({}, this.props, {
+	          actions: actions,
+	          title: "Create new " + this.state.channelType + " channel"
+	        }),
+	        _react2.default.createElement(
+	          'div',
+	          { style: styles.block },
+	          _react2.default.createElement(_toggle2.default, {
+	            label: channelTypeMessage[this.state.channelType],
+	            defaultToggled: true,
+	            labelPosition: 'right',
+	            style: styles.toggle,
+	            onToggle: this._toggleChannelType,
+	            id: 'channelType'
+	          })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'private-desc' },
+	          'A private channel is only visible to its members, and only members of a private channel can read or search its contents.'
+	        ),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: '# Enter name here',
+	          floatingLabelText: 'Channel name',
+	          errorText: this.state.channelNameValidationMessage,
+	          fullWidth: true,
+	          id: 'channelName',
+	          onChange: this._handleChannelNameChange,
+	          value: this.state.channelName
+	        }),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: 'Search by name',
+	          floatingLabelText: 'Invite others to join (optional)',
+	          fullWidth: true
+	        }),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: 'Briefly describe the purpose of this channel',
+	          floatingLabelText: 'Purpose(optional)',
+	          multiLine: true,
+	          fullWidth: true
+	        })
+	      );
+	    }
+	  }]);
+
+	  return CreateChannelFormDialog;
+	}(_react2.default.Component);
+
+	exports.default = CreateChannelFormDialog;
+
+/***/ },
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _TextField = __webpack_require__(330);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _TextField2.default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 330 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _TextField = __webpack_require__(331);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _TextField2.default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 331 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _colorManipulator = __webpack_require__(274);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _uniqueId = __webpack_require__(292);
+
+	var _uniqueId2 = _interopRequireDefault(_uniqueId);
+
+	var _enhancedTextarea = __webpack_require__(332);
+
+	var _enhancedTextarea2 = _interopRequireDefault(_enhancedTextarea);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _contextPure = __webpack_require__(317);
+
+	var _contextPure2 = _interopRequireDefault(_contextPure);
+
+	var _TextFieldHint = __webpack_require__(333);
+
+	var _TextFieldHint2 = _interopRequireDefault(_TextFieldHint);
+
+	var _TextFieldLabel = __webpack_require__(334);
+
+	var _TextFieldLabel2 = _interopRequireDefault(_TextFieldLabel);
+
+	var _TextFieldUnderline = __webpack_require__(335);
+
+	var _TextFieldUnderline2 = _interopRequireDefault(_TextFieldUnderline);
+
+	var _warning = __webpack_require__(243);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	/**
+	 * Check if a value is valid to be displayed inside an input.
+	 *
+	 * @param The value to check.
+	 * @returns True if the string provided is valid, false otherwise.
+	 */
+	function isValid(value) {
+	  return Boolean(value || value === 0);
+	}
+
+	var TextField = _react2.default.createClass({
+	  displayName: 'TextField',
+
+	  propTypes: {
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * The css class name of the root element.
+	     */
+	    className: _react2.default.PropTypes.string,
+
+	    /**
+	     * The text string to use for the default value.
+	     */
+	    defaultValue: _react2.default.PropTypes.any,
+
+	    /**
+	     * Disables the text field if set to true.
+	     */
+	    disabled: _react2.default.PropTypes.bool,
+
+	    /**
+	     * The style object to use to override error styles.
+	     */
+	    errorStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The error content to display.
+	     */
+	    errorText: _react2.default.PropTypes.node,
+
+	    /**
+	     * The style object to use to override floating label styles.
+	     */
+	    floatingLabelStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The content to use for the floating label element.
+	     */
+	    floatingLabelText: _react2.default.PropTypes.node,
+
+	    /**
+	     * If true, the field receives the property width 100%.
+	     */
+	    fullWidth: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the TextField's hint text element.
+	     */
+	    hintStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The hint content to display.
+	     */
+	    hintText: _react2.default.PropTypes.node,
+
+	    /**
+	     * The id prop for the text field.
+	     */
+	    id: _react2.default.PropTypes.string,
+
+	    /**
+	     * Override the inline-styles of the TextField's input element.
+	     */
+	    inputStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * If true, a textarea element will be rendered.
+	     * The textarea also grows and shrinks according to the number of lines.
+	     */
+	    multiLine: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Callback function that is fired when the textfield loses focus.
+	     */
+	    onBlur: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function that is fired when the textfield's value changes.
+	     */
+	    onChange: _react2.default.PropTypes.func,
+
+	    /**
+	     * The function to call when the user presses the Enter key.
+	     */
+	    onEnterKeyDown: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function that is fired when the textfield gains focus.
+	     */
+	    onFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Callback function fired when key is pressed down.
+	     */
+	    onKeyDown: _react2.default.PropTypes.func,
+
+	    /**
+	     * Number of rows to display when multiLine option is set to true.
+	     */
+	    rows: _react2.default.PropTypes.number,
+
+	    /**
+	     * Maximum number of rows to display when
+	     * multiLine option is set to true.
+	     */
+	    rowsMax: _react2.default.PropTypes.number,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * Specifies the type of input to display
+	     * such as "password" or "text".
+	     */
+	    type: _react2.default.PropTypes.string,
+
+	    /**
+	     * Override the inline-styles of the
+	     * TextField's underline element when disabled.
+	     */
+	    underlineDisabledStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Override the inline-styles of the TextField's
+	     * underline element when focussed.
+	     */
+	    underlineFocusStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * If true, shows the underline for the text field.
+	     */
+	    underlineShow: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the TextField's underline element.
+	     */
+	    underlineStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The value of the text field.
+	     */
+	    value: _react2.default.PropTypes.any
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_contextPure2.default, _stylePropable2.default],
+
+	  statics: {
+	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+	      var textFieldTheme = muiTheme.textField;
+
+	      return {
+	        floatingLabelColor: textFieldTheme.floatingLabelColor,
+	        focusColor: textFieldTheme.focusColor,
+	        textColor: textFieldTheme.textColor,
+	        disabledTextColor: textFieldTheme.disabledTextColor,
+	        backgroundColor: textFieldTheme.backgroundColor,
+	        hintColor: textFieldTheme.hintColor,
+	        errorColor: textFieldTheme.errorColor
+	      };
+	    },
+	    getChildrenClasses: function getChildrenClasses() {
+	      return [_enhancedTextarea2.default];
+	    }
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      disabled: false,
+	      multiLine: false,
+	      fullWidth: false,
+	      type: 'text',
+	      underlineShow: true,
+	      rows: 1
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    var props = this.props.children ? this.props.children.props : this.props;
+
+	    return {
+	      isFocused: false,
+	      errorText: this.props.errorText,
+	      hasValue: isValid(props.value) || isValid(props.defaultValue) || props.valueLink && isValid(props.valueLink.value),
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this._uniqueId = _uniqueId2.default.generate();
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newState = {};
+	    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+
+	    newState.errorText = nextProps.errorText;
+	    if (nextProps.children && nextProps.children.props) {
+	      nextProps = nextProps.children.props;
+	    }
+
+	    var hasValueLinkProp = nextProps.hasOwnProperty('valueLink');
+	    var hasValueProp = nextProps.hasOwnProperty('value');
+	    var hasNewDefaultValue = nextProps.defaultValue !== this.props.defaultValue;
+
+	    if (hasValueLinkProp) {
+	      newState.hasValue = isValid(nextProps.valueLink.value);
+	    } else if (hasValueProp) {
+	      newState.hasValue = isValid(nextProps.value);
+	    } else if (hasNewDefaultValue) {
+	      newState.hasValue = isValid(nextProps.defaultValue);
+	    }
+
+	    if (newState) this.setState(newState);
+	  },
+	  getStyles: function getStyles() {
+	    var props = this.props;
+
+	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+	    var floatingLabelColor = _constructor$getRelev.floatingLabelColor;
+	    var focusColor = _constructor$getRelev.focusColor;
+	    var textColor = _constructor$getRelev.textColor;
+	    var disabledTextColor = _constructor$getRelev.disabledTextColor;
+	    var backgroundColor = _constructor$getRelev.backgroundColor;
+	    var hintColor = _constructor$getRelev.hintColor;
+	    var errorColor = _constructor$getRelev.errorColor;
+
+	    var styles = {
+	      root: {
+	        fontSize: 16,
+	        lineHeight: '24px',
+	        width: props.fullWidth ? '100%' : 256,
+	        height: (props.rows - 1) * 24 + (props.floatingLabelText ? 72 : 48),
+	        display: 'inline-block',
+	        position: 'relative',
+	        backgroundColor: backgroundColor,
+	        fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+	        transition: _transitions2.default.easeOut('200ms', 'height')
+	      },
+	      error: {
+	        position: 'relative',
+	        bottom: 2,
+	        fontSize: 12,
+	        lineHeight: '12px',
+	        color: errorColor,
+	        transition: _transitions2.default.easeOut()
+	      },
+	      floatingLabel: {
+	        color: hintColor
+	      },
+	      input: {
+	        tapHighlightColor: 'rgba(0,0,0,0)',
+	        padding: 0,
+	        position: 'relative',
+	        width: '100%',
+	        height: '100%',
+	        border: 'none',
+	        outline: 'none',
+	        backgroundColor: 'transparent',
+	        color: props.disabled ? disabledTextColor : textColor,
+	        font: 'inherit'
+	      }
+	    };
+
+	    styles.error = this.mergeStyles(styles.error, props.errorStyle);
+
+	    styles.textarea = this.mergeStyles(styles.input, {
+	      marginTop: props.floatingLabelText ? 36 : 12,
+	      marginBottom: props.floatingLabelText ? -36 : -12,
+	      boxSizing: 'border-box',
+	      font: 'inherit'
+	    });
+
+	    if (this.state.isFocused) {
+	      styles.floatingLabel.color = focusColor;
+	    }
+
+	    if (this.state.hasValue) {
+	      styles.floatingLabel.color = _colorManipulator2.default.fade(props.disabled ? disabledTextColor : floatingLabelColor, 0.5);
+	    }
+
+	    if (props.floatingLabelText) {
+	      styles.input.boxSizing = 'border-box';
+
+	      if (!props.multiLine) {
+	        styles.input.marginTop = 14;
+	      }
+
+	      if (this.state.errorText) {
+	        styles.error.bottom = !props.multiLine ? styles.error.fontSize + 3 : 3;
+	      }
+	    }
+
+	    if (this.state.errorText) {
+	      if (this.state.isFocused) {
+	        styles.floatingLabel.color = styles.error.color;
+	      }
+	    }
+
+	    return styles;
+	  },
+	  blur: function blur() {
+	    if (this.isMounted()) this._getInputNode().blur();
+	  },
+	  clearValue: function clearValue() {
+	    this.setValue('');
+	  },
+	  focus: function focus() {
+	    if (this.isMounted()) this._getInputNode().focus();
+	  },
+	  getValue: function getValue() {
+	    return this.isMounted() ? this._getInputNode().value : undefined;
+	  },
+	  setErrorText: function setErrorText(newErrorText) {
+	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'setErrorText() method is deprecated. Use the errorText property instead.') : undefined;
+
+	    if (this.isMounted()) {
+	      this.setState({ errorText: newErrorText });
+	    }
+	  },
+	  setValue: function setValue(newValue) {
+	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'setValue() method is deprecated. Use the defaultValue property instead.\n      Or use the TextField as a controlled component with the value property.') : undefined;
+
+	    if (this.isMounted()) {
+	      if (this.props.multiLine) {
+	        this.refs.input.setValue(newValue);
+	      } else {
+	        this._getInputNode().value = newValue;
+	      }
+
+	      this.setState({ hasValue: isValid(newValue) });
+	    }
+	  },
+	  _getInputNode: function _getInputNode() {
+	    return this.props.children || this.props.multiLine ? this.refs.input.getInputNode() : _reactDom2.default.findDOMNode(this.refs.input);
+	  },
+	  _handleInputBlur: function _handleInputBlur(e) {
+	    this.setState({ isFocused: false });
+	    if (this.props.onBlur) this.props.onBlur(e);
+	  },
+	  _handleInputChange: function _handleInputChange(e) {
+	    this.setState({ hasValue: isValid(e.target.value) });
+	    if (this.props.onChange) this.props.onChange(e);
+	  },
+	  _handleInputFocus: function _handleInputFocus(e) {
+	    if (this.props.disabled) return;
+	    this.setState({ isFocused: true });
+	    if (this.props.onFocus) this.props.onFocus(e);
+	  },
+	  _handleInputKeyDown: function _handleInputKeyDown(e) {
+	    if (e.keyCode === 13 && this.props.onEnterKeyDown) this.props.onEnterKeyDown(e);
+	    if (this.props.onKeyDown) this.props.onKeyDown(e);
+	  },
+	  _handleTextAreaHeightChange: function _handleTextAreaHeightChange(e, height) {
+	    var newHeight = height + 24;
+	    if (this.props.floatingLabelText) newHeight += 24;
+	    _reactDom2.default.findDOMNode(this).style.height = newHeight + 'px';
+	  },
+	  _isControlled: function _isControlled() {
+	    return this.props.hasOwnProperty('value') || this.props.hasOwnProperty('valueLink');
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var className = _props.className;
+	    var disabled = _props.disabled;
+	    var errorStyle = _props.errorStyle;
+	    var errorText = _props.errorText;
+	    var floatingLabelText = _props.floatingLabelText;
+	    var fullWidth = _props.fullWidth;
+	    var hintText = _props.hintText;
+	    var hintStyle = _props.hintStyle;
+	    var id = _props.id;
+	    var multiLine = _props.multiLine;
+	    var onBlur = _props.onBlur;
+	    var onChange = _props.onChange;
+	    var onFocus = _props.onFocus;
+	    var style = _props.style;
+	    var type = _props.type;
+	    var underlineDisabledStyle = _props.underlineDisabledStyle;
+	    var underlineFocusStyle = _props.underlineFocusStyle;
+	    var underlineShow = _props.underlineShow;
+	    var underlineStyle = _props.underlineStyle;
+	    var rows = _props.rows;
+	    var rowsMax = _props.rowsMax;
+
+	    var other = _objectWithoutProperties(_props, ['className', 'disabled', 'errorStyle', 'errorText', 'floatingLabelText', 'fullWidth', 'hintText', 'hintStyle', 'id', 'multiLine', 'onBlur', 'onChange', 'onFocus', 'style', 'type', 'underlineDisabledStyle', 'underlineFocusStyle', 'underlineShow', 'underlineStyle', 'rows', 'rowsMax']);
+
+	    var styles = this.getStyles();
+
+	    var inputId = id || this._uniqueId;
+
+	    var errorTextElement = this.state.errorText ? _react2.default.createElement(
+	      'div',
+	      { style: this.prepareStyles(styles.error) },
+	      this.state.errorText
+	    ) : null;
+
+	    var floatingLabelTextElement = floatingLabelText ? _react2.default.createElement(
+	      _TextFieldLabel2.default,
+	      {
+	        muiTheme: this.state.muiTheme,
+	        style: this.mergeStyles(styles.floatingLabel, this.props.floatingLabelStyle),
+	        htmlFor: inputId,
+	        shrink: this.state.hasValue || this.state.isFocused,
+	        disabled: disabled,
+	        onTouchTap: this.focus
+	      },
+	      floatingLabelText
+	    ) : null;
+
+	    var inputProps = undefined;
+	    var inputElement = undefined;
+
+	    inputProps = {
+	      id: inputId,
+	      ref: 'input',
+	      onBlur: this._handleInputBlur,
+	      onFocus: this._handleInputFocus,
+	      disabled: this.props.disabled,
+	      onKeyDown: this._handleInputKeyDown
+	    };
+	    var inputStyle = this.mergeStyles(styles.input, this.props.inputStyle);
+
+	    if (!this.props.hasOwnProperty('valueLink')) {
+	      inputProps.onChange = this._handleInputChange;
+	    }
+
+	    if (this.props.children) {
+	      inputElement = _react2.default.cloneElement(this.props.children, _extends({}, inputProps, this.props.children.props, {
+	        style: this.mergeStyles(inputStyle, this.props.children.props.style)
+	      }));
+	    } else {
+	      inputElement = multiLine ? _react2.default.createElement(_enhancedTextarea2.default, _extends({}, other, inputProps, {
+	        style: inputStyle,
+	        rows: rows,
+	        rowsMax: rowsMax,
+	        onHeightChange: this._handleTextAreaHeightChange,
+	        textareaStyle: styles.textarea
+	      })) : _react2.default.createElement('input', _extends({}, other, inputProps, {
+	        style: this.prepareStyles(inputStyle),
+	        type: type
+	      }));
+	    }
+
+	    return _react2.default.createElement(
+	      'div',
+	      { className: className, style: this.prepareStyles(styles.root, this.props.style) },
+	      floatingLabelTextElement,
+	      hintText ? _react2.default.createElement(_TextFieldHint2.default, {
+	        muiTheme: this.state.muiTheme,
+	        show: !(this.state.hasValue || floatingLabelText && !this.state.isFocused),
+	        style: hintStyle,
+	        text: hintText
+	      }) : null,
+	      inputElement,
+	      underlineShow ? _react2.default.createElement(_TextFieldUnderline2.default, {
+	        disabled: disabled,
+	        disabledStyle: underlineDisabledStyle,
+	        error: this.state.errorText ? true : false,
+	        errorStyle: errorStyle,
+	        focus: this.state.isFocused,
+	        focusStyle: underlineFocusStyle,
+	        muiTheme: this.state.muiTheme,
+	        style: underlineStyle
+	      }) : null,
+	      errorTextElement
+	    );
+	  }
+	});
+
+	exports.default = TextField;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 332 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var rowsHeight = 24;
+
+	var styles = {
+	  textarea: {
+	    width: '100%',
+	    resize: 'none',
+	    font: 'inherit',
+	    padding: 0
+	  },
+	  shadow: {
+	    width: '100%',
+	    resize: 'none',
+	    // Overflow also needed to here to remove the extra row
+	    // added to textareas in Firefox.
+	    overflow: 'hidden',
+	    // Visibility needed to hide the extra text area on ipads
+	    visibility: 'hidden',
+	    font: 'inherit',
+	    padding: 0,
+	    position: 'absolute'
+	  }
+	};
+
+	var EnhancedTextarea = _react2.default.createClass({
+	  displayName: 'EnhancedTextarea',
+
+	  propTypes: {
+	    defaultValue: _react2.default.PropTypes.any,
+	    disabled: _react2.default.PropTypes.bool,
+	    onChange: _react2.default.PropTypes.func,
+	    onHeightChange: _react2.default.PropTypes.func,
+	    rows: _react2.default.PropTypes.number,
+	    rowsMax: _react2.default.PropTypes.number,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+	    textareaStyle: _react2.default.PropTypes.object,
+	    value: _react2.default.PropTypes.string,
+	    valueLink: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      rows: 1
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      height: this.props.rows * rowsHeight,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this._syncHeightWithShadow();
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    if (nextProps.value !== this.props.value) {
+	      this._syncHeightWithShadow(nextProps.value);
+	    }
+	    var newState = {};
+	    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	  },
+	  getInputNode: function getInputNode() {
+	    return _reactDom2.default.findDOMNode(this.refs.input);
+	  },
+	  setValue: function setValue(value) {
+	    this.getInputNode().value = value;
+	    this._syncHeightWithShadow(value);
+	  },
+	  _syncHeightWithShadow: function _syncHeightWithShadow(newValue, e) {
+	    var shadow = _reactDom2.default.findDOMNode(this.refs.shadow);
+
+	    if (newValue !== undefined) {
+	      shadow.value = newValue;
+	    }
+
+	    var newHeight = shadow.scrollHeight;
+
+	    if (this.props.rowsMax >= this.props.rows) {
+	      newHeight = Math.min(this.props.rowsMax * rowsHeight, newHeight);
+	    }
+
+	    newHeight = Math.max(newHeight, rowsHeight);
+
+	    if (this.state.height !== newHeight) {
+	      this.setState({
+	        height: newHeight
+	      });
+
+	      if (this.props.onHeightChange) {
+	        this.props.onHeightChange(e, newHeight);
+	      }
+	    }
+	  },
+	  _handleChange: function _handleChange(e) {
+	    this._syncHeightWithShadow(e.target.value);
+
+	    if (this.props.hasOwnProperty('valueLink')) {
+	      this.props.valueLink.requestChange(e.target.value);
+	    }
+
+	    if (this.props.onChange) {
+	      this.props.onChange(e);
+	    }
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var onChange = _props.onChange;
+	    var onHeightChange = _props.onHeightChange;
+	    var rows = _props.rows;
+	    var style = _props.style;
+	    var textareaStyle = _props.textareaStyle;
+	    var valueLink = _props.valueLink;
+
+	    var other = _objectWithoutProperties(_props, ['onChange', 'onHeightChange', 'rows', 'style', 'textareaStyle', 'valueLink']);
+
+	    var textareaStyles = this.mergeStyles(styles.textarea, textareaStyle, {
+	      height: this.state.height
+	    });
+
+	    var shadowStyles = styles.shadow;
+
+	    if (this.props.hasOwnProperty('valueLink')) {
+	      other.value = this.props.valueLink.value;
+	    }
+
+	    if (this.props.disabled) {
+	      style.cursor = 'default';
+	    }
+
+	    return _react2.default.createElement(
+	      'div',
+	      { style: this.prepareStyles(this.props.style) },
+	      _react2.default.createElement('textarea', {
+	        ref: 'shadow',
+	        style: this.prepareStyles(shadowStyles),
+	        tabIndex: '-1',
+	        rows: this.props.rows,
+	        defaultValue: this.props.defaultValue,
+	        readOnly: true,
+	        value: this.props.value,
+	        valueLink: this.props.valueLink
+	      }),
+	      _react2.default.createElement('textarea', _extends({}, other, {
+	        ref: 'input',
+	        rows: this.props.rows,
+	        style: this.prepareStyles(textareaStyles),
+	        onChange: this._handleChange
+	      }))
+	    );
+	  }
+	});
+
+	exports.default = EnhancedTextarea;
+	module.exports = exports['default'];
+
+/***/ },
+/* 333 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _styles = __webpack_require__(223);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var propTypes = {
+	  /**
+	   * The material-ui theme applied to this component.
+	   */
+	  muiTheme: _react2.default.PropTypes.object.isRequired,
+
+	  /**
+	   * True if the hint text should be visible.
+	   */
+	  show: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react2.default.PropTypes.object,
+
+	  /**
+	   * The hint text displayed.
+	   */
+	  text: _react2.default.PropTypes.node
+	};
+
+	var defaultProps = {
+	  show: true
+	};
+
+	var TextFieldHint = function TextFieldHint(props) {
+	  var muiTheme = props.muiTheme;
+	  var show = props.show;
+	  var style = props.style;
+	  var text = props.text;
+	  var hintColor = muiTheme.textField.hintColor;
+
+	  var styles = {
+	    root: {
+	      position: 'absolute',
+	      opacity: show ? 1 : 0,
+	      color: hintColor,
+	      transition: _transitions2.default.easeOut(),
+	      bottom: 12
+	    }
+	  };
+
+	  return _react2.default.createElement(
+	    'div',
+	    { style: (0, _styles.prepareStyles)(muiTheme, (0, _styles.mergeStyles)(styles.root, style)) },
+	    text
+	  );
+	};
+
+	TextFieldHint.propTypes = propTypes;
+	TextFieldHint.defaultProps = defaultProps;
+
+	exports.default = TextFieldHint;
+	module.exports = exports['default'];
+
+/***/ },
+/* 334 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _styles = __webpack_require__(223);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var propTypes = {
+	  /**
+	   * The material-ui theme applied to this component.
+	   */
+	  muiTheme: _react2.default.PropTypes.object.isRequired,
+
+	  /**
+	   * The css class name of the root element.
+	   */
+	  className: _react2.default.PropTypes.string,
+
+	  /**
+	   * The label contents.
+	   */
+	  children: _react2.default.PropTypes.node,
+
+	  /**
+	   * Disables the label if set to true.
+	   */
+	  disabled: _react2.default.PropTypes.bool,
+
+	  /**
+	   * True if the floating label should shrink.
+	   */
+	  shrink: _react2.default.PropTypes.bool,
+
+	  /**
+	   * The id of the target element that this label should refer to.
+	   */
+	  htmlFor: _react2.default.PropTypes.string,
+
+	  /**
+	   * Callback function for when the label is selected via a touch tap.
+	   */
+	  onTouchTap: _react2.default.PropTypes.func,
+
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react2.default.PropTypes.object
+	};
+
+	var defaultProps = {
+	  disabled: false,
+	  shrink: false
+	};
+
+	var TextFieldLabel = function TextFieldLabel(props) {
+	  var muiTheme = props.muiTheme;
+	  var className = props.className;
+	  var children = props.children;
+	  var disabled = props.disabled;
+	  var shrink = props.shrink;
+	  var htmlFor = props.htmlFor;
+	  var style = props.style;
+	  var onTouchTap = props.onTouchTap;
+
+	  var styles = {
+	    root: {
+	      position: 'absolute',
+	      lineHeight: '22px',
+	      top: 38,
+	      transition: _transitions2.default.easeOut(),
+	      zIndex: 1, // Needed to display label above Chrome's autocomplete field background
+	      cursor: disabled ? 'default' : 'text',
+	      transform: shrink ? 'perspective(1px) scale(0.75) translate3d(2px, -28px, 0)' : 'scale(1) translate3d(0, 0, 0)',
+	      transformOrigin: 'left top',
+	      pointerEvents: shrink ? 'none' : 'auto',
+	      userSelect: 'none'
+	    }
+	  };
+
+	  return _react2.default.createElement(
+	    'label',
+	    {
+	      className: className,
+	      style: (0, _styles.prepareStyles)(muiTheme, (0, _styles.mergeStyles)(styles.root, style)),
+	      htmlFor: htmlFor,
+	      onTouchTap: onTouchTap
+	    },
+	    children
+	  );
+	};
+
+	TextFieldLabel.propTypes = propTypes;
+	TextFieldLabel.defaultProps = defaultProps;
+
+	exports.default = TextFieldLabel;
+	module.exports = exports['default'];
+
+/***/ },
+/* 335 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _styles = __webpack_require__(223);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var propTypes = {
+	  /**
+	   * True if the parent `TextField` is disabled.
+	   */
+	  disabled: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the underline when parent `TextField` is disabled.
+	   */
+	  disabledStyle: _react2.default.PropTypes.object,
+
+	  /**
+	   * True if the parent `TextField` has an error.
+	   */
+	  error: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the underline when parent `TextField` has an error.
+	   */
+	  errorStyle: _react2.default.PropTypes.object,
+
+	  /**
+	   * True if the parent `TextField` is focused.
+	   */
+	  focus: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the underline when parent `TextField` is focused.
+	   */
+	  focusStyle: _react2.default.PropTypes.object,
+
+	  /**
+	   * The material-ui theme applied to this component.
+	   */
+	  muiTheme: _react2.default.PropTypes.object.isRequired,
+
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react2.default.PropTypes.object
+	};
+
+	var defaultProps = {
+	  disabled: false,
+	  disabledStyle: {},
+	  error: false,
+	  errorStyle: {},
+	  focus: false,
+	  focusStyle: {},
+	  style: {}
+	};
+
+	var TextFieldUnderline = function TextFieldUnderline(props) {
+	  var disabled = props.disabled;
+	  var disabledStyle = props.disabledStyle;
+	  var error = props.error;
+	  var errorStyle = props.errorStyle;
+	  var focus = props.focus;
+	  var focusStyle = props.focusStyle;
+	  var muiTheme = props.muiTheme;
+	  var style = props.style;
+	  var errorStyleColor = errorStyle.color;
+	  var _muiTheme$textField = muiTheme.textField;
+	  var borderColor = _muiTheme$textField.borderColor;
+	  var disabledTextColor = _muiTheme$textField.disabledTextColor;
+	  var errorColor = _muiTheme$textField.errorColor;
+	  var focusColor = _muiTheme$textField.focusColor;
+
+	  var styles = {
+	    root: {
+	      border: 'none',
+	      borderBottom: 'solid 1px',
+	      borderColor: borderColor,
+	      bottom: 8,
+	      boxSizing: 'content-box',
+	      margin: 0,
+	      position: 'absolute',
+	      width: '100%'
+	    },
+	    disabled: {
+	      borderBottom: 'dotted 2px',
+	      borderColor: disabledTextColor
+	    },
+	    focus: {
+	      borderBottom: 'solid 2px',
+	      borderColor: focusColor,
+	      transform: 'scaleX(0)',
+	      transition: _transitions2.default.easeOut()
+	    },
+	    error: {
+	      borderColor: errorStyleColor ? errorStyleColor : errorColor,
+	      transform: 'scaleX(1)'
+	    }
+	  };
+
+	  var underline = (0, _styles.mergeStyles)(styles.root, style);
+	  var focusedUnderline = (0, _styles.mergeStyles)(underline, styles.focus, focusStyle);
+
+	  if (disabled) underline = (0, _styles.mergeStyles)(underline, styles.disabled, disabledStyle);
+	  if (focus) focusedUnderline = (0, _styles.mergeStyles)(focusedUnderline, { transform: 'scaleX(1)' });
+	  if (error) focusedUnderline = (0, _styles.mergeStyles)(focusedUnderline, styles.error);
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement('hr', { style: (0, _styles.prepareStyles)(muiTheme, underline) }),
+	    _react2.default.createElement('hr', { style: (0, _styles.prepareStyles)(muiTheme, focusedUnderline) })
+	  );
+	};
+
+	TextFieldUnderline.propTypes = propTypes;
+	TextFieldUnderline.defaultProps = defaultProps;
+
+	exports.default = TextFieldUnderline;
+	module.exports = exports['default'];
+
+/***/ },
+/* 336 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _contextPure = __webpack_require__(317);
+
+	var _contextPure2 = _interopRequireDefault(_contextPure);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _children = __webpack_require__(313);
+
+	var _children2 = _interopRequireDefault(_children);
+
+	var _colorManipulator = __webpack_require__(274);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	var _styles = __webpack_require__(223);
+
+	var _typography = __webpack_require__(305);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _enhancedButton = __webpack_require__(312);
+
+	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
+
+	var _flatButtonLabel = __webpack_require__(337);
+
+	var _flatButtonLabel2 = _interopRequireDefault(_flatButtonLabel);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function validateLabel(props, propName, componentName) {
+	  if (!props.children && !props.label) {
+	    return new Error('Required prop label or children was not ' + 'specified in ' + componentName + '.');
+	  }
+	}
+
+	var FlatButton = _react2.default.createClass({
+	  displayName: 'FlatButton',
+
+	  propTypes: {
+	    /**
+	     * Color of button when mouse is not hovering over it.
+	     */
+	    backgroundColor: _react2.default.PropTypes.string,
+
+	    /**
+	     * This is what will be displayed inside the button.
+	     * If a label is specified, the text within the label prop will
+	     * be displayed. Otherwise, the component will expect children
+	     * which will then be displayed. (In our example,
+	     * we are nesting an `<input type="file" />` and a `span`
+	     * that acts as our label to be displayed.) This only
+	     * applies to flat and raised buttons.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * Disables the button if set to true.
+	     */
+	    disabled: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Color of button when mouse hovers over.
+	     */
+	    hoverColor: _react2.default.PropTypes.string,
+
+	    /**
+	     * URL to link to when button clicked if `linkButton` is set to true.
+	     */
+	    href: _react2.default.PropTypes.string,
+
+	    /**
+	     * Use this property to display an icon.
+	     */
+	    icon: _react2.default.PropTypes.node,
+
+	    /**
+	     * Label for the button.
+	     */
+	    label: validateLabel,
+
+	    /**
+	     * Place label before or after the passed children.
+	     */
+	    labelPosition: _react2.default.PropTypes.oneOf(['before', 'after']),
+
+	    /**
+	     * Override the inline-styles of the button's label element.
+	     */
+	    labelStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Enables use of `href` property to provide a URL to link to if set to true.
+	     */
+	    linkButton: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Called when element is focused by the keyboard.
+	     */
+	    onKeyboardFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse enters the element.
+	     */
+	    onMouseEnter: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse leaves the element.
+	     */
+	    onMouseLeave: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when a touch event is started inside the element.
+	     */
+	    onTouchStart: _react2.default.PropTypes.func,
+
+	    /**
+	     * If true, colors button according to
+	     * primaryTextColor from the Theme.
+	     */
+	    primary: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Color for the ripple after button is clicked.
+	     */
+	    rippleColor: _react2.default.PropTypes.string,
+
+	    /**
+	     * If true, colors button according to secondaryTextColor from the theme.
+	     * The primary prop has precendent if set to true.
+	     */
+	    secondary: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_contextPure2.default],
+
+	  statics: {
+	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+	      var buttonTheme = muiTheme.button;
+	      var flatButtonTheme = muiTheme.flatButton;
+
+	      return {
+	        buttonColor: flatButtonTheme.color,
+	        buttonFilterColor: flatButtonTheme.buttonFilterColor,
+	        buttonHeight: buttonTheme.height,
+	        buttonMinWidth: buttonTheme.minWidth,
+	        disabledTextColor: flatButtonTheme.disabledTextColor,
+	        primaryTextColor: flatButtonTheme.primaryTextColor,
+	        secondaryTextColor: flatButtonTheme.secondaryTextColor,
+	        textColor: flatButtonTheme.textColor,
+	        textTransform: flatButtonTheme.textTransform ? flatButtonTheme.textTransform : buttonTheme.textTransform ? buttonTheme.textTransform : 'uppercase'
+	      };
+	    },
+	    getChildrenClasses: function getChildrenClasses() {
+	      return [_enhancedButton2.default, _flatButtonLabel2.default];
+	    }
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      disabled: false,
+	      labelStyle: {},
+	      labelPosition: 'after',
+	      onKeyboardFocus: function onKeyboardFocus() {},
+	      onMouseEnter: function onMouseEnter() {},
+	      onMouseLeave: function onMouseLeave() {},
+	      onTouchStart: function onTouchStart() {},
+	      primary: false,
+	      secondary: false
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      hovered: false,
+	      isKeyboardFocused: false,
+	      touch: false,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
+	    this.setState({ isKeyboardFocused: isKeyboardFocused });
+	    this.props.onKeyboardFocus(e, isKeyboardFocused);
+	  },
+	  _handleMouseEnter: function _handleMouseEnter(e) {
+	    //Cancel hover styles for touch devices
+	    if (!this.state.touch) this.setState({ hovered: true });
+	    this.props.onMouseEnter(e);
+	  },
+	  _handleMouseLeave: function _handleMouseLeave(e) {
+	    this.setState({ hovered: false });
+	    this.props.onMouseLeave(e);
+	  },
+	  _handleTouchStart: function _handleTouchStart(e) {
+	    this.setState({ touch: true });
+	    this.props.onTouchStart(e);
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var children = _props.children;
+	    var disabled = _props.disabled;
+	    var hoverColor = _props.hoverColor;
+	    var backgroundColor = _props.backgroundColor;
+	    var icon = _props.icon;
+	    var label = _props.label;
+	    var labelStyle = _props.labelStyle;
+	    var labelPosition = _props.labelPosition;
+	    var primary = _props.primary;
+	    var rippleColor = _props.rippleColor;
+	    var secondary = _props.secondary;
+	    var style = _props.style;
+
+	    var other = _objectWithoutProperties(_props, ['children', 'disabled', 'hoverColor', 'backgroundColor', 'icon', 'label', 'labelStyle', 'labelPosition', 'primary', 'rippleColor', 'secondary', 'style']);
+
+	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+	    var buttonColor = _constructor$getRelev.buttonColor;
+	    var buttonHeight = _constructor$getRelev.buttonHeight;
+	    var buttonMinWidth = _constructor$getRelev.buttonMinWidth;
+	    var disabledTextColor = _constructor$getRelev.disabledTextColor;
+	    var buttonFilterColor = _constructor$getRelev.buttonFilterColor;
+	    var primaryTextColor = _constructor$getRelev.primaryTextColor;
+	    var secondaryTextColor = _constructor$getRelev.secondaryTextColor;
+	    var textColor = _constructor$getRelev.textColor;
+	    var textTransform = _constructor$getRelev.textTransform;
+
+	    var defaultTextColor = disabled ? disabledTextColor : primary ? primaryTextColor : secondary ? secondaryTextColor : textColor;
+
+	    var defaultHoverColor = _colorManipulator2.default.fade(buttonFilterColor, 0.2);
+	    var defaultRippleColor = buttonFilterColor;
+	    var buttonHoverColor = hoverColor || defaultHoverColor;
+	    var buttonRippleColor = rippleColor || defaultRippleColor;
+	    var buttonBackgroundColor = backgroundColor || buttonColor;
+	    var hovered = (this.state.hovered || this.state.isKeyboardFocused) && !disabled;
+
+	    var mergedRootStyles = (0, _styles.mergeStyles)({
+	      color: defaultTextColor,
+	      transition: _transitions2.default.easeOut(),
+	      fontSize: _typography2.default.fontStyleButtonFontSize,
+	      letterSpacing: 0,
+	      textTransform: textTransform,
+	      fontWeight: _typography2.default.fontWeightMedium,
+	      borderRadius: 2,
+	      userSelect: 'none',
+	      position: 'relative',
+	      overflow: 'hidden',
+	      backgroundColor: hovered ? buttonHoverColor : buttonBackgroundColor,
+	      lineHeight: buttonHeight + 'px',
+	      minWidth: buttonMinWidth,
+	      padding: 0,
+	      margin: 0
+	    }, style);
+
+	    var iconCloned = undefined;
+	    var labelStyleIcon = {};
+
+	    if (icon) {
+	      iconCloned = _react2.default.cloneElement(icon, {
+	        color: mergedRootStyles.color,
+	        style: {
+	          verticalAlign: 'middle',
+	          marginLeft: labelPosition === 'before' ? 0 : 12,
+	          marginRight: labelPosition === 'before' ? 12 : 0
+	        }
+	      });
+
+	      if (labelPosition === 'before') {
+	        labelStyleIcon.paddingRight = 8;
+	      } else {
+	        labelStyleIcon.paddingLeft = 8;
+	      }
+	    }
+
+	    var labelElement = label ? _react2.default.createElement(_flatButtonLabel2.default, { label: label, style: (0, _styles.mergeStyles)(labelStyleIcon, labelStyle) }) : undefined;
+
+	    // Place label before or after children.
+	    var childrenFragment = labelPosition === 'before' ? {
+	      labelElement: labelElement,
+	      iconCloned: iconCloned,
+	      children: children
+	    } : {
+	      children: children,
+	      iconCloned: iconCloned,
+	      labelElement: labelElement
+	    };
+	    var enhancedButtonChildren = _children2.default.create(childrenFragment);
+
+	    return _react2.default.createElement(
+	      _enhancedButton2.default,
+	      _extends({}, other, {
+	        disabled: disabled,
+	        focusRippleColor: buttonRippleColor,
+	        focusRippleOpacity: 0.3,
+	        onKeyboardFocus: this._handleKeyboardFocus,
+	        onMouseLeave: this._handleMouseLeave,
+	        onMouseEnter: this._handleMouseEnter,
+	        onTouchStart: this._handleTouchStart,
+	        style: mergedRootStyles,
+	        touchRippleColor: buttonRippleColor,
+	        touchRippleOpacity: 0.3
+	      }),
+	      enhancedButtonChildren
+	    );
+	  }
+	});
+
+	exports.default = FlatButton;
+	module.exports = exports['default'];
+
+/***/ },
+/* 337 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _contextPure = __webpack_require__(317);
+
+	var _contextPure2 = _interopRequireDefault(_contextPure);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var FlatButtonLabel = _react2.default.createClass({
+	  displayName: 'FlatButtonLabel',
+
+	  propTypes: {
+	    label: _react2.default.PropTypes.node,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_contextPure2.default, _stylePropable2.default],
+
+	  statics: {
+	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+	      return {
+	        spacingDesktopGutterLess: muiTheme.rawTheme.spacing.desktopGutterLess
+	      };
+	    }
+	  },
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+
+	  render: function render() {
+	    var _props = this.props;
+	    var label = _props.label;
+	    var style = _props.style;
+
+	    var contextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+	    var mergedRootStyles = this.mergeStyles({
+	      position: 'relative',
+	      paddingLeft: contextKeys.spacingDesktopGutterLess,
+	      paddingRight: contextKeys.spacingDesktopGutterLess
+	    }, style);
+
+	    return _react2.default.createElement(
+	      'span',
+	      { style: this.prepareStyles(mergedRootStyles) },
+	      label
+	    );
+	  }
+
+	});
+
+	exports.default = FlatButtonLabel;
+	module.exports = exports['default'];
+
+/***/ },
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _windowListenable = __webpack_require__(247);
+
+	var _windowListenable2 = _interopRequireDefault(_windowListenable);
+
+	var _keyCode = __webpack_require__(221);
+
+	var _keyCode2 = _interopRequireDefault(_keyCode);
+
+	var _transitions = __webpack_require__(246);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _stylePropable = __webpack_require__(222);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _flatButton = __webpack_require__(336);
+
+	var _flatButton2 = _interopRequireDefault(_flatButton);
+
+	var _overlay = __webpack_require__(249);
+
+	var _overlay2 = _interopRequireDefault(_overlay);
+
+	var _renderToLayer = __webpack_require__(339);
+
+	var _renderToLayer2 = _interopRequireDefault(_renderToLayer);
+
+	var _paper = __webpack_require__(251);
+
+	var _paper2 = _interopRequireDefault(_paper);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _warning = __webpack_require__(243);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	var _deprecatedPropType = __webpack_require__(306);
+
+	var _deprecatedPropType2 = _interopRequireDefault(_deprecatedPropType);
+
+	var _reactAddonsTransitionGroup = __webpack_require__(297);
+
+	var _reactAddonsTransitionGroup2 = _interopRequireDefault(_reactAddonsTransitionGroup);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var TransitionItem = _react2.default.createClass({
+	  displayName: 'TransitionItem',
+
+	  propTypes: {
+	    children: _react2.default.PropTypes.node,
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      style: {},
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  componentWillEnter: function componentWillEnter(callback) {
+	    this.componentWillAppear(callback);
+	  },
+	  componentWillAppear: function componentWillAppear(callback) {
+	    var spacing = this.state.muiTheme.rawTheme.spacing;
+
+	    this.setState({
+	      style: {
+	        opacity: 1,
+	        transform: 'translate3d(0, ' + spacing.desktopKeylineIncrement + 'px, 0)'
+	      }
+	    });
+
+	    setTimeout(callback, 450); // matches transition duration
+	  },
+	  componentWillLeave: function componentWillLeave(callback) {
+	    var _this = this;
+
+	    this.setState({
+	      style: {
+	        opacity: 0,
+	        transform: 'translate3d(0, 0, 0)'
+	      }
+	    });
+
+	    setTimeout(function () {
+	      if (_this.isMounted()) callback();
+	    }, 450); // matches transition duration
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var style = _props.style;
+	    var children = _props.children;
+
+	    var other = _objectWithoutProperties(_props, ['style', 'children']);
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, other, { style: this.prepareStyles(this.state.style, style) }),
+	      children
+	    );
+	  }
+	});
+
+	var DialogInline = _react2.default.createClass({
+	  displayName: 'DialogInline',
+
+	  propTypes: {
+	    actionFocus: _react2.default.PropTypes.string,
+	    actions: _react2.default.PropTypes.node,
+	    actionsContainerClassName: _react2.default.PropTypes.string,
+	    actionsContainerStyle: _react2.default.PropTypes.object,
+	    autoDetectWindowHeight: _react2.default.PropTypes.bool,
+	    autoScrollBodyContent: _react2.default.PropTypes.bool,
+	    bodyClassName: _react2.default.PropTypes.string,
+	    bodyStyle: _react2.default.PropTypes.object,
+	    children: _react2.default.PropTypes.node,
+	    className: _react2.default.PropTypes.string,
+	    contentClassName: _react2.default.PropTypes.string,
+	    contentStyle: _react2.default.PropTypes.object,
+	    modal: _react2.default.PropTypes.bool,
+	    onRequestClose: _react2.default.PropTypes.func,
+	    open: _react2.default.PropTypes.bool.isRequired,
+	    overlayClassName: _react2.default.PropTypes.string,
+	    overlayStyle: _react2.default.PropTypes.object,
+	    repositionOnUpdate: _react2.default.PropTypes.bool,
+	    style: _react2.default.PropTypes.object,
+	    title: _react2.default.PropTypes.node,
+	    titleClassName: _react2.default.PropTypes.string,
+	    titleStyle: _react2.default.PropTypes.object,
+	    width: _react2.default.PropTypes.any
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_windowListenable2.default, _stylePropable2.default],
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this._positionDialog();
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  componentDidUpdate: function componentDidUpdate() {
+	    this._positionDialog();
+	  },
+
+	  windowListeners: {
+	    keyup: '_handleWindowKeyUp',
+	    resize: '_handleResize'
+	  },
+
+	  getStyles: function getStyles() {
+	    var _props2 = this.props;
+	    var autoScrollBodyContent = _props2.autoScrollBodyContent;
+	    var open = _props2.open;
+	    var width = _props2.width;
+
+	    var muiTheme = this.state.muiTheme;
+	    var rawTheme = muiTheme.rawTheme;
+	    var spacing = rawTheme.spacing;
+	    var gutter = spacing.desktopGutter;
+
+	    return {
+	      root: {
+	        position: 'fixed',
+	        boxSizing: 'border-box',
+	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+	        zIndex: muiTheme.zIndex.dialog,
+	        top: 0,
+	        left: open ? 0 : -10000,
+	        width: '100%',
+	        height: '100%',
+	        transition: open ? _transitions2.default.easeOut('0ms', 'left', '0ms') : _transitions2.default.easeOut('0ms', 'left', '450ms')
+	      },
+	      content: {
+	        boxSizing: 'border-box',
+	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+	        transition: _transitions2.default.easeOut(),
+	        position: 'relative',
+	        width: width || '75%',
+	        maxWidth: spacing.desktopKeylineIncrement * 12,
+	        margin: '0 auto',
+	        zIndex: muiTheme.zIndex.dialog
+	      },
+	      body: {
+	        padding: spacing.desktopGutter,
+	        overflowY: autoScrollBodyContent ? 'auto' : 'hidden',
+	        overflowX: 'hidden'
+	      },
+	      actionsContainer: {
+	        boxSizing: 'border-box',
+	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+	        padding: 8,
+	        marginBottom: 8,
+	        width: '100%',
+	        textAlign: 'right'
+	      },
+	      paper: {
+	        background: rawTheme.palette.canvasColor
+	      },
+	      overlay: {
+	        zIndex: muiTheme.zIndex.dialogOverlay
+	      },
+	      title: {
+	        margin: 0,
+	        padding: gutter + 'px ' + gutter + 'px 0 ' + gutter + 'px',
+	        color: rawTheme.palette.textColor,
+	        fontSize: 24,
+	        lineHeight: '32px',
+	        fontWeight: 400
+	      }
+	    };
+	  },
+	  _getAction: function _getAction(actionJSON) {
+	    var _this2 = this;
+
+	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'using actionsJSON is deprecated on Dialog, please provide an array of\n buttons, or any other components instead. For more information please refer to documentations.') : undefined;
+	    var props = {
+	      secondary: true,
+	      onClick: actionJSON.onClick,
+	      onTouchTap: function onTouchTap() {
+	        if (actionJSON.onTouchTap) {
+	          actionJSON.onTouchTap.call(undefined);
+	        }
+	        if (!(actionJSON.onClick || actionJSON.onTouchTap)) {
+	          _this2._requestClose(true);
+	        }
+	      },
+	      label: actionJSON.text,
+	      style: {
+	        marginRight: 8
+	      }
+	    };
+
+	    if (actionJSON.ref) {
+	      props.ref = actionJSON.ref;
+	      props.keyboardFocused = actionJSON.ref === this.props.actionFocus;
+	    }
+	    if (actionJSON.id) {
+	      props.id = actionJSON.id;
+	    }
+
+	    return _react2.default.createElement(_flatButton2.default, props);
+	  },
+	  _getActionObjects: function _getActionObjects(actions) {
+	    var _this3 = this;
+
+	    var actionObjects = [];
+
+	    // ------- Replace this selction with:
+	    //
+	    // React.Children.forEach(actions, action => {
+	    //   if (React.isValidElement(action)) {
+	    //     actionObjects.push(action);
+	    //   }
+	    // });
+	    //
+	    // Also the return element will not need a call to React.Children.toArray
+	    //
+	    // for the 0.15.0 release
+
+	    if (actions) {
+
+	      if (_react2.default.isValidElement(actions)) {
+	        actionObjects.push(actions);
+	      } else {
+	        actions.forEach(function (action) {
+	          if (action) {
+	            if (!_react2.default.isValidElement(action)) {
+	              action = _this3._getAction(action);
+	            }
+	            actionObjects.push(action);
+	          }
+	        });
+	      }
+	    }
+
+	    // ------- End of section
+
+	    return actionObjects;
+	  },
+	  _getActionsContainer: function _getActionsContainer(actions, styles, className) {
+	    var actionObjects = this._getActionObjects(actions);
+
+	    return actionObjects.length > 0 && _react2.default.createElement(
+	      'div',
+	      { className: className, style: this.prepareStyles(styles) },
+	      _react2.default.Children.toArray(actionObjects)
+	    );
+	  },
+	  _positionDialog: function _positionDialog() {
+	    var _props3 = this.props;
+	    var actions = _props3.actions;
+	    var autoDetectWindowHeight = _props3.autoDetectWindowHeight;
+	    var autoScrollBodyContent = _props3.autoScrollBodyContent;
+	    var bodyStyle = _props3.bodyStyle;
+	    var open = _props3.open;
+	    var repositionOnUpdate = _props3.repositionOnUpdate;
+	    var title = _props3.title;
+
+	    if (!open) {
+	      return;
+	    }
+
+	    var clientHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	    var container = _reactDom2.default.findDOMNode(this);
+	    var dialogWindow = _reactDom2.default.findDOMNode(this.refs.dialogWindow);
+	    var dialogContent = _reactDom2.default.findDOMNode(this.refs.dialogContent);
+	    var minPaddingTop = 16;
+
+	    //Reset the height in case the window was resized.
+	    dialogWindow.style.height = '';
+	    dialogContent.style.height = '';
+
+	    var dialogWindowHeight = dialogWindow.offsetHeight;
+	    var paddingTop = (clientHeight - dialogWindowHeight) / 2 - 64;
+	    if (paddingTop < minPaddingTop) paddingTop = minPaddingTop;
+
+	    //Vertically center the dialog window, but make sure it doesn't
+	    //transition to that position.
+	    if (repositionOnUpdate || !container.style.paddingTop) {
+	      container.style.paddingTop = paddingTop + 'px';
+	    }
+
+	    // Force a height if the dialog is taller than clientHeight
+	    if (autoDetectWindowHeight || autoScrollBodyContent) {
+	      var styles = this.getStyles();
+	      styles.body = this.mergeStyles(styles.body, bodyStyle);
+	      var maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + 64);
+
+	      if (title) maxDialogContentHeight -= dialogContent.previousSibling.offsetHeight;
+
+	      var hasActions = this._getActionObjects(actions).length > 0;
+	      if (hasActions) maxDialogContentHeight -= dialogContent.nextSibling.offsetHeight;
+
+	      dialogContent.style.maxHeight = maxDialogContentHeight + 'px';
+	    }
+	  },
+	  _requestClose: function _requestClose(buttonClicked) {
+
+	    if (!buttonClicked && this.props.modal) {
+	      return;
+	    }
+
+	    if (this.props.onRequestClose) {
+	      this.props.onRequestClose(!!buttonClicked);
+	    }
+	  },
+	  _handleOverlayTouchTap: function _handleOverlayTouchTap() {
+	    this._requestClose(false);
+	  },
+	  _handleWindowKeyUp: function _handleWindowKeyUp(event) {
+	    if (event.keyCode === _keyCode2.default.ESC) {
+	      this._requestClose(false);
+	    }
+	  },
+	  _handleResize: function _handleResize() {
+	    if (this.props.open) {
+	      this._positionDialog();
+	    }
+	  },
+	  render: function render() {
+	    var _props4 = this.props;
+	    var actions = _props4.actions;
+	    var actionsContainerClassName = _props4.actionsContainerClassName;
+	    var actionsContainerStyle = _props4.actionsContainerStyle;
+	    var bodyClassName = _props4.bodyClassName;
+	    var bodyStyle = _props4.bodyStyle;
+	    var children = _props4.children;
+	    var className = _props4.className;
+	    var contentClassName = _props4.contentClassName;
+	    var contentStyle = _props4.contentStyle;
+	    var overlayClassName = _props4.overlayClassName;
+	    var overlayStyle = _props4.overlayStyle;
+	    var open = _props4.open;
+	    var titleClassName = _props4.titleClassName;
+	    var titleStyle = _props4.titleStyle;
+	    var title = _props4.title;
+	    var style = _props4.style;
+
+	    var styles = this.getStyles();
+
+	    styles.root = this.mergeStyles(styles.root, style);
+	    styles.content = this.mergeStyles(styles.content, contentStyle);
+	    styles.body = this.mergeStyles(styles.body, bodyStyle);
+	    styles.actionsContainer = this.mergeStyles(styles.actionsContainer, actionsContainerStyle);
+	    styles.overlay = this.mergeStyles(styles.overlay, overlayStyle);
+	    styles.title = this.mergeStyles(styles.title, titleStyle);
+
+	    var actionsContainer = this._getActionsContainer(actions, styles.actionsContainer, actionsContainerClassName);
+
+	    var titleElement = typeof title === 'string' ? _react2.default.createElement(
+	      'h3',
+	      { className: titleClassName, style: this.prepareStyles(styles.title) },
+	      title
+	    ) : title;
+
+	    return _react2.default.createElement(
+	      'div',
+	      { className: className, style: this.prepareStyles(styles.root) },
+	      _react2.default.createElement(
+	        _reactAddonsTransitionGroup2.default,
+	        {
+	          component: 'div', ref: 'dialogWindow',
+	          transitionAppear: true, transitionAppearTimeout: 450,
+	          transitionEnter: true, transitionEnterTimeout: 450
+	        },
+	        open && _react2.default.createElement(
+	          TransitionItem,
+	          {
+	            className: contentClassName,
+	            style: styles.content
+	          },
+	          _react2.default.createElement(
+	            _paper2.default,
+	            {
+	              style: styles.paper,
+	              zDepth: 4
+	            },
+	            titleElement,
+	            _react2.default.createElement(
+	              'div',
+	              {
+	                ref: 'dialogContent',
+	                className: bodyClassName,
+	                style: this.prepareStyles(styles.body)
+	              },
+	              children
+	            ),
+	            actionsContainer
+	          )
+	        )
+	      ),
+	      _react2.default.createElement(_overlay2.default, {
+	        show: open,
+	        className: overlayClassName,
+	        style: styles.overlay,
+	        onTouchTap: this._handleOverlayTouchTap
+	      })
+	    );
+	  }
+	});
+
+	var Dialog = _react2.default.createClass({
+	  displayName: 'Dialog',
+
+	  propTypes: {
+	    /**
+	     * The `ref` of the action to focus on when the `Dialog` is displayed.
+	     */
+	    actionFocus: (0, _deprecatedPropType2.default)(_react2.default.PropTypes.string, 'Instead, use a custom `actions` property.'),
+
+	    /**
+	     * This prop can be either a JSON object containing the actions to render (This is **DEPRECATED**),
+	     * a react elements, or an array of react elements.
+	     */
+	    actions: _react2.default.PropTypes.node,
+
+	    /**
+	     * The `className` to add to the actions container's root element.
+	     */
+	    actionsContainerClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the actions container's root element.
+	     */
+	    actionsContainerStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * If set to true, the height of the `Dialog` will be auto detected. A max height
+	     * will be enforced so that the content does not extend beyond the viewport.
+	     */
+	    autoDetectWindowHeight: _react2.default.PropTypes.bool,
+
+	    /**
+	     * If set to true, the body content of the `Dialog` will be scrollable.
+	     */
+	    autoScrollBodyContent: _react2.default.PropTypes.bool,
+
+	    /**
+	     * The `className` to add to the content's root element under the title.
+	     */
+	    bodyClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the content's root element under the title.
+	     */
+	    bodyStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The contents of the `Dialog`.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * The css class name of the root element.
+	     */
+	    className: _react2.default.PropTypes.string,
+
+	    /**
+	     * The `className` to add to the content container.
+	     */
+	    contentClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the content container.
+	     */
+	    contentStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Force the user to use one of the actions in the `Dialog`.
+	     * Clicking outside the `Dialog` will not trigger the `onRequestClose`.
+	     */
+	    modal: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Fired when the `Dialog` is requested to be closed by a click outside the `Dialog` or on the buttons.
+	     *
+	     * @param {bool} buttonClicked Determines whether a button click triggered this request.
+	     */
+	    onRequestClose: _react2.default.PropTypes.func,
+
+	    /**
+	     * Controls whether the Dialog is opened or not.
+	     */
+	    open: _react2.default.PropTypes.bool.isRequired,
+
+	    /**
+	     * The `className` to add to the `Overlay` component that is rendered behind the `Dialog`.
+	     */
+	    overlayClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the `Overlay` component that is rendered behind the `Dialog`.
+	     */
+	    overlayStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Determines whether the `Dialog` should be repositioned when it's contents are updated.
+	     */
+	    repositionOnUpdate: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * The title to display on the `Dialog`. Could be number, string, element or an array containing these types.
+	     */
+	    title: _react2.default.PropTypes.node,
+
+	    /**
+	     * The `className` to add to the title's root container element.
+	     */
+	    titleClassName: _react2.default.PropTypes.string,
+
+	    /**
+	     * Overrides the inline-styles of the title's root container element.
+	     */
+	    titleStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Changes the width of the `Dialog`.
+	     */
+	    width: (0, _deprecatedPropType2.default)(_react2.default.PropTypes.any, 'Use the contentStyle.')
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      autoDetectWindowHeight: true,
+	      autoScrollBodyContent: false,
+	      modal: false,
+	      repositionOnUpdate: true
+	    };
+	  },
+	  renderLayer: function renderLayer() {
+	    return _react2.default.createElement(DialogInline, this.props);
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(_renderToLayer2.default, { render: this.renderLayer, open: true, useLayerForClickAway: false });
+	  }
+	});
+
+	exports.default = Dialog;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 339 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(147);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(1);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _dom = __webpack_require__(287);
+
+	var _dom2 = _interopRequireDefault(_dom);
+
+	var _getMuiTheme = __webpack_require__(256);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// heavily inspired by https://github.com/Khan/react-components/blob/master/js/layered-component-mixin.jsx
+	var RenderToLayer = _react2.default.createClass({
+	  displayName: 'RenderToLayer',
+
+	  propTypes: {
+	    componentClickAway: _react2.default.PropTypes.func,
+	    open: _react2.default.PropTypes.bool.isRequired,
+	    render: _react2.default.PropTypes.func.isRequired,
+	    useLayerForClickAway: _react2.default.PropTypes.bool
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      useLayerForClickAway: true
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this._renderLayer();
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({
+	      muiTheme: newMuiTheme
+	    });
+	  },
+	  componentDidUpdate: function componentDidUpdate() {
+	    this._renderLayer();
+	  },
+	  componentWillUnmount: function componentWillUnmount() {
+	    this._unrenderLayer();
+	  },
+	  onClickAway: function onClickAway(event) {
+	    if (event.defaultPrevented) {
+	      return;
+	    }
+
+	    if (!this.props.componentClickAway) {
+	      return;
+	    }
+
+	    if (!this.props.open) {
+	      return;
+	    }
+
+	    var el = this._layer;
+	    if (event.target !== el && event.target === window || document.documentElement.contains(event.target) && !_dom2.default.isDescendant(el, event.target)) {
+	      this.props.componentClickAway(event);
+	    }
+	  },
+	  getLayer: function getLayer() {
+	    return this._layer;
+	  },
+
+	  _unrenderLayer: function _unrenderLayer() {
+	    if (!this._layer) {
+	      return;
+	    }
+
+	    if (this.props.useLayerForClickAway) {
+	      this._layer.style.position = 'relative';
+	      this._layer.removeEventListener('touchstart', this.onClickAway);
+	      this._layer.removeEventListener('click', this.onClickAway);
+	    } else {
+	      window.removeEventListener('touchstart', this.onClickAway);
+	      window.removeEventListener('click', this.onClickAway);
+	    }
+
+	    _reactDom2.default.unmountComponentAtNode(this._layer);
+	    document.body.removeChild(this._layer);
+	    this._layer = null;
+	  },
+
+	  _renderLayer: function _renderLayer() {
+	    var _this = this;
+
+	    var _props = this.props;
+	    var open = _props.open;
+	    var render = _props.render;
+
+	    if (open) {
+	      if (!this._layer) {
+	        this._layer = document.createElement('div');
+	        document.body.appendChild(this._layer);
+
+	        if (this.props.useLayerForClickAway) {
+	          this._layer.addEventListener('touchstart', this.onClickAway);
+	          this._layer.addEventListener('click', this.onClickAway);
+	          this._layer.style.position = 'fixed';
+	          this._layer.style.top = 0;
+	          this._layer.style.bottom = 0;
+	          this._layer.style.left = 0;
+	          this._layer.style.right = 0;
+	          this._layer.style.zIndex = this.state.muiTheme.zIndex.layer;
+	        } else {
+	          setTimeout(function () {
+	            window.addEventListener('touchstart', _this.onClickAway);
+	            window.addEventListener('click', _this.onClickAway);
+	          }, 0);
+	        }
+	      }
+
+	      // By calling this method in componentDidMount() and
+	      // componentDidUpdate(), you're effectively creating a "wormhole" that
+	      // funnels React's hierarchical updates through to a DOM node on an
+	      // entirely different part of the page.
+
+	      var layerElement = render();
+
+	      if (layerElement === null) {
+	        this.layerElement = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, null, this._layer);
+	      } else {
+	        this.layerElement = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, layerElement, this._layer);
+	      }
+	    } else {
+	      this._unrenderLayer();
+	    }
+	  },
+	  render: function render() {
+	    return null;
+	  }
+	});
+
+	exports.default = RenderToLayer;
+	module.exports = exports['default'];
+
+/***/ },
+/* 340 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery JavaScript Library v2.2.1
+	 * http://jquery.com/
+	 *
+	 * Includes Sizzle.js
+	 * http://sizzlejs.com/
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license
+	 * http://jquery.org/license
+	 *
+	 * Date: 2016-02-22T19:11Z
+	 */
+
+	(function( global, factory ) {
+
+		if ( typeof module === "object" && typeof module.exports === "object" ) {
+			// For CommonJS and CommonJS-like environments where a proper `window`
+			// is present, execute the factory and get jQuery.
+			// For environments that do not have a `window` with a `document`
+			// (such as Node.js), expose a factory as module.exports.
+			// This accentuates the need for the creation of a real `window`.
+			// e.g. var jQuery = require("jquery")(window);
+			// See ticket #14549 for more info.
+			module.exports = global.document ?
+				factory( global, true ) :
+				function( w ) {
+					if ( !w.document ) {
+						throw new Error( "jQuery requires a window with a document" );
+					}
+					return factory( w );
+				};
+		} else {
+			factory( global );
+		}
+
+	// Pass this if window is not defined yet
+	}(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
+
+	// Support: Firefox 18+
+	// Can't be in strict mode, several libs including ASP.NET trace
+	// the stack via arguments.caller.callee and Firefox dies if
+	// you try to trace through "use strict" call chains. (#13335)
+	//"use strict";
+	var arr = [];
+
+	var document = window.document;
+
+	var slice = arr.slice;
+
+	var concat = arr.concat;
+
+	var push = arr.push;
+
+	var indexOf = arr.indexOf;
+
+	var class2type = {};
+
+	var toString = class2type.toString;
+
+	var hasOwn = class2type.hasOwnProperty;
+
+	var support = {};
+
+
+
+	var
+		version = "2.2.1",
+
+		// Define a local copy of jQuery
+		jQuery = function( selector, context ) {
+
+			// The jQuery object is actually just the init constructor 'enhanced'
+			// Need init if jQuery is called (just allow error to be thrown if not included)
+			return new jQuery.fn.init( selector, context );
+		},
+
+		// Support: Android<4.1
+		// Make sure we trim BOM and NBSP
+		rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
+
+		// Matches dashed string for camelizing
+		rmsPrefix = /^-ms-/,
+		rdashAlpha = /-([\da-z])/gi,
+
+		// Used by jQuery.camelCase as callback to replace()
+		fcamelCase = function( all, letter ) {
+			return letter.toUpperCase();
+		};
+
+	jQuery.fn = jQuery.prototype = {
+
+		// The current version of jQuery being used
+		jquery: version,
+
+		constructor: jQuery,
+
+		// Start with an empty selector
+		selector: "",
+
+		// The default length of a jQuery object is 0
+		length: 0,
+
+		toArray: function() {
+			return slice.call( this );
+		},
+
+		// Get the Nth element in the matched element set OR
+		// Get the whole matched element set as a clean array
+		get: function( num ) {
+			return num != null ?
+
+				// Return just the one element from the set
+				( num < 0 ? this[ num + this.length ] : this[ num ] ) :
+
+				// Return all the elements in a clean array
+				slice.call( this );
+		},
+
+		// Take an array of elements and push it onto the stack
+		// (returning the new matched element set)
+		pushStack: function( elems ) {
+
+			// Build a new jQuery matched element set
+			var ret = jQuery.merge( this.constructor(), elems );
+
+			// Add the old object onto the stack (as a reference)
+			ret.prevObject = this;
+			ret.context = this.context;
+
+			// Return the newly-formed element set
+			return ret;
+		},
+
+		// Execute a callback for every element in the matched set.
+		each: function( callback ) {
+			return jQuery.each( this, callback );
+		},
+
+		map: function( callback ) {
+			return this.pushStack( jQuery.map( this, function( elem, i ) {
+				return callback.call( elem, i, elem );
+			} ) );
+		},
+
+		slice: function() {
+			return this.pushStack( slice.apply( this, arguments ) );
+		},
+
+		first: function() {
+			return this.eq( 0 );
+		},
+
+		last: function() {
+			return this.eq( -1 );
+		},
+
+		eq: function( i ) {
+			var len = this.length,
+				j = +i + ( i < 0 ? len : 0 );
+			return this.pushStack( j >= 0 && j < len ? [ this[ j ] ] : [] );
+		},
+
+		end: function() {
+			return this.prevObject || this.constructor();
+		},
+
+		// For internal use only.
+		// Behaves like an Array's method, not like a jQuery method.
+		push: push,
+		sort: arr.sort,
+		splice: arr.splice
+	};
+
+	jQuery.extend = jQuery.fn.extend = function() {
+		var options, name, src, copy, copyIsArray, clone,
+			target = arguments[ 0 ] || {},
+			i = 1,
+			length = arguments.length,
+			deep = false;
+
+		// Handle a deep copy situation
+		if ( typeof target === "boolean" ) {
+			deep = target;
+
+			// Skip the boolean and the target
+			target = arguments[ i ] || {};
+			i++;
+		}
+
+		// Handle case when target is a string or something (possible in deep copy)
+		if ( typeof target !== "object" && !jQuery.isFunction( target ) ) {
+			target = {};
+		}
+
+		// Extend jQuery itself if only one argument is passed
+		if ( i === length ) {
+			target = this;
+			i--;
+		}
+
+		for ( ; i < length; i++ ) {
+
+			// Only deal with non-null/undefined values
+			if ( ( options = arguments[ i ] ) != null ) {
+
+				// Extend the base object
+				for ( name in options ) {
+					src = target[ name ];
+					copy = options[ name ];
+
+					// Prevent never-ending loop
+					if ( target === copy ) {
+						continue;
+					}
+
+					// Recurse if we're merging plain objects or arrays
+					if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
+						( copyIsArray = jQuery.isArray( copy ) ) ) ) {
+
+						if ( copyIsArray ) {
+							copyIsArray = false;
+							clone = src && jQuery.isArray( src ) ? src : [];
+
+						} else {
+							clone = src && jQuery.isPlainObject( src ) ? src : {};
+						}
+
+						// Never move original objects, clone them
+						target[ name ] = jQuery.extend( deep, clone, copy );
+
+					// Don't bring in undefined values
+					} else if ( copy !== undefined ) {
+						target[ name ] = copy;
+					}
+				}
+			}
+		}
+
+		// Return the modified object
+		return target;
+	};
+
+	jQuery.extend( {
+
+		// Unique for each copy of jQuery on the page
+		expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
+
+		// Assume jQuery is ready without the ready module
+		isReady: true,
+
+		error: function( msg ) {
+			throw new Error( msg );
+		},
+
+		noop: function() {},
+
+		isFunction: function( obj ) {
+			return jQuery.type( obj ) === "function";
+		},
+
+		isArray: Array.isArray,
+
+		isWindow: function( obj ) {
+			return obj != null && obj === obj.window;
+		},
+
+		isNumeric: function( obj ) {
+
+			// parseFloat NaNs numeric-cast false positives (null|true|false|"")
+			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+			// subtraction forces infinities to NaN
+			// adding 1 corrects loss of precision from parseFloat (#15100)
+			var realStringObj = obj && obj.toString();
+			return !jQuery.isArray( obj ) && ( realStringObj - parseFloat( realStringObj ) + 1 ) >= 0;
+		},
+
+		isPlainObject: function( obj ) {
+
+			// Not plain objects:
+			// - Any object or value whose internal [[Class]] property is not "[object Object]"
+			// - DOM nodes
+			// - window
+			if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
+				return false;
+			}
+
+			if ( obj.constructor &&
+					!hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
+				return false;
+			}
+
+			// If the function hasn't returned already, we're confident that
+			// |obj| is a plain object, created by {} or constructed with new Object
+			return true;
+		},
+
+		isEmptyObject: function( obj ) {
+			var name;
+			for ( name in obj ) {
+				return false;
+			}
+			return true;
+		},
+
+		type: function( obj ) {
+			if ( obj == null ) {
+				return obj + "";
+			}
+
+			// Support: Android<4.0, iOS<6 (functionish RegExp)
+			return typeof obj === "object" || typeof obj === "function" ?
+				class2type[ toString.call( obj ) ] || "object" :
+				typeof obj;
+		},
+
+		// Evaluates a script in a global context
+		globalEval: function( code ) {
+			var script,
+				indirect = eval;
+
+			code = jQuery.trim( code );
+
+			if ( code ) {
+
+				// If the code includes a valid, prologue position
+				// strict mode pragma, execute code by injecting a
+				// script tag into the document.
+				if ( code.indexOf( "use strict" ) === 1 ) {
+					script = document.createElement( "script" );
+					script.text = code;
+					document.head.appendChild( script ).parentNode.removeChild( script );
+				} else {
+
+					// Otherwise, avoid the DOM node creation, insertion
+					// and removal by using an indirect global eval
+
+					indirect( code );
+				}
+			}
+		},
+
+		// Convert dashed to camelCase; used by the css and data modules
+		// Support: IE9-11+
+		// Microsoft forgot to hump their vendor prefix (#9572)
+		camelCase: function( string ) {
+			return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
+		},
+
+		nodeName: function( elem, name ) {
+			return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+		},
+
+		each: function( obj, callback ) {
+			var length, i = 0;
+
+			if ( isArrayLike( obj ) ) {
+				length = obj.length;
+				for ( ; i < length; i++ ) {
+					if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+						break;
+					}
+				}
+			} else {
+				for ( i in obj ) {
+					if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+						break;
+					}
+				}
+			}
+
+			return obj;
+		},
+
+		// Support: Android<4.1
+		trim: function( text ) {
+			return text == null ?
+				"" :
+				( text + "" ).replace( rtrim, "" );
+		},
+
+		// results is for internal usage only
+		makeArray: function( arr, results ) {
+			var ret = results || [];
+
+			if ( arr != null ) {
+				if ( isArrayLike( Object( arr ) ) ) {
+					jQuery.merge( ret,
+						typeof arr === "string" ?
+						[ arr ] : arr
+					);
+				} else {
+					push.call( ret, arr );
+				}
+			}
+
+			return ret;
+		},
+
+		inArray: function( elem, arr, i ) {
+			return arr == null ? -1 : indexOf.call( arr, elem, i );
+		},
+
+		merge: function( first, second ) {
+			var len = +second.length,
+				j = 0,
+				i = first.length;
+
+			for ( ; j < len; j++ ) {
+				first[ i++ ] = second[ j ];
+			}
+
+			first.length = i;
+
+			return first;
+		},
+
+		grep: function( elems, callback, invert ) {
+			var callbackInverse,
+				matches = [],
+				i = 0,
+				length = elems.length,
+				callbackExpect = !invert;
+
+			// Go through the array, only saving the items
+			// that pass the validator function
+			for ( ; i < length; i++ ) {
+				callbackInverse = !callback( elems[ i ], i );
+				if ( callbackInverse !== callbackExpect ) {
+					matches.push( elems[ i ] );
+				}
+			}
+
+			return matches;
+		},
+
+		// arg is for internal usage only
+		map: function( elems, callback, arg ) {
+			var length, value,
+				i = 0,
+				ret = [];
+
+			// Go through the array, translating each of the items to their new values
+			if ( isArrayLike( elems ) ) {
+				length = elems.length;
+				for ( ; i < length; i++ ) {
+					value = callback( elems[ i ], i, arg );
+
+					if ( value != null ) {
+						ret.push( value );
+					}
+				}
+
+			// Go through every key on the object,
+			} else {
+				for ( i in elems ) {
+					value = callback( elems[ i ], i, arg );
+
+					if ( value != null ) {
+						ret.push( value );
+					}
+				}
+			}
+
+			// Flatten any nested arrays
+			return concat.apply( [], ret );
+		},
+
+		// A global GUID counter for objects
+		guid: 1,
+
+		// Bind a function to a context, optionally partially applying any
+		// arguments.
+		proxy: function( fn, context ) {
+			var tmp, args, proxy;
+
+			if ( typeof context === "string" ) {
+				tmp = fn[ context ];
+				context = fn;
+				fn = tmp;
+			}
+
+			// Quick check to determine if target is callable, in the spec
+			// this throws a TypeError, but we will just return undefined.
+			if ( !jQuery.isFunction( fn ) ) {
+				return undefined;
+			}
+
+			// Simulated bind
+			args = slice.call( arguments, 2 );
+			proxy = function() {
+				return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
+			};
+
+			// Set the guid of unique handler to the same of original handler, so it can be removed
+			proxy.guid = fn.guid = fn.guid || jQuery.guid++;
+
+			return proxy;
+		},
+
+		now: Date.now,
+
+		// jQuery.support is not used in Core but other projects attach their
+		// properties to it so it needs to exist.
+		support: support
+	} );
+
+	// JSHint would error on this code due to the Symbol not being defined in ES5.
+	// Defining this global in .jshintrc would create a danger of using the global
+	// unguarded in another place, it seems safer to just disable JSHint for these
+	// three lines.
+	/* jshint ignore: start */
+	if ( typeof Symbol === "function" ) {
+		jQuery.fn[ Symbol.iterator ] = arr[ Symbol.iterator ];
+	}
+	/* jshint ignore: end */
+
+	// Populate the class2type map
+	jQuery.each( "Boolean Number String Function Array Date RegExp Object Error Symbol".split( " " ),
+	function( i, name ) {
+		class2type[ "[object " + name + "]" ] = name.toLowerCase();
+	} );
+
+	function isArrayLike( obj ) {
+
+		// Support: iOS 8.2 (not reproducible in simulator)
+		// `in` check used to prevent JIT error (gh-2145)
+		// hasOwn isn't used here due to false negatives
+		// regarding Nodelist length in IE
+		var length = !!obj && "length" in obj && obj.length,
+			type = jQuery.type( obj );
+
+		if ( type === "function" || jQuery.isWindow( obj ) ) {
+			return false;
+		}
+
+		return type === "array" || length === 0 ||
+			typeof length === "number" && length > 0 && ( length - 1 ) in obj;
+	}
+	var Sizzle =
+	/*!
+	 * Sizzle CSS Selector Engine v2.2.1
+	 * http://sizzlejs.com/
+	 *
+	 * Copyright jQuery Foundation and other contributors
+	 * Released under the MIT license
+	 * http://jquery.org/license
+	 *
+	 * Date: 2015-10-17
+	 */
+	(function( window ) {
+
+	var i,
+		support,
+		Expr,
+		getText,
+		isXML,
+		tokenize,
+		compile,
+		select,
+		outermostContext,
+		sortInput,
+		hasDuplicate,
+
+		// Local document vars
+		setDocument,
+		document,
+		docElem,
+		documentIsHTML,
+		rbuggyQSA,
+		rbuggyMatches,
+		matches,
+		contains,
+
+		// Instance-specific data
+		expando = "sizzle" + 1 * new Date(),
+		preferredDoc = window.document,
+		dirruns = 0,
+		done = 0,
+		classCache = createCache(),
+		tokenCache = createCache(),
+		compilerCache = createCache(),
+		sortOrder = function( a, b ) {
+			if ( a === b ) {
+				hasDuplicate = true;
+			}
+			return 0;
+		},
+
+		// General-purpose constants
+		MAX_NEGATIVE = 1 << 31,
+
+		// Instance methods
+		hasOwn = ({}).hasOwnProperty,
+		arr = [],
+		pop = arr.pop,
+		push_native = arr.push,
+		push = arr.push,
+		slice = arr.slice,
+		// Use a stripped-down indexOf as it's faster than native
+		// http://jsperf.com/thor-indexof-vs-for/5
+		indexOf = function( list, elem ) {
+			var i = 0,
+				len = list.length;
+			for ( ; i < len; i++ ) {
+				if ( list[i] === elem ) {
+					return i;
+				}
+			}
+			return -1;
+		},
+
+		booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+
+		// Regular expressions
+
+		// http://www.w3.org/TR/css3-selectors/#whitespace
+		whitespace = "[\\x20\\t\\r\\n\\f]",
+
+		// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+		identifier = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
+
+		// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
+		attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
+			// Operator (capture 2)
+			"*([*^$|!~]?=)" + whitespace +
+			// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
+			"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace +
+			"*\\]",
+
+		pseudos = ":(" + identifier + ")(?:\\((" +
+			// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
+			// 1. quoted (capture 3; capture 4 or capture 5)
+			"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
+			// 2. simple (capture 6)
+			"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
+			// 3. anything else (capture 2)
+			".*" +
+			")\\)|)",
+
+		// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
+		rwhitespace = new RegExp( whitespace + "+", "g" ),
+		rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+
+		rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+		rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
+
+		rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
+
+		rpseudo = new RegExp( pseudos ),
+		ridentifier = new RegExp( "^" + identifier + "$" ),
+
+		matchExpr = {
+			"ID": new RegExp( "^#(" + identifier + ")" ),
+			"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
+			"TAG": new RegExp( "^(" + identifier + "|[*])" ),
+			"ATTR": new RegExp( "^" + attributes ),
+			"PSEUDO": new RegExp( "^" + pseudos ),
+			"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
+				"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
+				"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+			"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
+			// For use in libraries implementing .is()
+			// We use this for POS matching in `select`
+			"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
+				whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
+		},
+
+		rinputs = /^(?:input|select|textarea|button)$/i,
+		rheader = /^h\d$/i,
+
+		rnative = /^[^{]+\{\s*\[native \w/,
+
+		// Easily-parseable/retrievable ID or TAG or CLASS selectors
+		rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+
+		rsibling = /[+~]/,
+		rescape = /'|\\/g,
+
+		// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+		runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
+		funescape = function( _, escaped, escapedWhitespace ) {
+			var high = "0x" + escaped - 0x10000;
+			// NaN means non-codepoint
+			// Support: Firefox<24
+			// Workaround erroneous numeric interpretation of +"0x"
+			return high !== high || escapedWhitespace ?
+				escaped :
+				high < 0 ?
+					// BMP codepoint
+					String.fromCharCode( high + 0x10000 ) :
+					// Supplemental Plane codepoint (surrogate pair)
+					String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+		},
+
+		// Used for iframes
+		// See setDocument()
+		// Removing the function wrapper causes a "Permission Denied"
+		// error in IE
+		unloadHandler = function() {
+			setDocument();
+		};
+
+	// Optimize for push.apply( _, NodeList )
+	try {
+		push.apply(
+			(arr = slice.call( preferredDoc.childNodes )),
+			preferredDoc.childNodes
+		);
+		// Support: Android<4.0
+		// Detect silently failing push.apply
+		arr[ preferredDoc.childNodes.length ].nodeType;
+	} catch ( e ) {
+		push = { apply: arr.length ?
+
+			// Leverage slice if possible
+			function( target, els ) {
+				push_native.apply( target, slice.call(els) );
+			} :
+
+			// Support: IE<9
+			// Otherwise append directly
+			function( target, els ) {
+				var j = target.length,
+					i = 0;
+				// Can't trust NodeList.length
+				while ( (target[j++] = els[i++]) ) {}
+				target.length = j - 1;
+			}
+		};
+	}
+
+	function Sizzle( selector, context, results, seed ) {
+		var m, i, elem, nid, nidselect, match, groups, newSelector,
+			newContext = context && context.ownerDocument,
+
+			// nodeType defaults to 9, since context defaults to document
+			nodeType = context ? context.nodeType : 9;
+
+		results = results || [];
+
+		// Return early from calls with invalid selector or context
+		if ( typeof selector !== "string" || !selector ||
+			nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
+
+			return results;
+		}
+
+		// Try to shortcut find operations (as opposed to filters) in HTML documents
+		if ( !seed ) {
+
+			if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+				setDocument( context );
+			}
+			context = context || document;
+
+			if ( documentIsHTML ) {
+
+				// If the selector is sufficiently simple, try using a "get*By*" DOM method
+				// (excepting DocumentFragment context, where the methods don't exist)
+				if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
+
+					// ID selector
+					if ( (m = match[1]) ) {
+
+						// Document context
+						if ( nodeType === 9 ) {
+							if ( (elem = context.getElementById( m )) ) {
+
+								// Support: IE, Opera, Webkit
+								// TODO: identify versions
+								// getElementById can match elements by name instead of ID
+								if ( elem.id === m ) {
+									results.push( elem );
+									return results;
+								}
+							} else {
+								return results;
+							}
+
+						// Element context
+						} else {
+
+							// Support: IE, Opera, Webkit
+							// TODO: identify versions
+							// getElementById can match elements by name instead of ID
+							if ( newContext && (elem = newContext.getElementById( m )) &&
+								contains( context, elem ) &&
+								elem.id === m ) {
+
+								results.push( elem );
+								return results;
+							}
+						}
+
+					// Type selector
+					} else if ( match[2] ) {
+						push.apply( results, context.getElementsByTagName( selector ) );
+						return results;
+
+					// Class selector
+					} else if ( (m = match[3]) && support.getElementsByClassName &&
+						context.getElementsByClassName ) {
+
+						push.apply( results, context.getElementsByClassName( m ) );
+						return results;
+					}
+				}
+
+				// Take advantage of querySelectorAll
+				if ( support.qsa &&
+					!compilerCache[ selector + " " ] &&
+					(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+
+					if ( nodeType !== 1 ) {
+						newContext = context;
+						newSelector = selector;
+
+					// qSA looks outside Element context, which is not what we want
+					// Thanks to Andrew Dupont for this workaround technique
+					// Support: IE <=8
+					// Exclude object elements
+					} else if ( context.nodeName.toLowerCase() !== "object" ) {
+
+						// Capture the context ID, setting it first if necessary
+						if ( (nid = context.getAttribute( "id" )) ) {
+							nid = nid.replace( rescape, "\\$&" );
+						} else {
+							context.setAttribute( "id", (nid = expando) );
+						}
+
+						// Prefix every selector in the list
+						groups = tokenize( selector );
+						i = groups.length;
+						nidselect = ridentifier.test( nid ) ? "#" + nid : "[id='" + nid + "']";
+						while ( i-- ) {
+							groups[i] = nidselect + " " + toSelector( groups[i] );
+						}
+						newSelector = groups.join( "," );
+
+						// Expand context for sibling selectors
+						newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+							context;
+					}
+
+					if ( newSelector ) {
+						try {
+							push.apply( results,
+								newContext.querySelectorAll( newSelector )
+							);
+							return results;
+						} catch ( qsaError ) {
+						} finally {
+							if ( nid === expando ) {
+								context.removeAttribute( "id" );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// All others
+		return select( selector.replace( rtrim, "$1" ), context, results, seed );
+	}
+
+	/**
+	 * Create key-value caches of limited size
+	 * @returns {function(string, object)} Returns the Object data after storing it on itself with
+	 *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+	 *	deleting the oldest entry
+	 */
+	function createCache() {
+		var keys = [];
+
+		function cache( key, value ) {
+			// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
+			if ( keys.push( key + " " ) > Expr.cacheLength ) {
+				// Only keep the most recent entries
+				delete cache[ keys.shift() ];
+			}
+			return (cache[ key + " " ] = value);
+		}
+		return cache;
+	}
+
+	/**
+	 * Mark a function for special use by Sizzle
+	 * @param {Function} fn The function to mark
+	 */
+	function markFunction( fn ) {
+		fn[ expando ] = true;
+		return fn;
+	}
+
+	/**
+	 * Support testing using an element
+	 * @param {Function} fn Passed the created div and expects a boolean result
+	 */
+	function assert( fn ) {
+		var div = document.createElement("div");
+
+		try {
+			return !!fn( div );
+		} catch (e) {
+			return false;
+		} finally {
+			// Remove from its parent by default
+			if ( div.parentNode ) {
+				div.parentNode.removeChild( div );
+			}
+			// release memory in IE
+			div = null;
+		}
+	}
+
+	/**
+	 * Adds the same handler for all of the specified attrs
+	 * @param {String} attrs Pipe-separated list of attributes
+	 * @param {Function} handler The method that will be applied
+	 */
+	function addHandle( attrs, handler ) {
+		var arr = attrs.split("|"),
+			i = arr.length;
+
+		while ( i-- ) {
+			Expr.attrHandle[ arr[i] ] = handler;
+		}
+	}
+
+	/**
+	 * Checks document order of two siblings
+	 * @param {Element} a
+	 * @param {Element} b
+	 * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
+	 */
+	function siblingCheck( a, b ) {
+		var cur = b && a,
+			diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
+				( ~b.sourceIndex || MAX_NEGATIVE ) -
+				( ~a.sourceIndex || MAX_NEGATIVE );
+
+		// Use IE sourceIndex if available on both nodes
+		if ( diff ) {
+			return diff;
+		}
+
+		// Check if b follows a
+		if ( cur ) {
+			while ( (cur = cur.nextSibling) ) {
+				if ( cur === b ) {
+					return -1;
+				}
+			}
+		}
+
+		return a ? 1 : -1;
+	}
+
+	/**
+	 * Returns a function to use in pseudos for input types
+	 * @param {String} type
+	 */
+	function createInputPseudo( type ) {
+		return function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && elem.type === type;
+		};
+	}
+
+	/**
+	 * Returns a function to use in pseudos for buttons
+	 * @param {String} type
+	 */
+	function createButtonPseudo( type ) {
+		return function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return (name === "input" || name === "button") && elem.type === type;
+		};
+	}
+
+	/**
+	 * Returns a function to use in pseudos for positionals
+	 * @param {Function} fn
+	 */
+	function createPositionalPseudo( fn ) {
+		return markFunction(function( argument ) {
+			argument = +argument;
+			return markFunction(function( seed, matches ) {
+				var j,
+					matchIndexes = fn( [], seed.length, argument ),
+					i = matchIndexes.length;
+
+				// Match elements found at the specified indexes
+				while ( i-- ) {
+					if ( seed[ (j = matchIndexes[i]) ] ) {
+						seed[j] = !(matches[j] = seed[j]);
+					}
+				}
+			});
+		});
+	}
+
+	/**
+	 * Checks a node for validity as a Sizzle context
+	 * @param {Element|Object=} context
+	 * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
+	 */
+	function testContext( context ) {
+		return context && typeof context.getElementsByTagName !== "undefined" && context;
+	}
+
+	// Expose support vars for convenience
+	support = Sizzle.support = {};
+
+	/**
+	 * Detects XML nodes
+	 * @param {Element|Object} elem An element or a document
+	 * @returns {Boolean} True iff elem is a non-HTML XML node
+	 */
+	isXML = Sizzle.isXML = function( elem ) {
+		// documentElement is verified for cases where it doesn't yet exist
+		// (such as loading iframes in IE - #4833)
+		var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+		return documentElement ? documentElement.nodeName !== "HTML" : false;
+	};
+
+	/**
+	 * Sets document-related variables once based on the current document
+	 * @param {Element|Object} [doc] An element or document object to use to set the document
+	 * @returns {Object} Returns the current document
+	 */
+	setDocument = Sizzle.setDocument = function( node ) {
+		var hasCompare, parent,
+			doc = node ? node.ownerDocument || node : preferredDoc;
+
+		// Return early if doc is invalid or already selected
+		if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
+			return document;
+		}
+
+		// Update global variables
+		document = doc;
+		docElem = document.documentElement;
+		documentIsHTML = !isXML( document );
+
+		// Support: IE 9-11, Edge
+		// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
+		if ( (parent = document.defaultView) && parent.top !== parent ) {
+			// Support: IE 11
+			if ( parent.addEventListener ) {
+				parent.addEventListener( "unload", unloadHandler, false );
+
+			// Support: IE 9 - 10 only
+			} else if ( parent.attachEvent ) {
+				parent.attachEvent( "onunload", unloadHandler );
+			}
+		}
+
+		/* Attributes
+		---------------------------------------------------------------------- */
+
+		// Support: IE<8
+		// Verify that getAttribute really returns attributes and not properties
+		// (excepting IE8 booleans)
+		support.attributes = assert(function( div ) {
+			div.className = "i";
+			return !div.getAttribute("className");
+		});
+
+		/* getElement(s)By*
+		---------------------------------------------------------------------- */
+
+		// Check if getElementsByTagName("*") returns only elements
+		support.getElementsByTagName = assert(function( div ) {
+			div.appendChild( document.createComment("") );
+			return !div.getElementsByTagName("*").length;
+		});
+
+		// Support: IE<9
+		support.getElementsByClassName = rnative.test( document.getElementsByClassName );
+
+		// Support: IE<10
+		// Check if getElementById returns elements by name
+		// The broken getElementById methods don't pick up programatically-set names,
+		// so use a roundabout getElementsByName test
+		support.getById = assert(function( div ) {
+			docElem.appendChild( div ).id = expando;
+			return !document.getElementsByName || !document.getElementsByName( expando ).length;
+		});
+
+		// ID find and filter
+		if ( support.getById ) {
+			Expr.find["ID"] = function( id, context ) {
+				if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
+					var m = context.getElementById( id );
+					return m ? [ m ] : [];
+				}
+			};
+			Expr.filter["ID"] = function( id ) {
+				var attrId = id.replace( runescape, funescape );
+				return function( elem ) {
+					return elem.getAttribute("id") === attrId;
+				};
+			};
+		} else {
+			// Support: IE6/7
+			// getElementById is not reliable as a find shortcut
+			delete Expr.find["ID"];
+
+			Expr.filter["ID"] =  function( id ) {
+				var attrId = id.replace( runescape, funescape );
+				return function( elem ) {
+					var node = typeof elem.getAttributeNode !== "undefined" &&
+						elem.getAttributeNode("id");
+					return node && node.value === attrId;
+				};
+			};
+		}
+
+		// Tag
+		Expr.find["TAG"] = support.getElementsByTagName ?
+			function( tag, context ) {
+				if ( typeof context.getElementsByTagName !== "undefined" ) {
+					return context.getElementsByTagName( tag );
+
+				// DocumentFragment nodes don't have gEBTN
+				} else if ( support.qsa ) {
+					return context.querySelectorAll( tag );
+				}
+			} :
+
+			function( tag, context ) {
+				var elem,
+					tmp = [],
+					i = 0,
+					// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
+					results = context.getElementsByTagName( tag );
+
+				// Filter out possible comments
+				if ( tag === "*" ) {
+					while ( (elem = results[i++]) ) {
+						if ( elem.nodeType === 1 ) {
+							tmp.push( elem );
+						}
+					}
+
+					return tmp;
+				}
+				return results;
+			};
+
+		// Class
+		Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
+			if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
+				return context.getElementsByClassName( className );
+			}
+		};
+
+		/* QSA/matchesSelector
+		---------------------------------------------------------------------- */
+
+		// QSA and matchesSelector support
+
+		// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+		rbuggyMatches = [];
+
+		// qSa(:focus) reports false when true (Chrome 21)
+		// We allow this because of a bug in IE8/9 that throws an error
+		// whenever `document.activeElement` is accessed on an iframe
+		// So, we allow :focus to pass through QSA all the time to avoid the IE error
+		// See http://bugs.jquery.com/ticket/13378
+		rbuggyQSA = [];
+
+		if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
+			// Build QSA regex
+			// Regex strategy adopted from Diego Perini
+			assert(function( div ) {
+				// Select is set to empty string on purpose
+				// This is to test IE's treatment of not explicitly
+				// setting a boolean content attribute,
+				// since its presence should be enough
+				// http://bugs.jquery.com/ticket/12359
+				docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
+					"<select id='" + expando + "-\r\\' msallowcapture=''>" +
+					"<option selected=''></option></select>";
+
+				// Support: IE8, Opera 11-12.16
+				// Nothing should be selected when empty strings follow ^= or $= or *=
+				// The test attribute must be unknown in Opera but "safe" for WinRT
+				// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
+				if ( div.querySelectorAll("[msallowcapture^='']").length ) {
+					rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+				}
+
+				// Support: IE8
+				// Boolean attributes and "value" are not treated correctly
+				if ( !div.querySelectorAll("[selected]").length ) {
+					rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
+				}
+
+				// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
+				if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+					rbuggyQSA.push("~=");
+				}
+
+				// Webkit/Opera - :checked should return selected option elements
+				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+				// IE8 throws error here and will not see later tests
+				if ( !div.querySelectorAll(":checked").length ) {
+					rbuggyQSA.push(":checked");
+				}
+
+				// Support: Safari 8+, iOS 8+
+				// https://bugs.webkit.org/show_bug.cgi?id=136851
+				// In-page `selector#id sibing-combinator selector` fails
+				if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
+					rbuggyQSA.push(".#.+[+~]");
+				}
+			});
+
+			assert(function( div ) {
+				// Support: Windows 8 Native Apps
+				// The type and name attributes are restricted during .innerHTML assignment
+				var input = document.createElement("input");
+				input.setAttribute( "type", "hidden" );
+				div.appendChild( input ).setAttribute( "name", "D" );
+
+				// Support: IE8
+				// Enforce case-sensitivity of name attribute
+				if ( div.querySelectorAll("[name=d]").length ) {
+					rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
+				}
+
+				// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+				// IE8 throws error here and will not see later tests
+				if ( !div.querySelectorAll(":enabled").length ) {
+					rbuggyQSA.push( ":enabled", ":disabled" );
+				}
+
+				// Opera 10-11 does not throw on post-comma invalid pseudos
+				div.querySelectorAll("*,:x");
+				rbuggyQSA.push(",.*:");
+			});
+		}
+
+		if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
+			docElem.webkitMatchesSelector ||
+			docElem.mozMatchesSelector ||
+			docElem.oMatchesSelector ||
+			docElem.msMatchesSelector) )) ) {
+
+			assert(function( div ) {
+				// Check to see if it's possible to do matchesSelector
+				// on a disconnected node (IE 9)
+				support.disconnectedMatch = matches.call( div, "div" );
+
+				// This should fail with an exception
+				// Gecko does not error, returns false instead
+				matches.call( div, "[s!='']:x" );
+				rbuggyMatches.push( "!=", pseudos );
+			});
+		}
+
+		rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
+		rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
+
+		/* Contains
+		---------------------------------------------------------------------- */
+		hasCompare = rnative.test( docElem.compareDocumentPosition );
+
+		// Element contains another
+		// Purposefully self-exclusive
+		// As in, an element does not contain itself
+		contains = hasCompare || rnative.test( docElem.contains ) ?
+			function( a, b ) {
+				var adown = a.nodeType === 9 ? a.documentElement : a,
+					bup = b && b.parentNode;
+				return a === bup || !!( bup && bup.nodeType === 1 && (
+					adown.contains ?
+						adown.contains( bup ) :
+						a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+				));
+			} :
+			function( a, b ) {
+				if ( b ) {
+					while ( (b = b.parentNode) ) {
+						if ( b === a ) {
+							return true;
+						}
+					}
+				}
+				return false;
+			};
+
+		/* Sorting
+		---------------------------------------------------------------------- */
+
+		// Document order sorting
+		sortOrder = hasCompare ?
+		function( a, b ) {
+
+			// Flag for duplicate removal
+			if ( a === b ) {
+				hasDuplicate = true;
+				return 0;
+			}
+
+			// Sort on method existence if only one input has compareDocumentPosition
+			var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
+			if ( compare ) {
+				return compare;
+			}
+
+			// Calculate position if both inputs belong to the same document
+			compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
+				a.compareDocumentPosition( b ) :
+
+				// Otherwise we know they are disconnected
+				1;
+
+			// Disconnected nodes
+			if ( compare & 1 ||
+				(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
+
+				// Choose the first element that is related to our preferred document
+				if ( a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
+					return -1;
+				}
+				if ( b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
+					return 1;
+				}
+
+				// Maintain original order
+				return sortInput ?
+					( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+					0;
+			}
+
+			return compare & 4 ? -1 : 1;
+		} :
+		function( a, b ) {
+			// Exit early if the nodes are identical
+			if ( a === b ) {
+				hasDuplicate = true;
+				return 0;
+			}
+
+			var cur,
+				i = 0,
+				aup = a.parentNode,
+				bup = b.parentNode,
+				ap = [ a ],
+				bp = [ b ];
+
+			// Parentless nodes are either documents or disconnected
+			if ( !aup || !bup ) {
+				return a === document ? -1 :
+					b === document ? 1 :
+					aup ? -1 :
+					bup ? 1 :
+					sortInput ?
+					( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+					0;
+
+			// If the nodes are siblings, we can do a quick check
+			} else if ( aup === bup ) {
+				return siblingCheck( a, b );
+			}
+
+			// Otherwise we need full lists of their ancestors for comparison
+			cur = a;
+			while ( (cur = cur.parentNode) ) {
+				ap.unshift( cur );
+			}
+			cur = b;
+			while ( (cur = cur.parentNode) ) {
+				bp.unshift( cur );
+			}
+
+			// Walk down the tree looking for a discrepancy
+			while ( ap[i] === bp[i] ) {
+				i++;
+			}
+
+			return i ?
+				// Do a sibling check if the nodes have a common ancestor
+				siblingCheck( ap[i], bp[i] ) :
+
+				// Otherwise nodes in our document sort first
+				ap[i] === preferredDoc ? -1 :
+				bp[i] === preferredDoc ? 1 :
+				0;
+		};
+
+		return document;
+	};
+
+	Sizzle.matches = function( expr, elements ) {
+		return Sizzle( expr, null, null, elements );
+	};
+
+	Sizzle.matchesSelector = function( elem, expr ) {
+		// Set document vars if needed
+		if ( ( elem.ownerDocument || elem ) !== document ) {
+			setDocument( elem );
+		}
+
+		// Make sure that attribute selectors are quoted
+		expr = expr.replace( rattributeQuotes, "='$1']" );
+
+		if ( support.matchesSelector && documentIsHTML &&
+			!compilerCache[ expr + " " ] &&
+			( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+			( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
+
+			try {
+				var ret = matches.call( elem, expr );
+
+				// IE 9's matchesSelector returns false on disconnected nodes
+				if ( ret || support.disconnectedMatch ||
+						// As well, disconnected nodes are said to be in a document
+						// fragment in IE 9
+						elem.document && elem.document.nodeType !== 11 ) {
+					return ret;
+				}
+			} catch (e) {}
+		}
+
+		return Sizzle( expr, document, null, [ elem ] ).length > 0;
+	};
+
+	Sizzle.contains = function( context, elem ) {
+		// Set document vars if needed
+		if ( ( context.ownerDocument || context ) !== document ) {
+			setDocument( context );
+		}
+		return contains( context, elem );
+	};
+
+	Sizzle.attr = function( elem, name ) {
+		// Set document vars if needed
+		if ( ( elem.ownerDocument || elem ) !== document ) {
+			setDocument( elem );
+		}
+
+		var fn = Expr.attrHandle[ name.toLowerCase() ],
+			// Don't get fooled by Object.prototype properties (jQuery #13807)
+			val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+				fn( elem, name, !documentIsHTML ) :
+				undefined;
+
+		return val !== undefined ?
+			val :
+			support.attributes || !documentIsHTML ?
+				elem.getAttribute( name ) :
+				(val = elem.getAttributeNode(name)) && val.specified ?
+					val.value :
+					null;
+	};
+
+	Sizzle.error = function( msg ) {
+		throw new Error( "Syntax error, unrecognized expression: " + msg );
+	};
+
+	/**
+	 * Document sorting and removing duplicates
+	 * @param {ArrayLike} results
+	 */
+	Sizzle.uniqueSort = function( results ) {
+		var elem,
+			duplicates = [],
+			j = 0,
+			i = 0;
+
+		// Unless we *know* we can detect duplicates, assume their presence
+		hasDuplicate = !support.detectDuplicates;
+		sortInput = !support.sortStable && results.slice( 0 );
+		results.sort( sortOrder );
+
+		if ( hasDuplicate ) {
+			while ( (elem = results[i++]) ) {
+				if ( elem === results[ i ] ) {
+					j = duplicates.push( i );
+				}
+			}
+			while ( j-- ) {
+				results.splice( duplicates[ j ], 1 );
+			}
+		}
+
+		// Clear input after sorting to release objects
+		// See https://github.com/jquery/sizzle/pull/225
+		sortInput = null;
+
+		return results;
+	};
+
+	/**
+	 * Utility function for retrieving the text value of an array of DOM nodes
+	 * @param {Array|Element} elem
+	 */
+	getText = Sizzle.getText = function( elem ) {
+		var node,
+			ret = "",
+			i = 0,
+			nodeType = elem.nodeType;
+
+		if ( !nodeType ) {
+			// If no nodeType, this is expected to be an array
+			while ( (node = elem[i++]) ) {
+				// Do not traverse comment nodes
+				ret += getText( node );
+			}
+		} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+			// Use textContent for elements
+			// innerText usage removed for consistency of new lines (jQuery #11153)
+			if ( typeof elem.textContent === "string" ) {
+				return elem.textContent;
+			} else {
+				// Traverse its children
+				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+					ret += getText( elem );
+				}
+			}
+		} else if ( nodeType === 3 || nodeType === 4 ) {
+			return elem.nodeValue;
+		}
+		// Do not include comment or processing instruction nodes
+
+		return ret;
+	};
+
+	Expr = Sizzle.selectors = {
+
+		// Can be adjusted by the user
+		cacheLength: 50,
+
+		createPseudo: markFunction,
+
+		match: matchExpr,
+
+		attrHandle: {},
+
+		find: {},
+
+		relative: {
+			">": { dir: "parentNode", first: true },
+			" ": { dir: "parentNode" },
+			"+": { dir: "previousSibling", first: true },
+			"~": { dir: "previousSibling" }
+		},
+
+		preFilter: {
+			"ATTR": function( match ) {
+				match[1] = match[1].replace( runescape, funescape );
+
+				// Move the given value to match[3] whether quoted or unquoted
+				match[3] = ( match[3] || match[4] || match[5] || "" ).replace( runescape, funescape );
+
+				if ( match[2] === "~=" ) {
+					match[3] = " " + match[3] + " ";
+				}
+
+				return match.slice( 0, 4 );
+			},
+
+			"CHILD": function( match ) {
+				/* matches from matchExpr["CHILD"]
+					1 type (only|nth|...)
+					2 what (child|of-type)
+					3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
+					4 xn-component of xn+y argument ([+-]?\d*n|)
+					5 sign of xn-component
+					6 x of xn-component
+					7 sign of y-component
+					8 y of y-component
+				*/
+				match[1] = match[1].toLowerCase();
+
+				if ( match[1].slice( 0, 3 ) === "nth" ) {
+					// nth-* requires argument
+					if ( !match[3] ) {
+						Sizzle.error( match[0] );
+					}
+
+					// numeric x and y parameters for Expr.filter.CHILD
+					// remember that false/true cast respectively to 0/1
+					match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
+					match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
+
+				// other types prohibit arguments
+				} else if ( match[3] ) {
+					Sizzle.error( match[0] );
+				}
+
+				return match;
+			},
+
+			"PSEUDO": function( match ) {
+				var excess,
+					unquoted = !match[6] && match[2];
+
+				if ( matchExpr["CHILD"].test( match[0] ) ) {
+					return null;
+				}
+
+				// Accept quoted arguments as-is
+				if ( match[3] ) {
+					match[2] = match[4] || match[5] || "";
+
+				// Strip excess characters from unquoted arguments
+				} else if ( unquoted && rpseudo.test( unquoted ) &&
+					// Get excess from tokenize (recursively)
+					(excess = tokenize( unquoted, true )) &&
+					// advance to the next closing parenthesis
+					(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
+
+					// excess is a negative index
+					match[0] = match[0].slice( 0, excess );
+					match[2] = unquoted.slice( 0, excess );
+				}
+
+				// Return only captures needed by the pseudo filter method (type and argument)
+				return match.slice( 0, 3 );
+			}
+		},
+
+		filter: {
+
+			"TAG": function( nodeNameSelector ) {
+				var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
+				return nodeNameSelector === "*" ?
+					function() { return true; } :
+					function( elem ) {
+						return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
+					};
+			},
+
+			"CLASS": function( className ) {
+				var pattern = classCache[ className + " " ];
+
+				return pattern ||
+					(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
+					classCache( className, function( elem ) {
+						return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
+					});
+			},
+
+			"ATTR": function( name, operator, check ) {
+				return function( elem ) {
+					var result = Sizzle.attr( elem, name );
+
+					if ( result == null ) {
+						return operator === "!=";
+					}
+					if ( !operator ) {
+						return true;
+					}
+
+					result += "";
+
+					return operator === "=" ? result === check :
+						operator === "!=" ? result !== check :
+						operator === "^=" ? check && result.indexOf( check ) === 0 :
+						operator === "*=" ? check && result.indexOf( check ) > -1 :
+						operator === "$=" ? check && result.slice( -check.length ) === check :
+						operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
+						operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
+						false;
+				};
+			},
+
+			"CHILD": function( type, what, argument, first, last ) {
+				var simple = type.slice( 0, 3 ) !== "nth",
+					forward = type.slice( -4 ) !== "last",
+					ofType = what === "of-type";
+
+				return first === 1 && last === 0 ?
+
+					// Shortcut for :nth-*(n)
+					function( elem ) {
+						return !!elem.parentNode;
+					} :
+
+					function( elem, context, xml ) {
+						var cache, uniqueCache, outerCache, node, nodeIndex, start,
+							dir = simple !== forward ? "nextSibling" : "previousSibling",
+							parent = elem.parentNode,
+							name = ofType && elem.nodeName.toLowerCase(),
+							useCache = !xml && !ofType,
+							diff = false;
+
+						if ( parent ) {
+
+							// :(first|last|only)-(child|of-type)
+							if ( simple ) {
+								while ( dir ) {
+									node = elem;
+									while ( (node = node[ dir ]) ) {
+										if ( ofType ?
+											node.nodeName.toLowerCase() === name :
+											node.nodeType === 1 ) {
+
+											return false;
+										}
+									}
+									// Reverse direction for :only-* (if we haven't yet done so)
+									start = dir = type === "only" && !start && "nextSibling";
+								}
+								return true;
+							}
+
+							start = [ forward ? parent.firstChild : parent.lastChild ];
+
+							// non-xml :nth-child(...) stores cache data on `parent`
+							if ( forward && useCache ) {
+
+								// Seek `elem` from a previously-cached index
+
+								// ...in a gzip-friendly way
+								node = parent;
+								outerCache = node[ expando ] || (node[ expando ] = {});
+
+								// Support: IE <9 only
+								// Defend against cloned attroperties (jQuery gh-1709)
+								uniqueCache = outerCache[ node.uniqueID ] ||
+									(outerCache[ node.uniqueID ] = {});
+
+								cache = uniqueCache[ type ] || [];
+								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+								diff = nodeIndex && cache[ 2 ];
+								node = nodeIndex && parent.childNodes[ nodeIndex ];
+
+								while ( (node = ++nodeIndex && node && node[ dir ] ||
+
+									// Fallback to seeking `elem` from the start
+									(diff = nodeIndex = 0) || start.pop()) ) {
+
+									// When found, cache indexes on `parent` and break
+									if ( node.nodeType === 1 && ++diff && node === elem ) {
+										uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
+										break;
+									}
+								}
+
+							} else {
+								// Use previously-cached element index if available
+								if ( useCache ) {
+									// ...in a gzip-friendly way
+									node = elem;
+									outerCache = node[ expando ] || (node[ expando ] = {});
+
+									// Support: IE <9 only
+									// Defend against cloned attroperties (jQuery gh-1709)
+									uniqueCache = outerCache[ node.uniqueID ] ||
+										(outerCache[ node.uniqueID ] = {});
+
+									cache = uniqueCache[ type ] || [];
+									nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+									diff = nodeIndex;
+								}
+
+								// xml :nth-child(...)
+								// or :nth-last-child(...) or :nth(-last)?-of-type(...)
+								if ( diff === false ) {
+									// Use the same loop as above to seek `elem` from the start
+									while ( (node = ++nodeIndex && node && node[ dir ] ||
+										(diff = nodeIndex = 0) || start.pop()) ) {
+
+										if ( ( ofType ?
+											node.nodeName.toLowerCase() === name :
+											node.nodeType === 1 ) &&
+											++diff ) {
+
+											// Cache the index of each encountered element
+											if ( useCache ) {
+												outerCache = node[ expando ] || (node[ expando ] = {});
+
+												// Support: IE <9 only
+												// Defend against cloned attroperties (jQuery gh-1709)
+												uniqueCache = outerCache[ node.uniqueID ] ||
+													(outerCache[ node.uniqueID ] = {});
+
+												uniqueCache[ type ] = [ dirruns, diff ];
+											}
+
+											if ( node === elem ) {
+												break;
+											}
+										}
+									}
+								}
+							}
+
+							// Incorporate the offset, then check against cycle size
+							diff -= last;
+							return diff === first || ( diff % first === 0 && diff / first >= 0 );
+						}
+					};
+			},
+
+			"PSEUDO": function( pseudo, argument ) {
+				// pseudo-class names are case-insensitive
+				// http://www.w3.org/TR/selectors/#pseudo-classes
+				// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
+				// Remember that setFilters inherits from pseudos
+				var args,
+					fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
+						Sizzle.error( "unsupported pseudo: " + pseudo );
+
+				// The user may use createPseudo to indicate that
+				// arguments are needed to create the filter function
+				// just as Sizzle does
+				if ( fn[ expando ] ) {
+					return fn( argument );
+				}
+
+				// But maintain support for old signatures
+				if ( fn.length > 1 ) {
+					args = [ pseudo, pseudo, "", argument ];
+					return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
+						markFunction(function( seed, matches ) {
+							var idx,
+								matched = fn( seed, argument ),
+								i = matched.length;
+							while ( i-- ) {
+								idx = indexOf( seed, matched[i] );
+								seed[ idx ] = !( matches[ idx ] = matched[i] );
+							}
+						}) :
+						function( elem ) {
+							return fn( elem, 0, args );
+						};
+				}
+
+				return fn;
+			}
+		},
+
+		pseudos: {
+			// Potentially complex pseudos
+			"not": markFunction(function( selector ) {
+				// Trim the selector passed to compile
+				// to avoid treating leading and trailing
+				// spaces as combinators
+				var input = [],
+					results = [],
+					matcher = compile( selector.replace( rtrim, "$1" ) );
+
+				return matcher[ expando ] ?
+					markFunction(function( seed, matches, context, xml ) {
+						var elem,
+							unmatched = matcher( seed, null, xml, [] ),
+							i = seed.length;
+
+						// Match elements unmatched by `matcher`
+						while ( i-- ) {
+							if ( (elem = unmatched[i]) ) {
+								seed[i] = !(matches[i] = elem);
+							}
+						}
+					}) :
+					function( elem, context, xml ) {
+						input[0] = elem;
+						matcher( input, null, xml, results );
+						// Don't keep the element (issue #299)
+						input[0] = null;
+						return !results.pop();
+					};
+			}),
+
+			"has": markFunction(function( selector ) {
+				return function( elem ) {
+					return Sizzle( selector, elem ).length > 0;
+				};
+			}),
+
+			"contains": markFunction(function( text ) {
+				text = text.replace( runescape, funescape );
+				return function( elem ) {
+					return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+				};
+			}),
+
+			// "Whether an element is represented by a :lang() selector
+			// is based solely on the element's language value
+			// being equal to the identifier C,
+			// or beginning with the identifier C immediately followed by "-".
+			// The matching of C against the element's language value is performed case-insensitively.
+			// The identifier C does not have to be a valid language name."
+			// http://www.w3.org/TR/selectors/#lang-pseudo
+			"lang": markFunction( function( lang ) {
+				// lang value must be a valid identifier
+				if ( !ridentifier.test(lang || "") ) {
+					Sizzle.error( "unsupported lang: " + lang );
+				}
+				lang = lang.replace( runescape, funescape ).toLowerCase();
+				return function( elem ) {
+					var elemLang;
+					do {
+						if ( (elemLang = documentIsHTML ?
+							elem.lang :
+							elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
+
+							elemLang = elemLang.toLowerCase();
+							return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
+						}
+					} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
+					return false;
+				};
+			}),
+
+			// Miscellaneous
+			"target": function( elem ) {
+				var hash = window.location && window.location.hash;
+				return hash && hash.slice( 1 ) === elem.id;
+			},
+
+			"root": function( elem ) {
+				return elem === docElem;
+			},
+
+			"focus": function( elem ) {
+				return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+			},
+
+			// Boolean properties
+			"enabled": function( elem ) {
+				return elem.disabled === false;
+			},
+
+			"disabled": function( elem ) {
+				return elem.disabled === true;
+			},
+
+			"checked": function( elem ) {
+				// In CSS3, :checked should return both checked and selected elements
+				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+				var nodeName = elem.nodeName.toLowerCase();
+				return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
+			},
+
+			"selected": function( elem ) {
+				// Accessing this property makes selected-by-default
+				// options in Safari work properly
+				if ( elem.parentNode ) {
+					elem.parentNode.selectedIndex;
+				}
+
+				return elem.selected === true;
+			},
+
+			// Contents
+			"empty": function( elem ) {
+				// http://www.w3.org/TR/selectors/#empty-pseudo
+				// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
+				//   but not by others (comment: 8; processing instruction: 7; etc.)
+				// nodeType < 6 works because attributes (2) do not appear as children
+				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+					if ( elem.nodeType < 6 ) {
+						return false;
+					}
+				}
+				return true;
+			},
+
+			"parent": function( elem ) {
+				return !Expr.pseudos["empty"]( elem );
+			},
+
+			// Element/input types
+			"header": function( elem ) {
+				return rheader.test( elem.nodeName );
+			},
+
+			"input": function( elem ) {
+				return rinputs.test( elem.nodeName );
+			},
+
+			"button": function( elem ) {
+				var name = elem.nodeName.toLowerCase();
+				return name === "input" && elem.type === "button" || name === "button";
+			},
+
+			"text": function( elem ) {
+				var attr;
+				return elem.nodeName.toLowerCase() === "input" &&
+					elem.type === "text" &&
+
+					// Support: IE<8
+					// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
+					( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
+			},
+
+			// Position-in-collection
+			"first": createPositionalPseudo(function() {
+				return [ 0 ];
+			}),
+
+			"last": createPositionalPseudo(function( matchIndexes, length ) {
+				return [ length - 1 ];
+			}),
+
+			"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
+				return [ argument < 0 ? argument + length : argument ];
+			}),
+
+			"even": createPositionalPseudo(function( matchIndexes, length ) {
+				var i = 0;
+				for ( ; i < length; i += 2 ) {
+					matchIndexes.push( i );
+				}
+				return matchIndexes;
+			}),
+
+			"odd": createPositionalPseudo(function( matchIndexes, length ) {
+				var i = 1;
+				for ( ; i < length; i += 2 ) {
+					matchIndexes.push( i );
+				}
+				return matchIndexes;
+			}),
+
+			"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+				var i = argument < 0 ? argument + length : argument;
+				for ( ; --i >= 0; ) {
+					matchIndexes.push( i );
+				}
+				return matchIndexes;
+			}),
+
+			"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+				var i = argument < 0 ? argument + length : argument;
+				for ( ; ++i < length; ) {
+					matchIndexes.push( i );
+				}
+				return matchIndexes;
+			})
+		}
+	};
+
+	Expr.pseudos["nth"] = Expr.pseudos["eq"];
+
+	// Add button/input type pseudos
+	for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
+		Expr.pseudos[ i ] = createInputPseudo( i );
+	}
+	for ( i in { submit: true, reset: true } ) {
+		Expr.pseudos[ i ] = createButtonPseudo( i );
+	}
+
+	// Easy API for creating new setFilters
+	function setFilters() {}
+	setFilters.prototype = Expr.filters = Expr.pseudos;
+	Expr.setFilters = new setFilters();
+
+	tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
+		var matched, match, tokens, type,
+			soFar, groups, preFilters,
+			cached = tokenCache[ selector + " " ];
+
+		if ( cached ) {
+			return parseOnly ? 0 : cached.slice( 0 );
+		}
+
+		soFar = selector;
+		groups = [];
+		preFilters = Expr.preFilter;
+
+		while ( soFar ) {
+
+			// Comma and first run
+			if ( !matched || (match = rcomma.exec( soFar )) ) {
+				if ( match ) {
+					// Don't consume trailing commas as valid
+					soFar = soFar.slice( match[0].length ) || soFar;
+				}
+				groups.push( (tokens = []) );
+			}
+
+			matched = false;
+
+			// Combinators
+			if ( (match = rcombinators.exec( soFar )) ) {
+				matched = match.shift();
+				tokens.push({
+					value: matched,
+					// Cast descendant combinators to space
+					type: match[0].replace( rtrim, " " )
+				});
+				soFar = soFar.slice( matched.length );
+			}
+
+			// Filters
+			for ( type in Expr.filter ) {
+				if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+					(match = preFilters[ type ]( match ))) ) {
+					matched = match.shift();
+					tokens.push({
+						value: matched,
+						type: type,
+						matches: match
+					});
+					soFar = soFar.slice( matched.length );
+				}
+			}
+
+			if ( !matched ) {
+				break;
+			}
+		}
+
+		// Return the length of the invalid excess
+		// if we're just parsing
+		// Otherwise, throw an error or return tokens
+		return parseOnly ?
+			soFar.length :
+			soFar ?
+				Sizzle.error( selector ) :
+				// Cache the tokens
+				tokenCache( selector, groups ).slice( 0 );
+	};
+
+	function toSelector( tokens ) {
+		var i = 0,
+			len = tokens.length,
+			selector = "";
+		for ( ; i < len; i++ ) {
+			selector += tokens[i].value;
+		}
+		return selector;
+	}
+
+	function addCombinator( matcher, combinator, base ) {
+		var dir = combinator.dir,
+			checkNonElements = base && dir === "parentNode",
+			doneName = done++;
+
+		return combinator.first ?
+			// Check against closest ancestor/preceding element
+			function( elem, context, xml ) {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						return matcher( elem, context, xml );
+					}
+				}
+			} :
+
+			// Check against all ancestor/preceding elements
+			function( elem, context, xml ) {
+				var oldCache, uniqueCache, outerCache,
+					newCache = [ dirruns, doneName ];
+
+				// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
+				if ( xml ) {
+					while ( (elem = elem[ dir ]) ) {
+						if ( elem.nodeType === 1 || checkNonElements ) {
+							if ( matcher( elem, context, xml ) ) {
+								return true;
+							}
+						}
+					}
+				} else {
+					while ( (elem = elem[ dir ]) ) {
+						if ( elem.nodeType === 1 || checkNonElements ) {
+							outerCache = elem[ expando ] || (elem[ expando ] = {});
+
+							// Support: IE <9 only
+							// Defend against cloned attroperties (jQuery gh-1709)
+							uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
+
+							if ( (oldCache = uniqueCache[ dir ]) &&
+								oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
+
+								// Assign to newCache so results back-propagate to previous elements
+								return (newCache[ 2 ] = oldCache[ 2 ]);
+							} else {
+								// Reuse newcache so results back-propagate to previous elements
+								uniqueCache[ dir ] = newCache;
+
+								// A match means we're done; a fail means we have to keep checking
+								if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			};
+	}
+
+	function elementMatcher( matchers ) {
+		return matchers.length > 1 ?
+			function( elem, context, xml ) {
+				var i = matchers.length;
+				while ( i-- ) {
+					if ( !matchers[i]( elem, context, xml ) ) {
+						return false;
+					}
+				}
+				return true;
+			} :
+			matchers[0];
+	}
+
+	function multipleContexts( selector, contexts, results ) {
+		var i = 0,
+			len = contexts.length;
+		for ( ; i < len; i++ ) {
+			Sizzle( selector, contexts[i], results );
+		}
+		return results;
+	}
+
+	function condense( unmatched, map, filter, context, xml ) {
+		var elem,
+			newUnmatched = [],
+			i = 0,
+			len = unmatched.length,
+			mapped = map != null;
+
+		for ( ; i < len; i++ ) {
+			if ( (elem = unmatched[i]) ) {
+				if ( !filter || filter( elem, context, xml ) ) {
+					newUnmatched.push( elem );
+					if ( mapped ) {
+						map.push( i );
+					}
+				}
+			}
+		}
+
+		return newUnmatched;
+	}
+
+	function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
+		if ( postFilter && !postFilter[ expando ] ) {
+			postFilter = setMatcher( postFilter );
+		}
+		if ( postFinder && !postFinder[ expando ] ) {
+			postFinder = setMatcher( postFinder, postSelector );
+		}
+		return markFunction(function( seed, results, context, xml ) {
+			var temp, i, elem,
+				preMap = [],
+				postMap = [],
+				preexisting = results.length,
+
+				// Get initial elements from seed or context
+				elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+
+				// Prefilter to get matcher input, preserving a map for seed-results synchronization
+				matcherIn = preFilter && ( seed || !selector ) ?
+					condense( elems, preMap, preFilter, context, xml ) :
+					elems,
+
+				matcherOut = matcher ?
+					// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
+					postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
+
+						// ...intermediate processing is necessary
+						[] :
+
+						// ...otherwise use results directly
+						results :
+					matcherIn;
+
+			// Find primary matches
+			if ( matcher ) {
+				matcher( matcherIn, matcherOut, context, xml );
+			}
+
+			// Apply postFilter
+			if ( postFilter ) {
+				temp = condense( matcherOut, postMap );
+				postFilter( temp, [], context, xml );
+
+				// Un-match failing elements by moving them back to matcherIn
+				i = temp.length;
+				while ( i-- ) {
+					if ( (elem = temp[i]) ) {
+						matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
+					}
+				}
+			}
+
+			if ( seed ) {
+				if ( postFinder || preFilter ) {
+					if ( postFinder ) {
+						// Get the final matcherOut by condensing this intermediate into postFinder contexts
+						temp = [];
+						i = matcherOut.length;
+						while ( i-- ) {
+							if ( (elem = matcherOut[i]) ) {
+								// Restore matcherIn since elem is not yet a final match
+								temp.push( (matcherIn[i] = elem) );
+							}
+						}
+						postFinder( null, (matcherOut = []), temp, xml );
+					}
+
+					// Move matched elements from seed to results to keep them synchronized
+					i = matcherOut.length;
+					while ( i-- ) {
+						if ( (elem = matcherOut[i]) &&
+							(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
+
+							seed[temp] = !(results[temp] = elem);
+						}
+					}
+				}
+
+			// Add elements to results, through postFinder if defined
+			} else {
+				matcherOut = condense(
+					matcherOut === results ?
+						matcherOut.splice( preexisting, matcherOut.length ) :
+						matcherOut
+				);
+				if ( postFinder ) {
+					postFinder( null, results, matcherOut, xml );
+				} else {
+					push.apply( results, matcherOut );
+				}
+			}
+		});
+	}
+
+	function matcherFromTokens( tokens ) {
+		var checkContext, matcher, j,
+			len = tokens.length,
+			leadingRelative = Expr.relative[ tokens[0].type ],
+			implicitRelative = leadingRelative || Expr.relative[" "],
+			i = leadingRelative ? 1 : 0,
+
+			// The foundational matcher ensures that elements are reachable from top-level context(s)
+			matchContext = addCombinator( function( elem ) {
+				return elem === checkContext;
+			}, implicitRelative, true ),
+			matchAnyContext = addCombinator( function( elem ) {
+				return indexOf( checkContext, elem ) > -1;
+			}, implicitRelative, true ),
+			matchers = [ function( elem, context, xml ) {
+				var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+					(checkContext = context).nodeType ?
+						matchContext( elem, context, xml ) :
+						matchAnyContext( elem, context, xml ) );
+				// Avoid hanging onto element (issue #299)
+				checkContext = null;
+				return ret;
+			} ];
+
+		for ( ; i < len; i++ ) {
+			if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
+				matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
+			} else {
+				matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
+
+				// Return special upon seeing a positional matcher
+				if ( matcher[ expando ] ) {
+					// Find the next relative operator (if any) for proper handling
+					j = ++i;
+					for ( ; j < len; j++ ) {
+						if ( Expr.relative[ tokens[j].type ] ) {
+							break;
+						}
+					}
+					return setMatcher(
+						i > 1 && elementMatcher( matchers ),
+						i > 1 && toSelector(
+							// If the preceding token was a descendant combinator, insert an implicit any-element `*`
+							tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
+						).replace( rtrim, "$1" ),
+						matcher,
+						i < j && matcherFromTokens( tokens.slice( i, j ) ),
+						j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+						j < len && toSelector( tokens )
+					);
+				}
+				matchers.push( matcher );
+			}
+		}
+
+		return elementMatcher( matchers );
+	}
+
+	function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
+		var bySet = setMatchers.length > 0,
+			byElement = elementMatchers.length > 0,
+			superMatcher = function( seed, context, xml, results, outermost ) {
+				var elem, j, matcher,
+					matchedCount = 0,
+					i = "0",
+					unmatched = seed && [],
+					setMatched = [],
+					contextBackup = outermostContext,
+					// We must always have either seed elements or outermost context
+					elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
+					// Use integer dirruns iff this is the outermost matcher
+					dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
+					len = elems.length;
+
+				if ( outermost ) {
+					outermostContext = context === document || context || outermost;
+				}
+
+				// Add elements passing elementMatchers directly to results
+				// Support: IE<9, Safari
+				// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
+				for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
+					if ( byElement && elem ) {
+						j = 0;
+						if ( !context && elem.ownerDocument !== document ) {
+							setDocument( elem );
+							xml = !documentIsHTML;
+						}
+						while ( (matcher = elementMatchers[j++]) ) {
+							if ( matcher( elem, context || document, xml) ) {
+								results.push( elem );
+								break;
+							}
+						}
+						if ( outermost ) {
+							dirruns = dirrunsUnique;
+						}
+					}
+
+					// Track unmatched elements for set filters
+					if ( bySet ) {
+						// They will have gone through all possible matchers
+						if ( (elem = !matcher && elem) ) {
+							matchedCount--;
+						}
+
+						// Lengthen the array for every element, matched or not
+						if ( seed ) {
+							unmatched.push( elem );
+						}
+					}
+				}
+
+				// `i` is now the count of elements visited above, and adding it to `matchedCount`
+				// makes the latter nonnegative.
+				matchedCount += i;
+
+				// Apply set filters to unmatched elements
+				// NOTE: This can be skipped if there are no unmatched elements (i.e., `matchedCount`
+				// equals `i`), unless we didn't visit _any_ elements in the above loop because we have
+				// no element matchers and no seed.
+				// Incrementing an initially-string "0" `i` allows `i` to remain a string only in that
+				// case, which will result in a "00" `matchedCount` that differs from `i` but is also
+				// numerically zero.
+				if ( bySet && i !== matchedCount ) {
+					j = 0;
+					while ( (matcher = setMatchers[j++]) ) {
+						matcher( unmatched, setMatched, context, xml );
+					}
+
+					if ( seed ) {
+						// Reintegrate element matches to eliminate the need for sorting
+						if ( matchedCount > 0 ) {
+							while ( i-- ) {
+								if ( !(unmatched[i] || setMatched[i]) ) {
+									setMatched[i] = pop.call( results );
+								}
+							}
+						}
+
+						// Discard index placeholder values to get only actual matches
+						setMatched = condense( setMatched );
+					}
+
+					// Add matches to results
+					push.apply( results, setMatched );
+
+					// Seedless set matches succeeding multiple successful matchers stipulate sorting
+					if ( outermost && !seed && setMatched.length > 0 &&
+						( matchedCount + setMatchers.length ) > 1 ) {
+
+						Sizzle.uniqueSort( results );
+					}
+				}
+
+				// Override manipulation of globals by nested matchers
+				if ( outermost ) {
+					dirruns = dirrunsUnique;
+					outermostContext = contextBackup;
+				}
+
+				return unmatched;
+			};
+
+		return bySet ?
+			markFunction( superMatcher ) :
+			superMatcher;
+	}
+
+	compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
+		var i,
+			setMatchers = [],
+			elementMatchers = [],
+			cached = compilerCache[ selector + " " ];
+
+		if ( !cached ) {
+			// Generate a function of recursive functions that can be used to check each element
+			if ( !match ) {
+				match = tokenize( selector );
+			}
+			i = match.length;
+			while ( i-- ) {
+				cached = matcherFromTokens( match[i] );
+				if ( cached[ expando ] ) {
+					setMatchers.push( cached );
+				} else {
+					elementMatchers.push( cached );
+				}
+			}
+
+			// Cache the compiled function
+			cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+
+			// Save selector and tokenization
+			cached.selector = selector;
+		}
+		return cached;
+	};
+
+	/**
+	 * A low-level selection function that works with Sizzle's compiled
+	 *  selector functions
+	 * @param {String|Function} selector A selector or a pre-compiled
+	 *  selector function built with Sizzle.compile
+	 * @param {Element} context
+	 * @param {Array} [results]
+	 * @param {Array} [seed] A set of elements to match against
+	 */
+	select = Sizzle.select = function( selector, context, results, seed ) {
+		var i, tokens, token, type, find,
+			compiled = typeof selector === "function" && selector,
+			match = !seed && tokenize( (selector = compiled.selector || selector) );
+
+		results = results || [];
+
+		// Try to minimize operations if there is only one selector in the list and no seed
+		// (the latter of which guarantees us context)
+		if ( match.length === 1 ) {
+
+			// Reduce context if the leading compound selector is an ID
+			tokens = match[0] = match[0].slice( 0 );
+			if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
+					support.getById && context.nodeType === 9 && documentIsHTML &&
+					Expr.relative[ tokens[1].type ] ) {
+
+				context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
+				if ( !context ) {
+					return results;
+
+				// Precompiled matchers will still verify ancestry, so step up a level
+				} else if ( compiled ) {
+					context = context.parentNode;
+				}
+
+				selector = selector.slice( tokens.shift().value.length );
+			}
+
+			// Fetch a seed set for right-to-left matching
+			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+			while ( i-- ) {
+				token = tokens[i];
+
+				// Abort if we hit a combinator
+				if ( Expr.relative[ (type = token.type) ] ) {
+					break;
+				}
+				if ( (find = Expr.find[ type ]) ) {
+					// Search, expanding context for leading sibling combinators
+					if ( (seed = find(
+						token.matches[0].replace( runescape, funescape ),
+						rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
+					)) ) {
+
+						// If seed is empty or no tokens remain, we can return early
+						tokens.splice( i, 1 );
+						selector = seed.length && toSelector( tokens );
+						if ( !selector ) {
+							push.apply( results, seed );
+							return results;
+						}
+
+						break;
+					}
+				}
+			}
+		}
+
+		// Compile and execute a filtering function if one is not provided
+		// Provide `match` to avoid retokenization if we modified the selector above
+		( compiled || compile( selector, match ) )(
+			seed,
+			context,
+			!documentIsHTML,
+			results,
+			!context || rsibling.test( selector ) && testContext( context.parentNode ) || context
+		);
+		return results;
+	};
+
+	// One-time assignments
+
+	// Sort stability
+	support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
+
+	// Support: Chrome 14-35+
+	// Always assume duplicates if they aren't passed to the comparison function
+	support.detectDuplicates = !!hasDuplicate;
+
+	// Initialize against the default document
+	setDocument();
+
+	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+	// Detached nodes confoundingly follow *each other*
+	support.sortDetached = assert(function( div1 ) {
+		// Should return 1, but returns 4 (following)
+		return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+	});
+
+	// Support: IE<8
+	// Prevent attribute/property "interpolation"
+	// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
+	if ( !assert(function( div ) {
+		div.innerHTML = "<a href='#'></a>";
+		return div.firstChild.getAttribute("href") === "#" ;
+	}) ) {
+		addHandle( "type|href|height|width", function( elem, name, isXML ) {
+			if ( !isXML ) {
+				return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+			}
+		});
+	}
+
+	// Support: IE<9
+	// Use defaultValue in place of getAttribute("value")
+	if ( !support.attributes || !assert(function( div ) {
+		div.innerHTML = "<input/>";
+		div.firstChild.setAttribute( "value", "" );
+		return div.firstChild.getAttribute( "value" ) === "";
+	}) ) {
+		addHandle( "value", function( elem, name, isXML ) {
+			if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+				return elem.defaultValue;
+			}
+		});
+	}
+
+	// Support: IE<9
+	// Use getAttributeNode to fetch booleans when getAttribute lies
+	if ( !assert(function( div ) {
+		return div.getAttribute("disabled") == null;
+	}) ) {
+		addHandle( booleans, function( elem, name, isXML ) {
+			var val;
+			if ( !isXML ) {
+				return elem[ name ] === true ? name.toLowerCase() :
+						(val = elem.getAttributeNode( name )) && val.specified ?
+						val.value :
+					null;
+			}
+		});
+	}
+
+	return Sizzle;
+
+	})( window );
+
+
+
+	jQuery.find = Sizzle;
+	jQuery.expr = Sizzle.selectors;
+	jQuery.expr[ ":" ] = jQuery.expr.pseudos;
+	jQuery.uniqueSort = jQuery.unique = Sizzle.uniqueSort;
+	jQuery.text = Sizzle.getText;
+	jQuery.isXMLDoc = Sizzle.isXML;
+	jQuery.contains = Sizzle.contains;
+
+
+
+	var dir = function( elem, dir, until ) {
+		var matched = [],
+			truncate = until !== undefined;
+
+		while ( ( elem = elem[ dir ] ) && elem.nodeType !== 9 ) {
+			if ( elem.nodeType === 1 ) {
+				if ( truncate && jQuery( elem ).is( until ) ) {
+					break;
+				}
+				matched.push( elem );
+			}
+		}
+		return matched;
+	};
+
+
+	var siblings = function( n, elem ) {
+		var matched = [];
+
+		for ( ; n; n = n.nextSibling ) {
+			if ( n.nodeType === 1 && n !== elem ) {
+				matched.push( n );
+			}
+		}
+
+		return matched;
+	};
+
+
+	var rneedsContext = jQuery.expr.match.needsContext;
+
+	var rsingleTag = ( /^<([\w-]+)\s*\/?>(?:<\/\1>|)$/ );
+
+
+
+	var risSimple = /^.[^:#\[\.,]*$/;
+
+	// Implement the identical functionality for filter and not
+	function winnow( elements, qualifier, not ) {
+		if ( jQuery.isFunction( qualifier ) ) {
+			return jQuery.grep( elements, function( elem, i ) {
+				/* jshint -W018 */
+				return !!qualifier.call( elem, i, elem ) !== not;
+			} );
+
+		}
+
+		if ( qualifier.nodeType ) {
+			return jQuery.grep( elements, function( elem ) {
+				return ( elem === qualifier ) !== not;
+			} );
+
+		}
+
+		if ( typeof qualifier === "string" ) {
+			if ( risSimple.test( qualifier ) ) {
+				return jQuery.filter( qualifier, elements, not );
+			}
+
+			qualifier = jQuery.filter( qualifier, elements );
+		}
+
+		return jQuery.grep( elements, function( elem ) {
+			return ( indexOf.call( qualifier, elem ) > -1 ) !== not;
+		} );
+	}
+
+	jQuery.filter = function( expr, elems, not ) {
+		var elem = elems[ 0 ];
+
+		if ( not ) {
+			expr = ":not(" + expr + ")";
+		}
+
+		return elems.length === 1 && elem.nodeType === 1 ?
+			jQuery.find.matchesSelector( elem, expr ) ? [ elem ] : [] :
+			jQuery.find.matches( expr, jQuery.grep( elems, function( elem ) {
+				return elem.nodeType === 1;
+			} ) );
+	};
+
+	jQuery.fn.extend( {
+		find: function( selector ) {
+			var i,
+				len = this.length,
+				ret = [],
+				self = this;
+
+			if ( typeof selector !== "string" ) {
+				return this.pushStack( jQuery( selector ).filter( function() {
+					for ( i = 0; i < len; i++ ) {
+						if ( jQuery.contains( self[ i ], this ) ) {
+							return true;
+						}
+					}
+				} ) );
+			}
+
+			for ( i = 0; i < len; i++ ) {
+				jQuery.find( selector, self[ i ], ret );
+			}
+
+			// Needed because $( selector, context ) becomes $( context ).find( selector )
+			ret = this.pushStack( len > 1 ? jQuery.unique( ret ) : ret );
+			ret.selector = this.selector ? this.selector + " " + selector : selector;
+			return ret;
+		},
+		filter: function( selector ) {
+			return this.pushStack( winnow( this, selector || [], false ) );
+		},
+		not: function( selector ) {
+			return this.pushStack( winnow( this, selector || [], true ) );
+		},
+		is: function( selector ) {
+			return !!winnow(
+				this,
+
+				// If this is a positional/relative selector, check membership in the returned set
+				// so $("p:first").is("p:last") won't return true for a doc with two "p".
+				typeof selector === "string" && rneedsContext.test( selector ) ?
+					jQuery( selector ) :
+					selector || [],
+				false
+			).length;
+		}
+	} );
+
+
+	// Initialize a jQuery object
+
+
+	// A central reference to the root jQuery(document)
+	var rootjQuery,
+
+		// A simple way to check for HTML strings
+		// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
+		// Strict HTML recognition (#11290: must start with <)
+		rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
+
+		init = jQuery.fn.init = function( selector, context, root ) {
+			var match, elem;
+
+			// HANDLE: $(""), $(null), $(undefined), $(false)
+			if ( !selector ) {
+				return this;
+			}
+
+			// Method init() accepts an alternate rootjQuery
+			// so migrate can support jQuery.sub (gh-2101)
+			root = root || rootjQuery;
+
+			// Handle HTML strings
+			if ( typeof selector === "string" ) {
+				if ( selector[ 0 ] === "<" &&
+					selector[ selector.length - 1 ] === ">" &&
+					selector.length >= 3 ) {
+
+					// Assume that strings that start and end with <> are HTML and skip the regex check
+					match = [ null, selector, null ];
+
+				} else {
+					match = rquickExpr.exec( selector );
+				}
+
+				// Match html or make sure no context is specified for #id
+				if ( match && ( match[ 1 ] || !context ) ) {
+
+					// HANDLE: $(html) -> $(array)
+					if ( match[ 1 ] ) {
+						context = context instanceof jQuery ? context[ 0 ] : context;
+
+						// Option to run scripts is true for back-compat
+						// Intentionally let the error be thrown if parseHTML is not present
+						jQuery.merge( this, jQuery.parseHTML(
+							match[ 1 ],
+							context && context.nodeType ? context.ownerDocument || context : document,
+							true
+						) );
+
+						// HANDLE: $(html, props)
+						if ( rsingleTag.test( match[ 1 ] ) && jQuery.isPlainObject( context ) ) {
+							for ( match in context ) {
+
+								// Properties of context are called as methods if possible
+								if ( jQuery.isFunction( this[ match ] ) ) {
+									this[ match ]( context[ match ] );
+
+								// ...and otherwise set as attributes
+								} else {
+									this.attr( match, context[ match ] );
+								}
+							}
+						}
+
+						return this;
+
+					// HANDLE: $(#id)
+					} else {
+						elem = document.getElementById( match[ 2 ] );
+
+						// Support: Blackberry 4.6
+						// gEBID returns nodes no longer in the document (#6963)
+						if ( elem && elem.parentNode ) {
+
+							// Inject the element directly into the jQuery object
+							this.length = 1;
+							this[ 0 ] = elem;
+						}
+
+						this.context = document;
+						this.selector = selector;
+						return this;
+					}
+
+				// HANDLE: $(expr, $(...))
+				} else if ( !context || context.jquery ) {
+					return ( context || root ).find( selector );
+
+				// HANDLE: $(expr, context)
+				// (which is just equivalent to: $(context).find(expr)
+				} else {
+					return this.constructor( context ).find( selector );
+				}
+
+			// HANDLE: $(DOMElement)
+			} else if ( selector.nodeType ) {
+				this.context = this[ 0 ] = selector;
+				this.length = 1;
+				return this;
+
+			// HANDLE: $(function)
+			// Shortcut for document ready
+			} else if ( jQuery.isFunction( selector ) ) {
+				return root.ready !== undefined ?
+					root.ready( selector ) :
+
+					// Execute immediately if ready is not present
+					selector( jQuery );
+			}
+
+			if ( selector.selector !== undefined ) {
+				this.selector = selector.selector;
+				this.context = selector.context;
+			}
+
+			return jQuery.makeArray( selector, this );
+		};
+
+	// Give the init function the jQuery prototype for later instantiation
+	init.prototype = jQuery.fn;
+
+	// Initialize central reference
+	rootjQuery = jQuery( document );
+
+
+	var rparentsprev = /^(?:parents|prev(?:Until|All))/,
+
+		// Methods guaranteed to produce a unique set when starting from a unique set
+		guaranteedUnique = {
+			children: true,
+			contents: true,
+			next: true,
+			prev: true
+		};
+
+	jQuery.fn.extend( {
+		has: function( target ) {
+			var targets = jQuery( target, this ),
+				l = targets.length;
+
+			return this.filter( function() {
+				var i = 0;
+				for ( ; i < l; i++ ) {
+					if ( jQuery.contains( this, targets[ i ] ) ) {
+						return true;
+					}
+				}
+			} );
+		},
+
+		closest: function( selectors, context ) {
+			var cur,
+				i = 0,
+				l = this.length,
+				matched = [],
+				pos = rneedsContext.test( selectors ) || typeof selectors !== "string" ?
+					jQuery( selectors, context || this.context ) :
+					0;
+
+			for ( ; i < l; i++ ) {
+				for ( cur = this[ i ]; cur && cur !== context; cur = cur.parentNode ) {
+
+					// Always skip document fragments
+					if ( cur.nodeType < 11 && ( pos ?
+						pos.index( cur ) > -1 :
+
+						// Don't pass non-elements to Sizzle
+						cur.nodeType === 1 &&
+							jQuery.find.matchesSelector( cur, selectors ) ) ) {
+
+						matched.push( cur );
+						break;
+					}
+				}
+			}
+
+			return this.pushStack( matched.length > 1 ? jQuery.uniqueSort( matched ) : matched );
+		},
+
+		// Determine the position of an element within the set
+		index: function( elem ) {
+
+			// No argument, return index in parent
+			if ( !elem ) {
+				return ( this[ 0 ] && this[ 0 ].parentNode ) ? this.first().prevAll().length : -1;
+			}
+
+			// Index in selector
+			if ( typeof elem === "string" ) {
+				return indexOf.call( jQuery( elem ), this[ 0 ] );
+			}
+
+			// Locate the position of the desired element
+			return indexOf.call( this,
+
+				// If it receives a jQuery object, the first element is used
+				elem.jquery ? elem[ 0 ] : elem
+			);
+		},
+
+		add: function( selector, context ) {
+			return this.pushStack(
+				jQuery.uniqueSort(
+					jQuery.merge( this.get(), jQuery( selector, context ) )
+				)
+			);
+		},
+
+		addBack: function( selector ) {
+			return this.add( selector == null ?
+				this.prevObject : this.prevObject.filter( selector )
+			);
+		}
+	} );
+
+	function sibling( cur, dir ) {
+		while ( ( cur = cur[ dir ] ) && cur.nodeType !== 1 ) {}
+		return cur;
+	}
+
+	jQuery.each( {
+		parent: function( elem ) {
+			var parent = elem.parentNode;
+			return parent && parent.nodeType !== 11 ? parent : null;
+		},
+		parents: function( elem ) {
+			return dir( elem, "parentNode" );
+		},
+		parentsUntil: function( elem, i, until ) {
+			return dir( elem, "parentNode", until );
+		},
+		next: function( elem ) {
+			return sibling( elem, "nextSibling" );
+		},
+		prev: function( elem ) {
+			return sibling( elem, "previousSibling" );
+		},
+		nextAll: function( elem ) {
+			return dir( elem, "nextSibling" );
+		},
+		prevAll: function( elem ) {
+			return dir( elem, "previousSibling" );
+		},
+		nextUntil: function( elem, i, until ) {
+			return dir( elem, "nextSibling", until );
+		},
+		prevUntil: function( elem, i, until ) {
+			return dir( elem, "previousSibling", until );
+		},
+		siblings: function( elem ) {
+			return siblings( ( elem.parentNode || {} ).firstChild, elem );
+		},
+		children: function( elem ) {
+			return siblings( elem.firstChild );
+		},
+		contents: function( elem ) {
+			return elem.contentDocument || jQuery.merge( [], elem.childNodes );
+		}
+	}, function( name, fn ) {
+		jQuery.fn[ name ] = function( until, selector ) {
+			var matched = jQuery.map( this, fn, until );
+
+			if ( name.slice( -5 ) !== "Until" ) {
+				selector = until;
+			}
+
+			if ( selector && typeof selector === "string" ) {
+				matched = jQuery.filter( selector, matched );
+			}
+
+			if ( this.length > 1 ) {
+
+				// Remove duplicates
+				if ( !guaranteedUnique[ name ] ) {
+					jQuery.uniqueSort( matched );
+				}
+
+				// Reverse order for parents* and prev-derivatives
+				if ( rparentsprev.test( name ) ) {
+					matched.reverse();
+				}
+			}
+
+			return this.pushStack( matched );
+		};
+	} );
+	var rnotwhite = ( /\S+/g );
+
+
+
+	// Convert String-formatted options into Object-formatted ones
+	function createOptions( options ) {
+		var object = {};
+		jQuery.each( options.match( rnotwhite ) || [], function( _, flag ) {
+			object[ flag ] = true;
+		} );
+		return object;
+	}
+
+	/*
+	 * Create a callback list using the following parameters:
+	 *
+	 *	options: an optional list of space-separated options that will change how
+	 *			the callback list behaves or a more traditional option object
+	 *
+	 * By default a callback list will act like an event callback list and can be
+	 * "fired" multiple times.
+	 *
+	 * Possible options:
+	 *
+	 *	once:			will ensure the callback list can only be fired once (like a Deferred)
+	 *
+	 *	memory:			will keep track of previous values and will call any callback added
+	 *					after the list has been fired right away with the latest "memorized"
+	 *					values (like a Deferred)
+	 *
+	 *	unique:			will ensure a callback can only be added once (no duplicate in the list)
+	 *
+	 *	stopOnFalse:	interrupt callings when a callback returns false
+	 *
+	 */
+	jQuery.Callbacks = function( options ) {
+
+		// Convert options from String-formatted to Object-formatted if needed
+		// (we check in cache first)
+		options = typeof options === "string" ?
+			createOptions( options ) :
+			jQuery.extend( {}, options );
+
+		var // Flag to know if list is currently firing
+			firing,
+
+			// Last fire value for non-forgettable lists
+			memory,
+
+			// Flag to know if list was already fired
+			fired,
+
+			// Flag to prevent firing
+			locked,
+
+			// Actual callback list
+			list = [],
+
+			// Queue of execution data for repeatable lists
+			queue = [],
+
+			// Index of currently firing callback (modified by add/remove as needed)
+			firingIndex = -1,
+
+			// Fire callbacks
+			fire = function() {
+
+				// Enforce single-firing
+				locked = options.once;
+
+				// Execute callbacks for all pending executions,
+				// respecting firingIndex overrides and runtime changes
+				fired = firing = true;
+				for ( ; queue.length; firingIndex = -1 ) {
+					memory = queue.shift();
+					while ( ++firingIndex < list.length ) {
+
+						// Run callback and check for early termination
+						if ( list[ firingIndex ].apply( memory[ 0 ], memory[ 1 ] ) === false &&
+							options.stopOnFalse ) {
+
+							// Jump to end and forget the data so .add doesn't re-fire
+							firingIndex = list.length;
+							memory = false;
+						}
+					}
+				}
+
+				// Forget the data if we're done with it
+				if ( !options.memory ) {
+					memory = false;
+				}
+
+				firing = false;
+
+				// Clean up if we're done firing for good
+				if ( locked ) {
+
+					// Keep an empty list if we have data for future add calls
+					if ( memory ) {
+						list = [];
+
+					// Otherwise, this object is spent
+					} else {
+						list = "";
+					}
+				}
+			},
+
+			// Actual Callbacks object
+			self = {
+
+				// Add a callback or a collection of callbacks to the list
+				add: function() {
+					if ( list ) {
+
+						// If we have memory from a past run, we should fire after adding
+						if ( memory && !firing ) {
+							firingIndex = list.length - 1;
+							queue.push( memory );
+						}
+
+						( function add( args ) {
+							jQuery.each( args, function( _, arg ) {
+								if ( jQuery.isFunction( arg ) ) {
+									if ( !options.unique || !self.has( arg ) ) {
+										list.push( arg );
+									}
+								} else if ( arg && arg.length && jQuery.type( arg ) !== "string" ) {
+
+									// Inspect recursively
+									add( arg );
+								}
+							} );
+						} )( arguments );
+
+						if ( memory && !firing ) {
+							fire();
+						}
+					}
+					return this;
+				},
+
+				// Remove a callback from the list
+				remove: function() {
+					jQuery.each( arguments, function( _, arg ) {
+						var index;
+						while ( ( index = jQuery.inArray( arg, list, index ) ) > -1 ) {
+							list.splice( index, 1 );
+
+							// Handle firing indexes
+							if ( index <= firingIndex ) {
+								firingIndex--;
+							}
+						}
+					} );
+					return this;
+				},
+
+				// Check if a given callback is in the list.
+				// If no argument is given, return whether or not list has callbacks attached.
+				has: function( fn ) {
+					return fn ?
+						jQuery.inArray( fn, list ) > -1 :
+						list.length > 0;
+				},
+
+				// Remove all callbacks from the list
+				empty: function() {
+					if ( list ) {
+						list = [];
+					}
+					return this;
+				},
+
+				// Disable .fire and .add
+				// Abort any current/pending executions
+				// Clear all callbacks and values
+				disable: function() {
+					locked = queue = [];
+					list = memory = "";
+					return this;
+				},
+				disabled: function() {
+					return !list;
+				},
+
+				// Disable .fire
+				// Also disable .add unless we have memory (since it would have no effect)
+				// Abort any pending executions
+				lock: function() {
+					locked = queue = [];
+					if ( !memory ) {
+						list = memory = "";
+					}
+					return this;
+				},
+				locked: function() {
+					return !!locked;
+				},
+
+				// Call all callbacks with the given context and arguments
+				fireWith: function( context, args ) {
+					if ( !locked ) {
+						args = args || [];
+						args = [ context, args.slice ? args.slice() : args ];
+						queue.push( args );
+						if ( !firing ) {
+							fire();
+						}
+					}
+					return this;
+				},
+
+				// Call all the callbacks with the given arguments
+				fire: function() {
+					self.fireWith( this, arguments );
+					return this;
+				},
+
+				// To know if the callbacks have already been called at least once
+				fired: function() {
+					return !!fired;
+				}
+			};
+
+		return self;
+	};
+
+
+	jQuery.extend( {
+
+		Deferred: function( func ) {
+			var tuples = [
+
+					// action, add listener, listener list, final state
+					[ "resolve", "done", jQuery.Callbacks( "once memory" ), "resolved" ],
+					[ "reject", "fail", jQuery.Callbacks( "once memory" ), "rejected" ],
+					[ "notify", "progress", jQuery.Callbacks( "memory" ) ]
+				],
+				state = "pending",
+				promise = {
+					state: function() {
+						return state;
+					},
+					always: function() {
+						deferred.done( arguments ).fail( arguments );
+						return this;
+					},
+					then: function( /* fnDone, fnFail, fnProgress */ ) {
+						var fns = arguments;
+						return jQuery.Deferred( function( newDefer ) {
+							jQuery.each( tuples, function( i, tuple ) {
+								var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
+
+								// deferred[ done | fail | progress ] for forwarding actions to newDefer
+								deferred[ tuple[ 1 ] ]( function() {
+									var returned = fn && fn.apply( this, arguments );
+									if ( returned && jQuery.isFunction( returned.promise ) ) {
+										returned.promise()
+											.progress( newDefer.notify )
+											.done( newDefer.resolve )
+											.fail( newDefer.reject );
+									} else {
+										newDefer[ tuple[ 0 ] + "With" ](
+											this === promise ? newDefer.promise() : this,
+											fn ? [ returned ] : arguments
+										);
+									}
+								} );
+							} );
+							fns = null;
+						} ).promise();
+					},
+
+					// Get a promise for this deferred
+					// If obj is provided, the promise aspect is added to the object
+					promise: function( obj ) {
+						return obj != null ? jQuery.extend( obj, promise ) : promise;
+					}
+				},
+				deferred = {};
+
+			// Keep pipe for back-compat
+			promise.pipe = promise.then;
+
+			// Add list-specific methods
+			jQuery.each( tuples, function( i, tuple ) {
+				var list = tuple[ 2 ],
+					stateString = tuple[ 3 ];
+
+				// promise[ done | fail | progress ] = list.add
+				promise[ tuple[ 1 ] ] = list.add;
+
+				// Handle state
+				if ( stateString ) {
+					list.add( function() {
+
+						// state = [ resolved | rejected ]
+						state = stateString;
+
+					// [ reject_list | resolve_list ].disable; progress_list.lock
+					}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
+				}
+
+				// deferred[ resolve | reject | notify ]
+				deferred[ tuple[ 0 ] ] = function() {
+					deferred[ tuple[ 0 ] + "With" ]( this === deferred ? promise : this, arguments );
+					return this;
+				};
+				deferred[ tuple[ 0 ] + "With" ] = list.fireWith;
+			} );
+
+			// Make the deferred a promise
+			promise.promise( deferred );
+
+			// Call given func if any
+			if ( func ) {
+				func.call( deferred, deferred );
+			}
+
+			// All done!
+			return deferred;
+		},
+
+		// Deferred helper
+		when: function( subordinate /* , ..., subordinateN */ ) {
+			var i = 0,
+				resolveValues = slice.call( arguments ),
+				length = resolveValues.length,
+
+				// the count of uncompleted subordinates
+				remaining = length !== 1 ||
+					( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
+
+				// the master Deferred.
+				// If resolveValues consist of only a single Deferred, just use that.
+				deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
+
+				// Update function for both resolve and progress values
+				updateFunc = function( i, contexts, values ) {
+					return function( value ) {
+						contexts[ i ] = this;
+						values[ i ] = arguments.length > 1 ? slice.call( arguments ) : value;
+						if ( values === progressValues ) {
+							deferred.notifyWith( contexts, values );
+						} else if ( !( --remaining ) ) {
+							deferred.resolveWith( contexts, values );
+						}
+					};
+				},
+
+				progressValues, progressContexts, resolveContexts;
+
+			// Add listeners to Deferred subordinates; treat others as resolved
+			if ( length > 1 ) {
+				progressValues = new Array( length );
+				progressContexts = new Array( length );
+				resolveContexts = new Array( length );
+				for ( ; i < length; i++ ) {
+					if ( resolveValues[ i ] && jQuery.isFunction( resolveValues[ i ].promise ) ) {
+						resolveValues[ i ].promise()
+							.progress( updateFunc( i, progressContexts, progressValues ) )
+							.done( updateFunc( i, resolveContexts, resolveValues ) )
+							.fail( deferred.reject );
+					} else {
+						--remaining;
+					}
+				}
+			}
+
+			// If we're not waiting on anything, resolve the master
+			if ( !remaining ) {
+				deferred.resolveWith( resolveContexts, resolveValues );
+			}
+
+			return deferred.promise();
+		}
+	} );
+
+
+	// The deferred used on DOM ready
+	var readyList;
+
+	jQuery.fn.ready = function( fn ) {
+
+		// Add the callback
+		jQuery.ready.promise().done( fn );
+
+		return this;
+	};
+
+	jQuery.extend( {
+
+		// Is the DOM ready to be used? Set to true once it occurs.
+		isReady: false,
+
+		// A counter to track how many items to wait for before
+		// the ready event fires. See #6781
+		readyWait: 1,
+
+		// Hold (or release) the ready event
+		holdReady: function( hold ) {
+			if ( hold ) {
+				jQuery.readyWait++;
+			} else {
+				jQuery.ready( true );
+			}
+		},
+
+		// Handle when the DOM is ready
+		ready: function( wait ) {
+
+			// Abort if there are pending holds or we're already ready
+			if ( wait === true ? --jQuery.readyWait : jQuery.isReady ) {
+				return;
+			}
+
+			// Remember that the DOM is ready
+			jQuery.isReady = true;
+
+			// If a normal DOM Ready event fired, decrement, and wait if need be
+			if ( wait !== true && --jQuery.readyWait > 0 ) {
+				return;
+			}
+
+			// If there are functions bound, to execute
+			readyList.resolveWith( document, [ jQuery ] );
+
+			// Trigger any bound ready events
+			if ( jQuery.fn.triggerHandler ) {
+				jQuery( document ).triggerHandler( "ready" );
+				jQuery( document ).off( "ready" );
+			}
+		}
+	} );
+
+	/**
+	 * The ready event handler and self cleanup method
+	 */
+	function completed() {
+		document.removeEventListener( "DOMContentLoaded", completed );
+		window.removeEventListener( "load", completed );
+		jQuery.ready();
+	}
+
+	jQuery.ready.promise = function( obj ) {
+		if ( !readyList ) {
+
+			readyList = jQuery.Deferred();
+
+			// Catch cases where $(document).ready() is called
+			// after the browser event has already occurred.
+			// Support: IE9-10 only
+			// Older IE sometimes signals "interactive" too soon
+			if ( document.readyState === "complete" ||
+				( document.readyState !== "loading" && !document.documentElement.doScroll ) ) {
+
+				// Handle it asynchronously to allow scripts the opportunity to delay ready
+				window.setTimeout( jQuery.ready );
+
+			} else {
+
+				// Use the handy event callback
+				document.addEventListener( "DOMContentLoaded", completed );
+
+				// A fallback to window.onload, that will always work
+				window.addEventListener( "load", completed );
+			}
+		}
+		return readyList.promise( obj );
+	};
+
+	// Kick off the DOM ready check even if the user does not
+	jQuery.ready.promise();
+
+
+
+
+	// Multifunctional method to get and set values of a collection
+	// The value/s can optionally be executed if it's a function
+	var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
+		var i = 0,
+			len = elems.length,
+			bulk = key == null;
+
+		// Sets many values
+		if ( jQuery.type( key ) === "object" ) {
+			chainable = true;
+			for ( i in key ) {
+				access( elems, fn, i, key[ i ], true, emptyGet, raw );
+			}
+
+		// Sets one value
+		} else if ( value !== undefined ) {
+			chainable = true;
+
+			if ( !jQuery.isFunction( value ) ) {
+				raw = true;
+			}
+
+			if ( bulk ) {
+
+				// Bulk operations run against the entire set
+				if ( raw ) {
+					fn.call( elems, value );
+					fn = null;
+
+				// ...except when executing function values
+				} else {
+					bulk = fn;
+					fn = function( elem, key, value ) {
+						return bulk.call( jQuery( elem ), value );
+					};
+				}
+			}
+
+			if ( fn ) {
+				for ( ; i < len; i++ ) {
+					fn(
+						elems[ i ], key, raw ?
+						value :
+						value.call( elems[ i ], i, fn( elems[ i ], key ) )
+					);
+				}
+			}
+		}
+
+		return chainable ?
+			elems :
+
+			// Gets
+			bulk ?
+				fn.call( elems ) :
+				len ? fn( elems[ 0 ], key ) : emptyGet;
+	};
+	var acceptData = function( owner ) {
+
+		// Accepts only:
+		//  - Node
+		//    - Node.ELEMENT_NODE
+		//    - Node.DOCUMENT_NODE
+		//  - Object
+		//    - Any
+		/* jshint -W018 */
+		return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
+	};
+
+
+
+
+	function Data() {
+		this.expando = jQuery.expando + Data.uid++;
+	}
+
+	Data.uid = 1;
+
+	Data.prototype = {
+
+		register: function( owner, initial ) {
+			var value = initial || {};
+
+			// If it is a node unlikely to be stringify-ed or looped over
+			// use plain assignment
+			if ( owner.nodeType ) {
+				owner[ this.expando ] = value;
+
+			// Otherwise secure it in a non-enumerable, non-writable property
+			// configurability must be true to allow the property to be
+			// deleted with the delete operator
+			} else {
+				Object.defineProperty( owner, this.expando, {
+					value: value,
+					writable: true,
+					configurable: true
+				} );
+			}
+			return owner[ this.expando ];
+		},
+		cache: function( owner ) {
+
+			// We can accept data for non-element nodes in modern browsers,
+			// but we should not, see #8335.
+			// Always return an empty object.
+			if ( !acceptData( owner ) ) {
+				return {};
+			}
+
+			// Check if the owner object already has a cache
+			var value = owner[ this.expando ];
+
+			// If not, create one
+			if ( !value ) {
+				value = {};
+
+				// We can accept data for non-element nodes in modern browsers,
+				// but we should not, see #8335.
+				// Always return an empty object.
+				if ( acceptData( owner ) ) {
+
+					// If it is a node unlikely to be stringify-ed or looped over
+					// use plain assignment
+					if ( owner.nodeType ) {
+						owner[ this.expando ] = value;
+
+					// Otherwise secure it in a non-enumerable property
+					// configurable must be true to allow the property to be
+					// deleted when data is removed
+					} else {
+						Object.defineProperty( owner, this.expando, {
+							value: value,
+							configurable: true
+						} );
+					}
+				}
+			}
+
+			return value;
+		},
+		set: function( owner, data, value ) {
+			var prop,
+				cache = this.cache( owner );
+
+			// Handle: [ owner, key, value ] args
+			if ( typeof data === "string" ) {
+				cache[ data ] = value;
+
+			// Handle: [ owner, { properties } ] args
+			} else {
+
+				// Copy the properties one-by-one to the cache object
+				for ( prop in data ) {
+					cache[ prop ] = data[ prop ];
+				}
+			}
+			return cache;
+		},
+		get: function( owner, key ) {
+			return key === undefined ?
+				this.cache( owner ) :
+				owner[ this.expando ] && owner[ this.expando ][ key ];
+		},
+		access: function( owner, key, value ) {
+			var stored;
+
+			// In cases where either:
+			//
+			//   1. No key was specified
+			//   2. A string key was specified, but no value provided
+			//
+			// Take the "read" path and allow the get method to determine
+			// which value to return, respectively either:
+			//
+			//   1. The entire cache object
+			//   2. The data stored at the key
+			//
+			if ( key === undefined ||
+					( ( key && typeof key === "string" ) && value === undefined ) ) {
+
+				stored = this.get( owner, key );
+
+				return stored !== undefined ?
+					stored : this.get( owner, jQuery.camelCase( key ) );
+			}
+
+			// When the key is not a string, or both a key and value
+			// are specified, set or extend (existing objects) with either:
+			//
+			//   1. An object of properties
+			//   2. A key and value
+			//
+			this.set( owner, key, value );
+
+			// Since the "set" path can have two possible entry points
+			// return the expected data based on which path was taken[*]
+			return value !== undefined ? value : key;
+		},
+		remove: function( owner, key ) {
+			var i, name, camel,
+				cache = owner[ this.expando ];
+
+			if ( cache === undefined ) {
+				return;
+			}
+
+			if ( key === undefined ) {
+				this.register( owner );
+
+			} else {
+
+				// Support array or space separated string of keys
+				if ( jQuery.isArray( key ) ) {
+
+					// If "name" is an array of keys...
+					// When data is initially created, via ("key", "val") signature,
+					// keys will be converted to camelCase.
+					// Since there is no way to tell _how_ a key was added, remove
+					// both plain key and camelCase key. #12786
+					// This will only penalize the array argument path.
+					name = key.concat( key.map( jQuery.camelCase ) );
+				} else {
+					camel = jQuery.camelCase( key );
+
+					// Try the string as a key before any manipulation
+					if ( key in cache ) {
+						name = [ key, camel ];
+					} else {
+
+						// If a key with the spaces exists, use it.
+						// Otherwise, create an array by matching non-whitespace
+						name = camel;
+						name = name in cache ?
+							[ name ] : ( name.match( rnotwhite ) || [] );
+					}
+				}
+
+				i = name.length;
+
+				while ( i-- ) {
+					delete cache[ name[ i ] ];
+				}
+			}
+
+			// Remove the expando if there's no more data
+			if ( key === undefined || jQuery.isEmptyObject( cache ) ) {
+
+				// Support: Chrome <= 35-45+
+				// Webkit & Blink performance suffers when deleting properties
+				// from DOM nodes, so set to undefined instead
+				// https://code.google.com/p/chromium/issues/detail?id=378607
+				if ( owner.nodeType ) {
+					owner[ this.expando ] = undefined;
+				} else {
+					delete owner[ this.expando ];
+				}
+			}
+		},
+		hasData: function( owner ) {
+			var cache = owner[ this.expando ];
+			return cache !== undefined && !jQuery.isEmptyObject( cache );
+		}
+	};
+	var dataPriv = new Data();
+
+	var dataUser = new Data();
+
+
+
+	//	Implementation Summary
+	//
+	//	1. Enforce API surface and semantic compatibility with 1.9.x branch
+	//	2. Improve the module's maintainability by reducing the storage
+	//		paths to a single mechanism.
+	//	3. Use the same single mechanism to support "private" and "user" data.
+	//	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
+	//	5. Avoid exposing implementation details on user objects (eg. expando properties)
+	//	6. Provide a clear path for implementation upgrade to WeakMap in 2014
+
+	var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
+		rmultiDash = /[A-Z]/g;
+
+	function dataAttr( elem, key, data ) {
+		var name;
+
+		// If nothing was found internally, try to fetch any
+		// data from the HTML5 data-* attribute
+		if ( data === undefined && elem.nodeType === 1 ) {
+			name = "data-" + key.replace( rmultiDash, "-$&" ).toLowerCase();
+			data = elem.getAttribute( name );
+
+			if ( typeof data === "string" ) {
+				try {
+					data = data === "true" ? true :
+						data === "false" ? false :
+						data === "null" ? null :
+
+						// Only convert to a number if it doesn't change the string
+						+data + "" === data ? +data :
+						rbrace.test( data ) ? jQuery.parseJSON( data ) :
+						data;
+				} catch ( e ) {}
+
+				// Make sure we set the data so it isn't changed later
+				dataUser.set( elem, key, data );
+			} else {
+				data = undefined;
+			}
+		}
+		return data;
+	}
+
+	jQuery.extend( {
+		hasData: function( elem ) {
+			return dataUser.hasData( elem ) || dataPriv.hasData( elem );
+		},
+
+		data: function( elem, name, data ) {
+			return dataUser.access( elem, name, data );
+		},
+
+		removeData: function( elem, name ) {
+			dataUser.remove( elem, name );
+		},
+
+		// TODO: Now that all calls to _data and _removeData have been replaced
+		// with direct calls to dataPriv methods, these can be deprecated.
+		_data: function( elem, name, data ) {
+			return dataPriv.access( elem, name, data );
+		},
+
+		_removeData: function( elem, name ) {
+			dataPriv.remove( elem, name );
+		}
+	} );
+
+	jQuery.fn.extend( {
+		data: function( key, value ) {
+			var i, name, data,
+				elem = this[ 0 ],
+				attrs = elem && elem.attributes;
+
+			// Gets all values
+			if ( key === undefined ) {
+				if ( this.length ) {
+					data = dataUser.get( elem );
+
+					if ( elem.nodeType === 1 && !dataPriv.get( elem, "hasDataAttrs" ) ) {
+						i = attrs.length;
+						while ( i-- ) {
+
+							// Support: IE11+
+							// The attrs elements can be null (#14894)
+							if ( attrs[ i ] ) {
+								name = attrs[ i ].name;
+								if ( name.indexOf( "data-" ) === 0 ) {
+									name = jQuery.camelCase( name.slice( 5 ) );
+									dataAttr( elem, name, data[ name ] );
+								}
+							}
+						}
+						dataPriv.set( elem, "hasDataAttrs", true );
+					}
+				}
+
+				return data;
+			}
+
+			// Sets multiple values
+			if ( typeof key === "object" ) {
+				return this.each( function() {
+					dataUser.set( this, key );
+				} );
+			}
+
+			return access( this, function( value ) {
+				var data, camelKey;
+
+				// The calling jQuery object (element matches) is not empty
+				// (and therefore has an element appears at this[ 0 ]) and the
+				// `value` parameter was not undefined. An empty jQuery object
+				// will result in `undefined` for elem = this[ 0 ] which will
+				// throw an exception if an attempt to read a data cache is made.
+				if ( elem && value === undefined ) {
+
+					// Attempt to get data from the cache
+					// with the key as-is
+					data = dataUser.get( elem, key ) ||
+
+						// Try to find dashed key if it exists (gh-2779)
+						// This is for 2.2.x only
+						dataUser.get( elem, key.replace( rmultiDash, "-$&" ).toLowerCase() );
+
+					if ( data !== undefined ) {
+						return data;
+					}
+
+					camelKey = jQuery.camelCase( key );
+
+					// Attempt to get data from the cache
+					// with the key camelized
+					data = dataUser.get( elem, camelKey );
+					if ( data !== undefined ) {
+						return data;
+					}
+
+					// Attempt to "discover" the data in
+					// HTML5 custom data-* attrs
+					data = dataAttr( elem, camelKey, undefined );
+					if ( data !== undefined ) {
+						return data;
+					}
+
+					// We tried really hard, but the data doesn't exist.
+					return;
+				}
+
+				// Set the data...
+				camelKey = jQuery.camelCase( key );
+				this.each( function() {
+
+					// First, attempt to store a copy or reference of any
+					// data that might've been store with a camelCased key.
+					var data = dataUser.get( this, camelKey );
+
+					// For HTML5 data-* attribute interop, we have to
+					// store property names with dashes in a camelCase form.
+					// This might not apply to all properties...*
+					dataUser.set( this, camelKey, value );
+
+					// *... In the case of properties that might _actually_
+					// have dashes, we need to also store a copy of that
+					// unchanged property.
+					if ( key.indexOf( "-" ) > -1 && data !== undefined ) {
+						dataUser.set( this, key, value );
+					}
+				} );
+			}, null, value, arguments.length > 1, null, true );
+		},
+
+		removeData: function( key ) {
+			return this.each( function() {
+				dataUser.remove( this, key );
+			} );
+		}
+	} );
+
+
+	jQuery.extend( {
+		queue: function( elem, type, data ) {
+			var queue;
+
+			if ( elem ) {
+				type = ( type || "fx" ) + "queue";
+				queue = dataPriv.get( elem, type );
+
+				// Speed up dequeue by getting out quickly if this is just a lookup
+				if ( data ) {
+					if ( !queue || jQuery.isArray( data ) ) {
+						queue = dataPriv.access( elem, type, jQuery.makeArray( data ) );
+					} else {
+						queue.push( data );
+					}
+				}
+				return queue || [];
+			}
+		},
+
+		dequeue: function( elem, type ) {
+			type = type || "fx";
+
+			var queue = jQuery.queue( elem, type ),
+				startLength = queue.length,
+				fn = queue.shift(),
+				hooks = jQuery._queueHooks( elem, type ),
+				next = function() {
+					jQuery.dequeue( elem, type );
+				};
+
+			// If the fx queue is dequeued, always remove the progress sentinel
+			if ( fn === "inprogress" ) {
+				fn = queue.shift();
+				startLength--;
+			}
+
+			if ( fn ) {
+
+				// Add a progress sentinel to prevent the fx queue from being
+				// automatically dequeued
+				if ( type === "fx" ) {
+					queue.unshift( "inprogress" );
+				}
+
+				// Clear up the last queue stop function
+				delete hooks.stop;
+				fn.call( elem, next, hooks );
+			}
+
+			if ( !startLength && hooks ) {
+				hooks.empty.fire();
+			}
+		},
+
+		// Not public - generate a queueHooks object, or return the current one
+		_queueHooks: function( elem, type ) {
+			var key = type + "queueHooks";
+			return dataPriv.get( elem, key ) || dataPriv.access( elem, key, {
+				empty: jQuery.Callbacks( "once memory" ).add( function() {
+					dataPriv.remove( elem, [ type + "queue", key ] );
+				} )
+			} );
+		}
+	} );
+
+	jQuery.fn.extend( {
+		queue: function( type, data ) {
+			var setter = 2;
+
+			if ( typeof type !== "string" ) {
+				data = type;
+				type = "fx";
+				setter--;
+			}
+
+			if ( arguments.length < setter ) {
+				return jQuery.queue( this[ 0 ], type );
+			}
+
+			return data === undefined ?
+				this :
+				this.each( function() {
+					var queue = jQuery.queue( this, type, data );
+
+					// Ensure a hooks for this queue
+					jQuery._queueHooks( this, type );
+
+					if ( type === "fx" && queue[ 0 ] !== "inprogress" ) {
+						jQuery.dequeue( this, type );
+					}
+				} );
+		},
+		dequeue: function( type ) {
+			return this.each( function() {
+				jQuery.dequeue( this, type );
+			} );
+		},
+		clearQueue: function( type ) {
+			return this.queue( type || "fx", [] );
+		},
+
+		// Get a promise resolved when queues of a certain type
+		// are emptied (fx is the type by default)
+		promise: function( type, obj ) {
+			var tmp,
+				count = 1,
+				defer = jQuery.Deferred(),
+				elements = this,
+				i = this.length,
+				resolve = function() {
+					if ( !( --count ) ) {
+						defer.resolveWith( elements, [ elements ] );
+					}
+				};
+
+			if ( typeof type !== "string" ) {
+				obj = type;
+				type = undefined;
+			}
+			type = type || "fx";
+
+			while ( i-- ) {
+				tmp = dataPriv.get( elements[ i ], type + "queueHooks" );
+				if ( tmp && tmp.empty ) {
+					count++;
+					tmp.empty.add( resolve );
+				}
+			}
+			resolve();
+			return defer.promise( obj );
+		}
+	} );
+	var pnum = ( /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/ ).source;
+
+	var rcssNum = new RegExp( "^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i" );
+
+
+	var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
+
+	var isHidden = function( elem, el ) {
+
+			// isHidden might be called from jQuery#filter function;
+			// in that case, element will be second argument
+			elem = el || elem;
+			return jQuery.css( elem, "display" ) === "none" ||
+				!jQuery.contains( elem.ownerDocument, elem );
+		};
+
+
+
+	function adjustCSS( elem, prop, valueParts, tween ) {
+		var adjusted,
+			scale = 1,
+			maxIterations = 20,
+			currentValue = tween ?
+				function() { return tween.cur(); } :
+				function() { return jQuery.css( elem, prop, "" ); },
+			initial = currentValue(),
+			unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
+
+			// Starting value computation is required for potential unit mismatches
+			initialInUnit = ( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
+				rcssNum.exec( jQuery.css( elem, prop ) );
+
+		if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
+
+			// Trust units reported by jQuery.css
+			unit = unit || initialInUnit[ 3 ];
+
+			// Make sure we update the tween properties later on
+			valueParts = valueParts || [];
+
+			// Iteratively approximate from a nonzero starting point
+			initialInUnit = +initial || 1;
+
+			do {
+
+				// If previous iteration zeroed out, double until we get *something*.
+				// Use string for doubling so we don't accidentally see scale as unchanged below
+				scale = scale || ".5";
+
+				// Adjust and apply
+				initialInUnit = initialInUnit / scale;
+				jQuery.style( elem, prop, initialInUnit + unit );
+
+			// Update scale, tolerating zero or NaN from tween.cur()
+			// Break the loop if scale is unchanged or perfect, or if we've just had enough.
+			} while (
+				scale !== ( scale = currentValue() / initial ) && scale !== 1 && --maxIterations
+			);
+		}
+
+		if ( valueParts ) {
+			initialInUnit = +initialInUnit || +initial || 0;
+
+			// Apply relative offset (+=/-=) if specified
+			adjusted = valueParts[ 1 ] ?
+				initialInUnit + ( valueParts[ 1 ] + 1 ) * valueParts[ 2 ] :
+				+valueParts[ 2 ];
+			if ( tween ) {
+				tween.unit = unit;
+				tween.start = initialInUnit;
+				tween.end = adjusted;
+			}
+		}
+		return adjusted;
+	}
+	var rcheckableType = ( /^(?:checkbox|radio)$/i );
+
+	var rtagName = ( /<([\w:-]+)/ );
+
+	var rscriptType = ( /^$|\/(?:java|ecma)script/i );
+
+
+
+	// We have to close these tags to support XHTML (#13200)
+	var wrapMap = {
+
+		// Support: IE9
+		option: [ 1, "<select multiple='multiple'>", "</select>" ],
+
+		// XHTML parsers do not magically insert elements in the
+		// same way that tag soup parsers do. So we cannot shorten
+		// this by omitting <tbody> or other required elements.
+		thead: [ 1, "<table>", "</table>" ],
+		col: [ 2, "<table><colgroup>", "</colgroup></table>" ],
+		tr: [ 2, "<table><tbody>", "</tbody></table>" ],
+		td: [ 3, "<table><tbody><tr>", "</tr></tbody></table>" ],
+
+		_default: [ 0, "", "" ]
+	};
+
+	// Support: IE9
+	wrapMap.optgroup = wrapMap.option;
+
+	wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
+	wrapMap.th = wrapMap.td;
+
+
+	function getAll( context, tag ) {
+
+		// Support: IE9-11+
+		// Use typeof to avoid zero-argument method invocation on host objects (#15151)
+		var ret = typeof context.getElementsByTagName !== "undefined" ?
+				context.getElementsByTagName( tag || "*" ) :
+				typeof context.querySelectorAll !== "undefined" ?
+					context.querySelectorAll( tag || "*" ) :
+				[];
+
+		return tag === undefined || tag && jQuery.nodeName( context, tag ) ?
+			jQuery.merge( [ context ], ret ) :
+			ret;
+	}
+
+
+	// Mark scripts as having already been evaluated
+	function setGlobalEval( elems, refElements ) {
+		var i = 0,
+			l = elems.length;
+
+		for ( ; i < l; i++ ) {
+			dataPriv.set(
+				elems[ i ],
+				"globalEval",
+				!refElements || dataPriv.get( refElements[ i ], "globalEval" )
+			);
+		}
+	}
+
+
+	var rhtml = /<|&#?\w+;/;
+
+	function buildFragment( elems, context, scripts, selection, ignored ) {
+		var elem, tmp, tag, wrap, contains, j,
+			fragment = context.createDocumentFragment(),
+			nodes = [],
+			i = 0,
+			l = elems.length;
+
+		for ( ; i < l; i++ ) {
+			elem = elems[ i ];
+
+			if ( elem || elem === 0 ) {
+
+				// Add nodes directly
+				if ( jQuery.type( elem ) === "object" ) {
+
+					// Support: Android<4.1, PhantomJS<2
+					// push.apply(_, arraylike) throws on ancient WebKit
+					jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
+
+				// Convert non-html into a text node
+				} else if ( !rhtml.test( elem ) ) {
+					nodes.push( context.createTextNode( elem ) );
+
+				// Convert html into DOM nodes
+				} else {
+					tmp = tmp || fragment.appendChild( context.createElement( "div" ) );
+
+					// Deserialize a standard representation
+					tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
+					wrap = wrapMap[ tag ] || wrapMap._default;
+					tmp.innerHTML = wrap[ 1 ] + jQuery.htmlPrefilter( elem ) + wrap[ 2 ];
+
+					// Descend through wrappers to the right content
+					j = wrap[ 0 ];
+					while ( j-- ) {
+						tmp = tmp.lastChild;
+					}
+
+					// Support: Android<4.1, PhantomJS<2
+					// push.apply(_, arraylike) throws on ancient WebKit
+					jQuery.merge( nodes, tmp.childNodes );
+
+					// Remember the top-level container
+					tmp = fragment.firstChild;
+
+					// Ensure the created nodes are orphaned (#12392)
+					tmp.textContent = "";
+				}
+			}
+		}
+
+		// Remove wrapper from fragment
+		fragment.textContent = "";
+
+		i = 0;
+		while ( ( elem = nodes[ i++ ] ) ) {
+
+			// Skip elements already in the context collection (trac-4087)
+			if ( selection && jQuery.inArray( elem, selection ) > -1 ) {
+				if ( ignored ) {
+					ignored.push( elem );
+				}
+				continue;
+			}
+
+			contains = jQuery.contains( elem.ownerDocument, elem );
+
+			// Append to fragment
+			tmp = getAll( fragment.appendChild( elem ), "script" );
+
+			// Preserve script evaluation history
+			if ( contains ) {
+				setGlobalEval( tmp );
+			}
+
+			// Capture executables
+			if ( scripts ) {
+				j = 0;
+				while ( ( elem = tmp[ j++ ] ) ) {
+					if ( rscriptType.test( elem.type || "" ) ) {
+						scripts.push( elem );
+					}
+				}
+			}
+		}
+
+		return fragment;
+	}
+
+
+	( function() {
+		var fragment = document.createDocumentFragment(),
+			div = fragment.appendChild( document.createElement( "div" ) ),
+			input = document.createElement( "input" );
+
+		// Support: Android 4.0-4.3, Safari<=5.1
+		// Check state lost if the name is set (#11217)
+		// Support: Windows Web Apps (WWA)
+		// `name` and `type` must use .setAttribute for WWA (#14901)
+		input.setAttribute( "type", "radio" );
+		input.setAttribute( "checked", "checked" );
+		input.setAttribute( "name", "t" );
+
+		div.appendChild( input );
+
+		// Support: Safari<=5.1, Android<4.2
+		// Older WebKit doesn't clone checked state correctly in fragments
+		support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
+
+		// Support: IE<=11+
+		// Make sure textarea (and checkbox) defaultValue is properly cloned
+		div.innerHTML = "<textarea>x</textarea>";
+		support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
+	} )();
+
+
+	var
+		rkeyEvent = /^key/,
+		rmouseEvent = /^(?:mouse|pointer|contextmenu|drag|drop)|click/,
+		rtypenamespace = /^([^.]*)(?:\.(.+)|)/;
+
+	function returnTrue() {
+		return true;
+	}
+
+	function returnFalse() {
+		return false;
+	}
+
+	// Support: IE9
+	// See #13393 for more info
+	function safeActiveElement() {
+		try {
+			return document.activeElement;
+		} catch ( err ) { }
+	}
+
+	function on( elem, types, selector, data, fn, one ) {
+		var origFn, type;
+
+		// Types can be a map of types/handlers
+		if ( typeof types === "object" ) {
+
+			// ( types-Object, selector, data )
+			if ( typeof selector !== "string" ) {
+
+				// ( types-Object, data )
+				data = data || selector;
+				selector = undefined;
+			}
+			for ( type in types ) {
+				on( elem, type, selector, data, types[ type ], one );
+			}
+			return elem;
+		}
+
+		if ( data == null && fn == null ) {
+
+			// ( types, fn )
+			fn = selector;
+			data = selector = undefined;
+		} else if ( fn == null ) {
+			if ( typeof selector === "string" ) {
+
+				// ( types, selector, fn )
+				fn = data;
+				data = undefined;
+			} else {
+
+				// ( types, data, fn )
+				fn = data;
+				data = selector;
+				selector = undefined;
+			}
+		}
+		if ( fn === false ) {
+			fn = returnFalse;
+		} else if ( !fn ) {
+			return elem;
+		}
+
+		if ( one === 1 ) {
+			origFn = fn;
+			fn = function( event ) {
+
+				// Can use an empty set, since event contains the info
+				jQuery().off( event );
+				return origFn.apply( this, arguments );
+			};
+
+			// Use same guid so caller can remove using origFn
+			fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
+		}
+		return elem.each( function() {
+			jQuery.event.add( this, types, fn, data, selector );
+		} );
+	}
+
+	/*
+	 * Helper functions for managing events -- not part of the public interface.
+	 * Props to Dean Edwards' addEvent library for many of the ideas.
+	 */
+	jQuery.event = {
+
+		global: {},
+
+		add: function( elem, types, handler, data, selector ) {
+
+			var handleObjIn, eventHandle, tmp,
+				events, t, handleObj,
+				special, handlers, type, namespaces, origType,
+				elemData = dataPriv.get( elem );
+
+			// Don't attach events to noData or text/comment nodes (but allow plain objects)
+			if ( !elemData ) {
+				return;
+			}
+
+			// Caller can pass in an object of custom data in lieu of the handler
+			if ( handler.handler ) {
+				handleObjIn = handler;
+				handler = handleObjIn.handler;
+				selector = handleObjIn.selector;
+			}
+
+			// Make sure that the handler has a unique ID, used to find/remove it later
+			if ( !handler.guid ) {
+				handler.guid = jQuery.guid++;
+			}
+
+			// Init the element's event structure and main handler, if this is the first
+			if ( !( events = elemData.events ) ) {
+				events = elemData.events = {};
+			}
+			if ( !( eventHandle = elemData.handle ) ) {
+				eventHandle = elemData.handle = function( e ) {
+
+					// Discard the second event of a jQuery.event.trigger() and
+					// when an event is called after a page has unloaded
+					return typeof jQuery !== "undefined" && jQuery.event.triggered !== e.type ?
+						jQuery.event.dispatch.apply( elem, arguments ) : undefined;
+				};
+			}
+
+			// Handle multiple events separated by a space
+			types = ( types || "" ).match( rnotwhite ) || [ "" ];
+			t = types.length;
+			while ( t-- ) {
+				tmp = rtypenamespace.exec( types[ t ] ) || [];
+				type = origType = tmp[ 1 ];
+				namespaces = ( tmp[ 2 ] || "" ).split( "." ).sort();
+
+				// There *must* be a type, no attaching namespace-only handlers
+				if ( !type ) {
+					continue;
+				}
+
+				// If event changes its type, use the special event handlers for the changed type
+				special = jQuery.event.special[ type ] || {};
+
+				// If selector defined, determine special event api type, otherwise given type
+				type = ( selector ? special.delegateType : special.bindType ) || type;
+
+				// Update special based on newly reset type
+				special = jQuery.event.special[ type ] || {};
+
+				// handleObj is passed to all event handlers
+				handleObj = jQuery.extend( {
+					type: type,
+					origType: origType,
+					data: data,
+					handler: handler,
+					guid: handler.guid,
+					selector: selector,
+					needsContext: selector && jQuery.expr.match.needsContext.test( selector ),
+					namespace: namespaces.join( "." )
+				}, handleObjIn );
+
+				// Init the event handler queue if we're the first
+				if ( !( handlers = events[ type ] ) ) {
+					handlers = events[ type ] = [];
+					handlers.delegateCount = 0;
+
+					// Only use addEventListener if the special events handler returns false
+					if ( !special.setup ||
+						special.setup.call( elem, data, namespaces, eventHandle ) === false ) {
+
+						if ( elem.addEventListener ) {
+							elem.addEventListener( type, eventHandle );
+						}
+					}
+				}
+
+				if ( special.add ) {
+					special.add.call( elem, handleObj );
+
+					if ( !handleObj.handler.guid ) {
+						handleObj.handler.guid = handler.guid;
+					}
+				}
+
+				// Add to the element's handler list, delegates in front
+				if ( selector ) {
+					handlers.splice( handlers.delegateCount++, 0, handleObj );
+				} else {
+					handlers.push( handleObj );
+				}
+
+				// Keep track of which events have ever been used, for event optimization
+				jQuery.event.global[ type ] = true;
+			}
+
+		},
+
+		// Detach an event or set of events from an element
+		remove: function( elem, types, handler, selector, mappedTypes ) {
+
+			var j, origCount, tmp,
+				events, t, handleObj,
+				special, handlers, type, namespaces, origType,
+				elemData = dataPriv.hasData( elem ) && dataPriv.get( elem );
+
+			if ( !elemData || !( events = elemData.events ) ) {
+				return;
+			}
+
+			// Once for each type.namespace in types; type may be omitted
+			types = ( types || "" ).match( rnotwhite ) || [ "" ];
+			t = types.length;
+			while ( t-- ) {
+				tmp = rtypenamespace.exec( types[ t ] ) || [];
+				type = origType = tmp[ 1 ];
+				namespaces = ( tmp[ 2 ] || "" ).split( "." ).sort();
+
+				// Unbind all events (on this namespace, if provided) for the element
+				if ( !type ) {
+					for ( type in events ) {
+						jQuery.event.remove( elem, type + types[ t ], handler, selector, true );
+					}
+					continue;
+				}
+
+				special = jQuery.event.special[ type ] || {};
+				type = ( selector ? special.delegateType : special.bindType ) || type;
+				handlers = events[ type ] || [];
+				tmp = tmp[ 2 ] &&
+					new RegExp( "(^|\\.)" + namespaces.join( "\\.(?:.*\\.|)" ) + "(\\.|$)" );
+
+				// Remove matching events
+				origCount = j = handlers.length;
+				while ( j-- ) {
+					handleObj = handlers[ j ];
+
+					if ( ( mappedTypes || origType === handleObj.origType ) &&
+						( !handler || handler.guid === handleObj.guid ) &&
+						( !tmp || tmp.test( handleObj.namespace ) ) &&
+						( !selector || selector === handleObj.selector ||
+							selector === "**" && handleObj.selector ) ) {
+						handlers.splice( j, 1 );
+
+						if ( handleObj.selector ) {
+							handlers.delegateCount--;
+						}
+						if ( special.remove ) {
+							special.remove.call( elem, handleObj );
+						}
+					}
+				}
+
+				// Remove generic event handler if we removed something and no more handlers exist
+				// (avoids potential for endless recursion during removal of special event handlers)
+				if ( origCount && !handlers.length ) {
+					if ( !special.teardown ||
+						special.teardown.call( elem, namespaces, elemData.handle ) === false ) {
+
+						jQuery.removeEvent( elem, type, elemData.handle );
+					}
+
+					delete events[ type ];
+				}
+			}
+
+			// Remove data and the expando if it's no longer used
+			if ( jQuery.isEmptyObject( events ) ) {
+				dataPriv.remove( elem, "handle events" );
+			}
+		},
+
+		dispatch: function( event ) {
+
+			// Make a writable jQuery.Event from the native event object
+			event = jQuery.event.fix( event );
+
+			var i, j, ret, matched, handleObj,
+				handlerQueue = [],
+				args = slice.call( arguments ),
+				handlers = ( dataPriv.get( this, "events" ) || {} )[ event.type ] || [],
+				special = jQuery.event.special[ event.type ] || {};
+
+			// Use the fix-ed jQuery.Event rather than the (read-only) native event
+			args[ 0 ] = event;
+			event.delegateTarget = this;
+
+			// Call the preDispatch hook for the mapped type, and let it bail if desired
+			if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
+				return;
+			}
+
+			// Determine handlers
+			handlerQueue = jQuery.event.handlers.call( this, event, handlers );
+
+			// Run delegates first; they may want to stop propagation beneath us
+			i = 0;
+			while ( ( matched = handlerQueue[ i++ ] ) && !event.isPropagationStopped() ) {
+				event.currentTarget = matched.elem;
+
+				j = 0;
+				while ( ( handleObj = matched.handlers[ j++ ] ) &&
+					!event.isImmediatePropagationStopped() ) {
+
+					// Triggered event must either 1) have no namespace, or 2) have namespace(s)
+					// a subset or equal to those in the bound event (both can have no namespace).
+					if ( !event.rnamespace || event.rnamespace.test( handleObj.namespace ) ) {
+
+						event.handleObj = handleObj;
+						event.data = handleObj.data;
+
+						ret = ( ( jQuery.event.special[ handleObj.origType ] || {} ).handle ||
+							handleObj.handler ).apply( matched.elem, args );
+
+						if ( ret !== undefined ) {
+							if ( ( event.result = ret ) === false ) {
+								event.preventDefault();
+								event.stopPropagation();
+							}
+						}
+					}
+				}
+			}
+
+			// Call the postDispatch hook for the mapped type
+			if ( special.postDispatch ) {
+				special.postDispatch.call( this, event );
+			}
+
+			return event.result;
+		},
+
+		handlers: function( event, handlers ) {
+			var i, matches, sel, handleObj,
+				handlerQueue = [],
+				delegateCount = handlers.delegateCount,
+				cur = event.target;
+
+			// Support (at least): Chrome, IE9
+			// Find delegate handlers
+			// Black-hole SVG <use> instance trees (#13180)
+			//
+			// Support: Firefox<=42+
+			// Avoid non-left-click in FF but don't block IE radio events (#3861, gh-2343)
+			if ( delegateCount && cur.nodeType &&
+				( event.type !== "click" || isNaN( event.button ) || event.button < 1 ) ) {
+
+				for ( ; cur !== this; cur = cur.parentNode || this ) {
+
+					// Don't check non-elements (#13208)
+					// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
+					if ( cur.nodeType === 1 && ( cur.disabled !== true || event.type !== "click" ) ) {
+						matches = [];
+						for ( i = 0; i < delegateCount; i++ ) {
+							handleObj = handlers[ i ];
+
+							// Don't conflict with Object.prototype properties (#13203)
+							sel = handleObj.selector + " ";
+
+							if ( matches[ sel ] === undefined ) {
+								matches[ sel ] = handleObj.needsContext ?
+									jQuery( sel, this ).index( cur ) > -1 :
+									jQuery.find( sel, this, null, [ cur ] ).length;
+							}
+							if ( matches[ sel ] ) {
+								matches.push( handleObj );
+							}
+						}
+						if ( matches.length ) {
+							handlerQueue.push( { elem: cur, handlers: matches } );
+						}
+					}
+				}
+			}
+
+			// Add the remaining (directly-bound) handlers
+			if ( delegateCount < handlers.length ) {
+				handlerQueue.push( { elem: this, handlers: handlers.slice( delegateCount ) } );
+			}
+
+			return handlerQueue;
+		},
+
+		// Includes some event props shared by KeyEvent and MouseEvent
+		props: ( "altKey bubbles cancelable ctrlKey currentTarget detail eventPhase " +
+			"metaKey relatedTarget shiftKey target timeStamp view which" ).split( " " ),
+
+		fixHooks: {},
+
+		keyHooks: {
+			props: "char charCode key keyCode".split( " " ),
+			filter: function( event, original ) {
+
+				// Add which for key events
+				if ( event.which == null ) {
+					event.which = original.charCode != null ? original.charCode : original.keyCode;
+				}
+
+				return event;
+			}
+		},
+
+		mouseHooks: {
+			props: ( "button buttons clientX clientY offsetX offsetY pageX pageY " +
+				"screenX screenY toElement" ).split( " " ),
+			filter: function( event, original ) {
+				var eventDoc, doc, body,
+					button = original.button;
+
+				// Calculate pageX/Y if missing and clientX/Y available
+				if ( event.pageX == null && original.clientX != null ) {
+					eventDoc = event.target.ownerDocument || document;
+					doc = eventDoc.documentElement;
+					body = eventDoc.body;
+
+					event.pageX = original.clientX +
+						( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) -
+						( doc && doc.clientLeft || body && body.clientLeft || 0 );
+					event.pageY = original.clientY +
+						( doc && doc.scrollTop  || body && body.scrollTop  || 0 ) -
+						( doc && doc.clientTop  || body && body.clientTop  || 0 );
+				}
+
+				// Add which for click: 1 === left; 2 === middle; 3 === right
+				// Note: button is not normalized, so don't use it
+				if ( !event.which && button !== undefined ) {
+					event.which = ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
+				}
+
+				return event;
+			}
+		},
+
+		fix: function( event ) {
+			if ( event[ jQuery.expando ] ) {
+				return event;
+			}
+
+			// Create a writable copy of the event object and normalize some properties
+			var i, prop, copy,
+				type = event.type,
+				originalEvent = event,
+				fixHook = this.fixHooks[ type ];
+
+			if ( !fixHook ) {
+				this.fixHooks[ type ] = fixHook =
+					rmouseEvent.test( type ) ? this.mouseHooks :
+					rkeyEvent.test( type ) ? this.keyHooks :
+					{};
+			}
+			copy = fixHook.props ? this.props.concat( fixHook.props ) : this.props;
+
+			event = new jQuery.Event( originalEvent );
+
+			i = copy.length;
+			while ( i-- ) {
+				prop = copy[ i ];
+				event[ prop ] = originalEvent[ prop ];
+			}
+
+			// Support: Cordova 2.5 (WebKit) (#13255)
+			// All events should have a target; Cordova deviceready doesn't
+			if ( !event.target ) {
+				event.target = document;
+			}
+
+			// Support: Safari 6.0+, Chrome<28
+			// Target should not be a text node (#504, #13143)
+			if ( event.target.nodeType === 3 ) {
+				event.target = event.target.parentNode;
+			}
+
+			return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
+		},
+
+		special: {
+			load: {
+
+				// Prevent triggered image.load events from bubbling to window.load
+				noBubble: true
+			},
+			focus: {
+
+				// Fire native event if possible so blur/focus sequence is correct
+				trigger: function() {
+					if ( this !== safeActiveElement() && this.focus ) {
+						this.focus();
+						return false;
+					}
+				},
+				delegateType: "focusin"
+			},
+			blur: {
+				trigger: function() {
+					if ( this === safeActiveElement() && this.blur ) {
+						this.blur();
+						return false;
+					}
+				},
+				delegateType: "focusout"
+			},
+			click: {
+
+				// For checkbox, fire native event so checked state will be right
+				trigger: function() {
+					if ( this.type === "checkbox" && this.click && jQuery.nodeName( this, "input" ) ) {
+						this.click();
+						return false;
+					}
+				},
+
+				// For cross-browser consistency, don't fire native .click() on links
+				_default: function( event ) {
+					return jQuery.nodeName( event.target, "a" );
+				}
+			},
+
+			beforeunload: {
+				postDispatch: function( event ) {
+
+					// Support: Firefox 20+
+					// Firefox doesn't alert if the returnValue field is not set.
+					if ( event.result !== undefined && event.originalEvent ) {
+						event.originalEvent.returnValue = event.result;
+					}
+				}
+			}
+		}
+	};
+
+	jQuery.removeEvent = function( elem, type, handle ) {
+
+		// This "if" is needed for plain objects
+		if ( elem.removeEventListener ) {
+			elem.removeEventListener( type, handle );
+		}
+	};
+
+	jQuery.Event = function( src, props ) {
+
+		// Allow instantiation without the 'new' keyword
+		if ( !( this instanceof jQuery.Event ) ) {
+			return new jQuery.Event( src, props );
+		}
+
+		// Event object
+		if ( src && src.type ) {
+			this.originalEvent = src;
+			this.type = src.type;
+
+			// Events bubbling up the document may have been marked as prevented
+			// by a handler lower down the tree; reflect the correct value.
+			this.isDefaultPrevented = src.defaultPrevented ||
+					src.defaultPrevented === undefined &&
+
+					// Support: Android<4.0
+					src.returnValue === false ?
+				returnTrue :
+				returnFalse;
+
+		// Event type
+		} else {
+			this.type = src;
+		}
+
+		// Put explicitly provided properties onto the event object
+		if ( props ) {
+			jQuery.extend( this, props );
+		}
+
+		// Create a timestamp if incoming event doesn't have one
+		this.timeStamp = src && src.timeStamp || jQuery.now();
+
+		// Mark it as fixed
+		this[ jQuery.expando ] = true;
+	};
+
+	// jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
+	// http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
+	jQuery.Event.prototype = {
+		constructor: jQuery.Event,
+		isDefaultPrevented: returnFalse,
+		isPropagationStopped: returnFalse,
+		isImmediatePropagationStopped: returnFalse,
+
+		preventDefault: function() {
+			var e = this.originalEvent;
+
+			this.isDefaultPrevented = returnTrue;
+
+			if ( e ) {
+				e.preventDefault();
+			}
+		},
+		stopPropagation: function() {
+			var e = this.originalEvent;
+
+			this.isPropagationStopped = returnTrue;
+
+			if ( e ) {
+				e.stopPropagation();
+			}
+		},
+		stopImmediatePropagation: function() {
+			var e = this.originalEvent;
+
+			this.isImmediatePropagationStopped = returnTrue;
+
+			if ( e ) {
+				e.stopImmediatePropagation();
+			}
+
+			this.stopPropagation();
+		}
+	};
+
+	// Create mouseenter/leave events using mouseover/out and event-time checks
+	// so that event delegation works in jQuery.
+	// Do the same for pointerenter/pointerleave and pointerover/pointerout
+	//
+	// Support: Safari 7 only
+	// Safari sends mouseenter too often; see:
+	// https://code.google.com/p/chromium/issues/detail?id=470258
+	// for the description of the bug (it existed in older Chrome versions as well).
+	jQuery.each( {
+		mouseenter: "mouseover",
+		mouseleave: "mouseout",
+		pointerenter: "pointerover",
+		pointerleave: "pointerout"
+	}, function( orig, fix ) {
+		jQuery.event.special[ orig ] = {
+			delegateType: fix,
+			bindType: fix,
+
+			handle: function( event ) {
+				var ret,
+					target = this,
+					related = event.relatedTarget,
+					handleObj = event.handleObj;
+
+				// For mouseenter/leave call the handler if related is outside the target.
+				// NB: No relatedTarget if the mouse left/entered the browser window
+				if ( !related || ( related !== target && !jQuery.contains( target, related ) ) ) {
+					event.type = handleObj.origType;
+					ret = handleObj.handler.apply( this, arguments );
+					event.type = fix;
+				}
+				return ret;
+			}
+		};
+	} );
+
+	jQuery.fn.extend( {
+		on: function( types, selector, data, fn ) {
+			return on( this, types, selector, data, fn );
+		},
+		one: function( types, selector, data, fn ) {
+			return on( this, types, selector, data, fn, 1 );
+		},
+		off: function( types, selector, fn ) {
+			var handleObj, type;
+			if ( types && types.preventDefault && types.handleObj ) {
+
+				// ( event )  dispatched jQuery.Event
+				handleObj = types.handleObj;
+				jQuery( types.delegateTarget ).off(
+					handleObj.namespace ?
+						handleObj.origType + "." + handleObj.namespace :
+						handleObj.origType,
+					handleObj.selector,
+					handleObj.handler
+				);
+				return this;
+			}
+			if ( typeof types === "object" ) {
+
+				// ( types-object [, selector] )
+				for ( type in types ) {
+					this.off( type, selector, types[ type ] );
+				}
+				return this;
+			}
+			if ( selector === false || typeof selector === "function" ) {
+
+				// ( types [, fn] )
+				fn = selector;
+				selector = undefined;
+			}
+			if ( fn === false ) {
+				fn = returnFalse;
+			}
+			return this.each( function() {
+				jQuery.event.remove( this, types, fn, selector );
+			} );
+		}
+	} );
+
+
+	var
+		rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:-]+)[^>]*)\/>/gi,
+
+		// Support: IE 10-11, Edge 10240+
+		// In IE/Edge using regex groups here causes severe slowdowns.
+		// See https://connect.microsoft.com/IE/feedback/details/1736512/
+		rnoInnerhtml = /<script|<style|<link/i,
+
+		// checked="checked" or checked
+		rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
+		rscriptTypeMasked = /^true\/(.*)/,
+		rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
+
+	// Manipulating tables requires a tbody
+	function manipulationTarget( elem, content ) {
+		return jQuery.nodeName( elem, "table" ) &&
+			jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ?
+
+			elem.getElementsByTagName( "tbody" )[ 0 ] ||
+				elem.appendChild( elem.ownerDocument.createElement( "tbody" ) ) :
+			elem;
+	}
+
+	// Replace/restore the type attribute of script elements for safe DOM manipulation
+	function disableScript( elem ) {
+		elem.type = ( elem.getAttribute( "type" ) !== null ) + "/" + elem.type;
+		return elem;
+	}
+	function restoreScript( elem ) {
+		var match = rscriptTypeMasked.exec( elem.type );
+
+		if ( match ) {
+			elem.type = match[ 1 ];
+		} else {
+			elem.removeAttribute( "type" );
+		}
+
+		return elem;
+	}
+
+	function cloneCopyEvent( src, dest ) {
+		var i, l, type, pdataOld, pdataCur, udataOld, udataCur, events;
+
+		if ( dest.nodeType !== 1 ) {
+			return;
+		}
+
+		// 1. Copy private data: events, handlers, etc.
+		if ( dataPriv.hasData( src ) ) {
+			pdataOld = dataPriv.access( src );
+			pdataCur = dataPriv.set( dest, pdataOld );
+			events = pdataOld.events;
+
+			if ( events ) {
+				delete pdataCur.handle;
+				pdataCur.events = {};
+
+				for ( type in events ) {
+					for ( i = 0, l = events[ type ].length; i < l; i++ ) {
+						jQuery.event.add( dest, type, events[ type ][ i ] );
+					}
+				}
+			}
+		}
+
+		// 2. Copy user data
+		if ( dataUser.hasData( src ) ) {
+			udataOld = dataUser.access( src );
+			udataCur = jQuery.extend( {}, udataOld );
+
+			dataUser.set( dest, udataCur );
+		}
+	}
+
+	// Fix IE bugs, see support tests
+	function fixInput( src, dest ) {
+		var nodeName = dest.nodeName.toLowerCase();
+
+		// Fails to persist the checked state of a cloned checkbox or radio button.
+		if ( nodeName === "input" && rcheckableType.test( src.type ) ) {
+			dest.checked = src.checked;
+
+		// Fails to return the selected option to the default selected state when cloning options
+		} else if ( nodeName === "input" || nodeName === "textarea" ) {
+			dest.defaultValue = src.defaultValue;
+		}
+	}
+
+	function domManip( collection, args, callback, ignored ) {
+
+		// Flatten any nested arrays
+		args = concat.apply( [], args );
+
+		var fragment, first, scripts, hasScripts, node, doc,
+			i = 0,
+			l = collection.length,
+			iNoClone = l - 1,
+			value = args[ 0 ],
+			isFunction = jQuery.isFunction( value );
+
+		// We can't cloneNode fragments that contain checked, in WebKit
+		if ( isFunction ||
+				( l > 1 && typeof value === "string" &&
+					!support.checkClone && rchecked.test( value ) ) ) {
+			return collection.each( function( index ) {
+				var self = collection.eq( index );
+				if ( isFunction ) {
+					args[ 0 ] = value.call( this, index, self.html() );
+				}
+				domManip( self, args, callback, ignored );
+			} );
+		}
+
+		if ( l ) {
+			fragment = buildFragment( args, collection[ 0 ].ownerDocument, false, collection, ignored );
+			first = fragment.firstChild;
+
+			if ( fragment.childNodes.length === 1 ) {
+				fragment = first;
+			}
+
+			// Require either new content or an interest in ignored elements to invoke the callback
+			if ( first || ignored ) {
+				scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
+				hasScripts = scripts.length;
+
+				// Use the original fragment for the last item
+				// instead of the first because it can end up
+				// being emptied incorrectly in certain situations (#8070).
+				for ( ; i < l; i++ ) {
+					node = fragment;
+
+					if ( i !== iNoClone ) {
+						node = jQuery.clone( node, true, true );
+
+						// Keep references to cloned scripts for later restoration
+						if ( hasScripts ) {
+
+							// Support: Android<4.1, PhantomJS<2
+							// push.apply(_, arraylike) throws on ancient WebKit
+							jQuery.merge( scripts, getAll( node, "script" ) );
+						}
+					}
+
+					callback.call( collection[ i ], node, i );
+				}
+
+				if ( hasScripts ) {
+					doc = scripts[ scripts.length - 1 ].ownerDocument;
+
+					// Reenable scripts
+					jQuery.map( scripts, restoreScript );
+
+					// Evaluate executable scripts on first document insertion
+					for ( i = 0; i < hasScripts; i++ ) {
+						node = scripts[ i ];
+						if ( rscriptType.test( node.type || "" ) &&
+							!dataPriv.access( node, "globalEval" ) &&
+							jQuery.contains( doc, node ) ) {
+
+							if ( node.src ) {
+
+								// Optional AJAX dependency, but won't run scripts if not present
+								if ( jQuery._evalUrl ) {
+									jQuery._evalUrl( node.src );
+								}
+							} else {
+								jQuery.globalEval( node.textContent.replace( rcleanScript, "" ) );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return collection;
+	}
+
+	function remove( elem, selector, keepData ) {
+		var node,
+			nodes = selector ? jQuery.filter( selector, elem ) : elem,
+			i = 0;
+
+		for ( ; ( node = nodes[ i ] ) != null; i++ ) {
+			if ( !keepData && node.nodeType === 1 ) {
+				jQuery.cleanData( getAll( node ) );
+			}
+
+			if ( node.parentNode ) {
+				if ( keepData && jQuery.contains( node.ownerDocument, node ) ) {
+					setGlobalEval( getAll( node, "script" ) );
+				}
+				node.parentNode.removeChild( node );
+			}
+		}
+
+		return elem;
+	}
+
+	jQuery.extend( {
+		htmlPrefilter: function( html ) {
+			return html.replace( rxhtmlTag, "<$1></$2>" );
+		},
+
+		clone: function( elem, dataAndEvents, deepDataAndEvents ) {
+			var i, l, srcElements, destElements,
+				clone = elem.cloneNode( true ),
+				inPage = jQuery.contains( elem.ownerDocument, elem );
+
+			// Fix IE cloning issues
+			if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
+					!jQuery.isXMLDoc( elem ) ) {
+
+				// We eschew Sizzle here for performance reasons: http://jsperf.com/getall-vs-sizzle/2
+				destElements = getAll( clone );
+				srcElements = getAll( elem );
+
+				for ( i = 0, l = srcElements.length; i < l; i++ ) {
+					fixInput( srcElements[ i ], destElements[ i ] );
+				}
+			}
+
+			// Copy the events from the original to the clone
+			if ( dataAndEvents ) {
+				if ( deepDataAndEvents ) {
+					srcElements = srcElements || getAll( elem );
+					destElements = destElements || getAll( clone );
+
+					for ( i = 0, l = srcElements.length; i < l; i++ ) {
+						cloneCopyEvent( srcElements[ i ], destElements[ i ] );
+					}
+				} else {
+					cloneCopyEvent( elem, clone );
+				}
+			}
+
+			// Preserve script evaluation history
+			destElements = getAll( clone, "script" );
+			if ( destElements.length > 0 ) {
+				setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
+			}
+
+			// Return the cloned set
+			return clone;
+		},
+
+		cleanData: function( elems ) {
+			var data, elem, type,
+				special = jQuery.event.special,
+				i = 0;
+
+			for ( ; ( elem = elems[ i ] ) !== undefined; i++ ) {
+				if ( acceptData( elem ) ) {
+					if ( ( data = elem[ dataPriv.expando ] ) ) {
+						if ( data.events ) {
+							for ( type in data.events ) {
+								if ( special[ type ] ) {
+									jQuery.event.remove( elem, type );
+
+								// This is a shortcut to avoid jQuery.event.remove's overhead
+								} else {
+									jQuery.removeEvent( elem, type, data.handle );
+								}
+							}
+						}
+
+						// Support: Chrome <= 35-45+
+						// Assign undefined instead of using delete, see Data#remove
+						elem[ dataPriv.expando ] = undefined;
+					}
+					if ( elem[ dataUser.expando ] ) {
+
+						// Support: Chrome <= 35-45+
+						// Assign undefined instead of using delete, see Data#remove
+						elem[ dataUser.expando ] = undefined;
+					}
+				}
+			}
+		}
+	} );
+
+	jQuery.fn.extend( {
+
+		// Keep domManip exposed until 3.0 (gh-2225)
+		domManip: domManip,
+
+		detach: function( selector ) {
+			return remove( this, selector, true );
+		},
+
+		remove: function( selector ) {
+			return remove( this, selector );
+		},
+
+		text: function( value ) {
+			return access( this, function( value ) {
+				return value === undefined ?
+					jQuery.text( this ) :
+					this.empty().each( function() {
+						if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
+							this.textContent = value;
+						}
+					} );
+			}, null, value, arguments.length );
+		},
+
+		append: function() {
+			return domManip( this, arguments, function( elem ) {
+				if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
+					var target = manipulationTarget( this, elem );
+					target.appendChild( elem );
+				}
+			} );
+		},
+
+		prepend: function() {
+			return domManip( this, arguments, function( elem ) {
+				if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
+					var target = manipulationTarget( this, elem );
+					target.insertBefore( elem, target.firstChild );
+				}
+			} );
+		},
+
+		before: function() {
+			return domManip( this, arguments, function( elem ) {
+				if ( this.parentNode ) {
+					this.parentNode.insertBefore( elem, this );
+				}
+			} );
+		},
+
+		after: function() {
+			return domManip( this, arguments, function( elem ) {
+				if ( this.parentNode ) {
+					this.parentNode.insertBefore( elem, this.nextSibling );
+				}
+			} );
+		},
+
+		empty: function() {
+			var elem,
+				i = 0;
+
+			for ( ; ( elem = this[ i ] ) != null; i++ ) {
+				if ( elem.nodeType === 1 ) {
+
+					// Prevent memory leaks
+					jQuery.cleanData( getAll( elem, false ) );
+
+					// Remove any remaining nodes
+					elem.textContent = "";
+				}
+			}
+
+			return this;
+		},
+
+		clone: function( dataAndEvents, deepDataAndEvents ) {
+			dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
+			deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
+
+			return this.map( function() {
+				return jQuery.clone( this, dataAndEvents, deepDataAndEvents );
+			} );
+		},
+
+		html: function( value ) {
+			return access( this, function( value ) {
+				var elem = this[ 0 ] || {},
+					i = 0,
+					l = this.length;
+
+				if ( value === undefined && elem.nodeType === 1 ) {
+					return elem.innerHTML;
+				}
+
+				// See if we can take a shortcut and just use innerHTML
+				if ( typeof value === "string" && !rnoInnerhtml.test( value ) &&
+					!wrapMap[ ( rtagName.exec( value ) || [ "", "" ] )[ 1 ].toLowerCase() ] ) {
+
+					value = jQuery.htmlPrefilter( value );
+
+					try {
+						for ( ; i < l; i++ ) {
+							elem = this[ i ] || {};
+
+							// Remove element nodes and prevent memory leaks
+							if ( elem.nodeType === 1 ) {
+								jQuery.cleanData( getAll( elem, false ) );
+								elem.innerHTML = value;
+							}
+						}
+
+						elem = 0;
+
+					// If using innerHTML throws an exception, use the fallback method
+					} catch ( e ) {}
+				}
+
+				if ( elem ) {
+					this.empty().append( value );
+				}
+			}, null, value, arguments.length );
+		},
+
+		replaceWith: function() {
+			var ignored = [];
+
+			// Make the changes, replacing each non-ignored context element with the new content
+			return domManip( this, arguments, function( elem ) {
+				var parent = this.parentNode;
+
+				if ( jQuery.inArray( this, ignored ) < 0 ) {
+					jQuery.cleanData( getAll( this ) );
+					if ( parent ) {
+						parent.replaceChild( elem, this );
+					}
+				}
+
+			// Force callback invocation
+			}, ignored );
+		}
+	} );
+
+	jQuery.each( {
+		appendTo: "append",
+		prependTo: "prepend",
+		insertBefore: "before",
+		insertAfter: "after",
+		replaceAll: "replaceWith"
+	}, function( name, original ) {
+		jQuery.fn[ name ] = function( selector ) {
+			var elems,
+				ret = [],
+				insert = jQuery( selector ),
+				last = insert.length - 1,
+				i = 0;
+
+			for ( ; i <= last; i++ ) {
+				elems = i === last ? this : this.clone( true );
+				jQuery( insert[ i ] )[ original ]( elems );
+
+				// Support: QtWebKit
+				// .get() because push.apply(_, arraylike) throws
+				push.apply( ret, elems.get() );
+			}
+
+			return this.pushStack( ret );
+		};
+	} );
+
+
+	var iframe,
+		elemdisplay = {
+
+			// Support: Firefox
+			// We have to pre-define these values for FF (#10227)
+			HTML: "block",
+			BODY: "block"
+		};
+
+	/**
+	 * Retrieve the actual display of a element
+	 * @param {String} name nodeName of the element
+	 * @param {Object} doc Document object
+	 */
+
+	// Called only from within defaultDisplay
+	function actualDisplay( name, doc ) {
+		var elem = jQuery( doc.createElement( name ) ).appendTo( doc.body ),
+
+			display = jQuery.css( elem[ 0 ], "display" );
+
+		// We don't have any data stored on the element,
+		// so use "detach" method as fast way to get rid of the element
+		elem.detach();
+
+		return display;
+	}
+
+	/**
+	 * Try to determine the default display value of an element
+	 * @param {String} nodeName
+	 */
+	function defaultDisplay( nodeName ) {
+		var doc = document,
+			display = elemdisplay[ nodeName ];
+
+		if ( !display ) {
+			display = actualDisplay( nodeName, doc );
+
+			// If the simple way fails, read from inside an iframe
+			if ( display === "none" || !display ) {
+
+				// Use the already-created iframe if possible
+				iframe = ( iframe || jQuery( "<iframe frameborder='0' width='0' height='0'/>" ) )
+					.appendTo( doc.documentElement );
+
+				// Always write a new HTML skeleton so Webkit and Firefox don't choke on reuse
+				doc = iframe[ 0 ].contentDocument;
+
+				// Support: IE
+				doc.write();
+				doc.close();
+
+				display = actualDisplay( nodeName, doc );
+				iframe.detach();
+			}
+
+			// Store the correct default display
+			elemdisplay[ nodeName ] = display;
+		}
+
+		return display;
+	}
+	var rmargin = ( /^margin/ );
+
+	var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
+
+	var getStyles = function( elem ) {
+
+			// Support: IE<=11+, Firefox<=30+ (#15098, #14150)
+			// IE throws on elements created in popups
+			// FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
+			var view = elem.ownerDocument.defaultView;
+
+			if ( !view || !view.opener ) {
+				view = window;
+			}
+
+			return view.getComputedStyle( elem );
+		};
+
+	var swap = function( elem, options, callback, args ) {
+		var ret, name,
+			old = {};
+
+		// Remember the old values, and insert the new ones
+		for ( name in options ) {
+			old[ name ] = elem.style[ name ];
+			elem.style[ name ] = options[ name ];
+		}
+
+		ret = callback.apply( elem, args || [] );
+
+		// Revert the old values
+		for ( name in options ) {
+			elem.style[ name ] = old[ name ];
+		}
+
+		return ret;
+	};
+
+
+	var documentElement = document.documentElement;
+
+
+
+	( function() {
+		var pixelPositionVal, boxSizingReliableVal, pixelMarginRightVal, reliableMarginLeftVal,
+			container = document.createElement( "div" ),
+			div = document.createElement( "div" );
+
+		// Finish early in limited (non-browser) environments
+		if ( !div.style ) {
+			return;
+		}
+
+		// Support: IE9-11+
+		// Style of cloned element affects source element cloned (#8908)
+		div.style.backgroundClip = "content-box";
+		div.cloneNode( true ).style.backgroundClip = "";
+		support.clearCloneStyle = div.style.backgroundClip === "content-box";
+
+		container.style.cssText = "border:0;width:8px;height:0;top:0;left:-9999px;" +
+			"padding:0;margin-top:1px;position:absolute";
+		container.appendChild( div );
+
+		// Executing both pixelPosition & boxSizingReliable tests require only one layout
+		// so they're executed at the same time to save the second computation.
+		function computeStyleTests() {
+			div.style.cssText =
+
+				// Support: Firefox<29, Android 2.3
+				// Vendor-prefix box-sizing
+				"-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;" +
+				"position:relative;display:block;" +
+				"margin:auto;border:1px;padding:1px;" +
+				"top:1%;width:50%";
+			div.innerHTML = "";
+			documentElement.appendChild( container );
+
+			var divStyle = window.getComputedStyle( div );
+			pixelPositionVal = divStyle.top !== "1%";
+			reliableMarginLeftVal = divStyle.marginLeft === "2px";
+			boxSizingReliableVal = divStyle.width === "4px";
+
+			// Support: Android 4.0 - 4.3 only
+			// Some styles come back with percentage values, even though they shouldn't
+			div.style.marginRight = "50%";
+			pixelMarginRightVal = divStyle.marginRight === "4px";
+
+			documentElement.removeChild( container );
+		}
+
+		jQuery.extend( support, {
+			pixelPosition: function() {
+
+				// This test is executed only once but we still do memoizing
+				// since we can use the boxSizingReliable pre-computing.
+				// No need to check if the test was already performed, though.
+				computeStyleTests();
+				return pixelPositionVal;
+			},
+			boxSizingReliable: function() {
+				if ( boxSizingReliableVal == null ) {
+					computeStyleTests();
+				}
+				return boxSizingReliableVal;
+			},
+			pixelMarginRight: function() {
+
+				// Support: Android 4.0-4.3
+				// We're checking for boxSizingReliableVal here instead of pixelMarginRightVal
+				// since that compresses better and they're computed together anyway.
+				if ( boxSizingReliableVal == null ) {
+					computeStyleTests();
+				}
+				return pixelMarginRightVal;
+			},
+			reliableMarginLeft: function() {
+
+				// Support: IE <=8 only, Android 4.0 - 4.3 only, Firefox <=3 - 37
+				if ( boxSizingReliableVal == null ) {
+					computeStyleTests();
+				}
+				return reliableMarginLeftVal;
+			},
+			reliableMarginRight: function() {
+
+				// Support: Android 2.3
+				// Check if div with explicit width and no margin-right incorrectly
+				// gets computed margin-right based on width of container. (#3333)
+				// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
+				// This support function is only executed once so no memoizing is needed.
+				var ret,
+					marginDiv = div.appendChild( document.createElement( "div" ) );
+
+				// Reset CSS: box-sizing; display; margin; border; padding
+				marginDiv.style.cssText = div.style.cssText =
+
+					// Support: Android 2.3
+					// Vendor-prefix box-sizing
+					"-webkit-box-sizing:content-box;box-sizing:content-box;" +
+					"display:block;margin:0;border:0;padding:0";
+				marginDiv.style.marginRight = marginDiv.style.width = "0";
+				div.style.width = "1px";
+				documentElement.appendChild( container );
+
+				ret = !parseFloat( window.getComputedStyle( marginDiv ).marginRight );
+
+				documentElement.removeChild( container );
+				div.removeChild( marginDiv );
+
+				return ret;
+			}
+		} );
+	} )();
+
+
+	function curCSS( elem, name, computed ) {
+		var width, minWidth, maxWidth, ret,
+			style = elem.style;
+
+		computed = computed || getStyles( elem );
+		ret = computed ? computed.getPropertyValue( name ) || computed[ name ] : undefined;
+
+		// Support: Opera 12.1x only
+		// Fall back to style even without computed
+		// computed is undefined for elems on document fragments
+		if ( ( ret === "" || ret === undefined ) && !jQuery.contains( elem.ownerDocument, elem ) ) {
+			ret = jQuery.style( elem, name );
+		}
+
+		// Support: IE9
+		// getPropertyValue is only needed for .css('filter') (#12537)
+		if ( computed ) {
+
+			// A tribute to the "awesome hack by Dean Edwards"
+			// Android Browser returns percentage for some values,
+			// but width seems to be reliably pixels.
+			// This is against the CSSOM draft spec:
+			// http://dev.w3.org/csswg/cssom/#resolved-values
+			if ( !support.pixelMarginRight() && rnumnonpx.test( ret ) && rmargin.test( name ) ) {
+
+				// Remember the original values
+				width = style.width;
+				minWidth = style.minWidth;
+				maxWidth = style.maxWidth;
+
+				// Put in the new values to get a computed value out
+				style.minWidth = style.maxWidth = style.width = ret;
+				ret = computed.width;
+
+				// Revert the changed values
+				style.width = width;
+				style.minWidth = minWidth;
+				style.maxWidth = maxWidth;
+			}
+		}
+
+		return ret !== undefined ?
+
+			// Support: IE9-11+
+			// IE returns zIndex value as an integer.
+			ret + "" :
+			ret;
+	}
+
+
+	function addGetHookIf( conditionFn, hookFn ) {
+
+		// Define the hook, we'll check on the first run if it's really needed.
+		return {
+			get: function() {
+				if ( conditionFn() ) {
+
+					// Hook not needed (or it's not possible to use it due
+					// to missing dependency), remove it.
+					delete this.get;
+					return;
+				}
+
+				// Hook needed; redefine it so that the support test is not executed again.
+				return ( this.get = hookFn ).apply( this, arguments );
+			}
+		};
+	}
+
+
+	var
+
+		// Swappable if display is none or starts with table
+		// except "table", "table-cell", or "table-caption"
+		// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+		rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+
+		cssShow = { position: "absolute", visibility: "hidden", display: "block" },
+		cssNormalTransform = {
+			letterSpacing: "0",
+			fontWeight: "400"
+		},
+
+		cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
+		emptyStyle = document.createElement( "div" ).style;
+
+	// Return a css property mapped to a potentially vendor prefixed property
+	function vendorPropName( name ) {
+
+		// Shortcut for names that are not vendor prefixed
+		if ( name in emptyStyle ) {
+			return name;
+		}
+
+		// Check for vendor prefixed names
+		var capName = name[ 0 ].toUpperCase() + name.slice( 1 ),
+			i = cssPrefixes.length;
+
+		while ( i-- ) {
+			name = cssPrefixes[ i ] + capName;
+			if ( name in emptyStyle ) {
+				return name;
+			}
+		}
+	}
+
+	function setPositiveNumber( elem, value, subtract ) {
+
+		// Any relative (+/-) values have already been
+		// normalized at this point
+		var matches = rcssNum.exec( value );
+		return matches ?
+
+			// Guard against undefined "subtract", e.g., when used as in cssHooks
+			Math.max( 0, matches[ 2 ] - ( subtract || 0 ) ) + ( matches[ 3 ] || "px" ) :
+			value;
+	}
+
+	function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
+		var i = extra === ( isBorderBox ? "border" : "content" ) ?
+
+			// If we already have the right measurement, avoid augmentation
+			4 :
+
+			// Otherwise initialize for horizontal or vertical properties
+			name === "width" ? 1 : 0,
+
+			val = 0;
+
+		for ( ; i < 4; i += 2 ) {
+
+			// Both box models exclude margin, so add it if we want it
+			if ( extra === "margin" ) {
+				val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
+			}
+
+			if ( isBorderBox ) {
+
+				// border-box includes padding, so remove it if we want content
+				if ( extra === "content" ) {
+					val -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+				}
+
+				// At this point, extra isn't border nor margin, so remove border
+				if ( extra !== "margin" ) {
+					val -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
+				}
+			} else {
+
+				// At this point, extra isn't content, so add padding
+				val += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+
+				// At this point, extra isn't content nor padding, so add border
+				if ( extra !== "padding" ) {
+					val += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
+				}
+			}
+		}
+
+		return val;
+	}
+
+	function getWidthOrHeight( elem, name, extra ) {
+
+		// Start with offset property, which is equivalent to the border-box value
+		var valueIsBorderBox = true,
+			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
+			styles = getStyles( elem ),
+			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+
+		// Support: IE11 only
+		// In IE 11 fullscreen elements inside of an iframe have
+		// 100x too small dimensions (gh-1764).
+		if ( document.msFullscreenElement && window.top !== window ) {
+
+			// Support: IE11 only
+			// Running getBoundingClientRect on a disconnected node
+			// in IE throws an error.
+			if ( elem.getClientRects().length ) {
+				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
+			}
+		}
+
+		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
+		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
+		// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
+		if ( val <= 0 || val == null ) {
+
+			// Fall back to computed then uncomputed css if necessary
+			val = curCSS( elem, name, styles );
+			if ( val < 0 || val == null ) {
+				val = elem.style[ name ];
+			}
+
+			// Computed unit is not pixels. Stop here and return.
+			if ( rnumnonpx.test( val ) ) {
+				return val;
+			}
+
+			// Check for style in case a browser which returns unreliable values
+			// for getComputedStyle silently falls back to the reliable elem.style
+			valueIsBorderBox = isBorderBox &&
+				( support.boxSizingReliable() || val === elem.style[ name ] );
+
+			// Normalize "", auto, and prepare for extra
+			val = parseFloat( val ) || 0;
+		}
+
+		// Use the active box-sizing model to add/subtract irrelevant styles
+		return ( val +
+			augmentWidthOrHeight(
+				elem,
+				name,
+				extra || ( isBorderBox ? "border" : "content" ),
+				valueIsBorderBox,
+				styles
+			)
+		) + "px";
+	}
+
+	function showHide( elements, show ) {
+		var display, elem, hidden,
+			values = [],
+			index = 0,
+			length = elements.length;
+
+		for ( ; index < length; index++ ) {
+			elem = elements[ index ];
+			if ( !elem.style ) {
+				continue;
+			}
+
+			values[ index ] = dataPriv.get( elem, "olddisplay" );
+			display = elem.style.display;
+			if ( show ) {
+
+				// Reset the inline display of this element to learn if it is
+				// being hidden by cascaded rules or not
+				if ( !values[ index ] && display === "none" ) {
+					elem.style.display = "";
+				}
+
+				// Set elements which have been overridden with display: none
+				// in a stylesheet to whatever the default browser style is
+				// for such an element
+				if ( elem.style.display === "" && isHidden( elem ) ) {
+					values[ index ] = dataPriv.access(
+						elem,
+						"olddisplay",
+						defaultDisplay( elem.nodeName )
+					);
+				}
+			} else {
+				hidden = isHidden( elem );
+
+				if ( display !== "none" || !hidden ) {
+					dataPriv.set(
+						elem,
+						"olddisplay",
+						hidden ? display : jQuery.css( elem, "display" )
+					);
+				}
+			}
+		}
+
+		// Set the display of most of the elements in a second loop
+		// to avoid the constant reflow
+		for ( index = 0; index < length; index++ ) {
+			elem = elements[ index ];
+			if ( !elem.style ) {
+				continue;
+			}
+			if ( !show || elem.style.display === "none" || elem.style.display === "" ) {
+				elem.style.display = show ? values[ index ] || "" : "none";
+			}
+		}
+
+		return elements;
+	}
+
+	jQuery.extend( {
+
+		// Add in style property hooks for overriding the default
+		// behavior of getting and setting a style property
+		cssHooks: {
+			opacity: {
+				get: function( elem, computed ) {
+					if ( computed ) {
+
+						// We should always get a number back from opacity
+						var ret = curCSS( elem, "opacity" );
+						return ret === "" ? "1" : ret;
+					}
+				}
+			}
+		},
+
+		// Don't automatically add "px" to these possibly-unitless properties
+		cssNumber: {
+			"animationIterationCount": true,
+			"columnCount": true,
+			"fillOpacity": true,
+			"flexGrow": true,
+			"flexShrink": true,
+			"fontWeight": true,
+			"lineHeight": true,
+			"opacity": true,
+			"order": true,
+			"orphans": true,
+			"widows": true,
+			"zIndex": true,
+			"zoom": true
+		},
+
+		// Add in properties whose names you wish to fix before
+		// setting or getting the value
+		cssProps: {
+			"float": "cssFloat"
+		},
+
+		// Get and set the style property on a DOM Node
+		style: function( elem, name, value, extra ) {
+
+			// Don't set styles on text and comment nodes
+			if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
+				return;
+			}
+
+			// Make sure that we're working with the right name
+			var ret, type, hooks,
+				origName = jQuery.camelCase( name ),
+				style = elem.style;
+
+			name = jQuery.cssProps[ origName ] ||
+				( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+
+			// Gets hook for the prefixed version, then unprefixed version
+			hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
+
+			// Check if we're setting a value
+			if ( value !== undefined ) {
+				type = typeof value;
+
+				// Convert "+=" or "-=" to relative numbers (#7345)
+				if ( type === "string" && ( ret = rcssNum.exec( value ) ) && ret[ 1 ] ) {
+					value = adjustCSS( elem, name, ret );
+
+					// Fixes bug #9237
+					type = "number";
+				}
+
+				// Make sure that null and NaN values aren't set (#7116)
+				if ( value == null || value !== value ) {
+					return;
+				}
+
+				// If a number was passed in, add the unit (except for certain CSS properties)
+				if ( type === "number" ) {
+					value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
+				}
+
+				// Support: IE9-11+
+				// background-* props affect original clone's values
+				if ( !support.clearCloneStyle && value === "" && name.indexOf( "background" ) === 0 ) {
+					style[ name ] = "inherit";
+				}
+
+				// If a hook was provided, use that value, otherwise just set the specified value
+				if ( !hooks || !( "set" in hooks ) ||
+					( value = hooks.set( elem, value, extra ) ) !== undefined ) {
+
+					style[ name ] = value;
+				}
+
+			} else {
+
+				// If a hook was provided get the non-computed value from there
+				if ( hooks && "get" in hooks &&
+					( ret = hooks.get( elem, false, extra ) ) !== undefined ) {
+
+					return ret;
+				}
+
+				// Otherwise just get the value from the style object
+				return style[ name ];
+			}
+		},
+
+		css: function( elem, name, extra, styles ) {
+			var val, num, hooks,
+				origName = jQuery.camelCase( name );
+
+			// Make sure that we're working with the right name
+			name = jQuery.cssProps[ origName ] ||
+				( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
+
+			// Try prefixed name followed by the unprefixed name
+			hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
+
+			// If a hook was provided get the computed value from there
+			if ( hooks && "get" in hooks ) {
+				val = hooks.get( elem, true, extra );
+			}
+
+			// Otherwise, if a way to get the computed value exists, use that
+			if ( val === undefined ) {
+				val = curCSS( elem, name, styles );
+			}
+
+			// Convert "normal" to computed value
+			if ( val === "normal" && name in cssNormalTransform ) {
+				val = cssNormalTransform[ name ];
+			}
+
+			// Make numeric if forced or a qualifier was provided and val looks numeric
+			if ( extra === "" || extra ) {
+				num = parseFloat( val );
+				return extra === true || isFinite( num ) ? num || 0 : val;
+			}
+			return val;
+		}
+	} );
+
+	jQuery.each( [ "height", "width" ], function( i, name ) {
+		jQuery.cssHooks[ name ] = {
+			get: function( elem, computed, extra ) {
+				if ( computed ) {
+
+					// Certain elements can have dimension info if we invisibly show them
+					// but it must have a current display style that would benefit
+					return rdisplayswap.test( jQuery.css( elem, "display" ) ) &&
+						elem.offsetWidth === 0 ?
+							swap( elem, cssShow, function() {
+								return getWidthOrHeight( elem, name, extra );
+							} ) :
+							getWidthOrHeight( elem, name, extra );
+				}
+			},
+
+			set: function( elem, value, extra ) {
+				var matches,
+					styles = extra && getStyles( elem ),
+					subtract = extra && augmentWidthOrHeight(
+						elem,
+						name,
+						extra,
+						jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+						styles
+					);
+
+				// Convert to pixels if value adjustment is needed
+				if ( subtract && ( matches = rcssNum.exec( value ) ) &&
+					( matches[ 3 ] || "px" ) !== "px" ) {
+
+					elem.style[ name ] = value;
+					value = jQuery.css( elem, name );
+				}
+
+				return setPositiveNumber( elem, value, subtract );
+			}
+		};
+	} );
+
+	jQuery.cssHooks.marginLeft = addGetHookIf( support.reliableMarginLeft,
+		function( elem, computed ) {
+			if ( computed ) {
+				return ( parseFloat( curCSS( elem, "marginLeft" ) ) ||
+					elem.getBoundingClientRect().left -
+						swap( elem, { marginLeft: 0 }, function() {
+							return elem.getBoundingClientRect().left;
+						} )
+					) + "px";
+			}
+		}
+	);
+
+	// Support: Android 2.3
+	jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
+		function( elem, computed ) {
+			if ( computed ) {
+				return swap( elem, { "display": "inline-block" },
+					curCSS, [ elem, "marginRight" ] );
+			}
+		}
+	);
+
+	// These hooks are used by animate to expand properties
+	jQuery.each( {
+		margin: "",
+		padding: "",
+		border: "Width"
+	}, function( prefix, suffix ) {
+		jQuery.cssHooks[ prefix + suffix ] = {
+			expand: function( value ) {
+				var i = 0,
+					expanded = {},
+
+					// Assumes a single number if not a string
+					parts = typeof value === "string" ? value.split( " " ) : [ value ];
+
+				for ( ; i < 4; i++ ) {
+					expanded[ prefix + cssExpand[ i ] + suffix ] =
+						parts[ i ] || parts[ i - 2 ] || parts[ 0 ];
+				}
+
+				return expanded;
+			}
+		};
+
+		if ( !rmargin.test( prefix ) ) {
+			jQuery.cssHooks[ prefix + suffix ].set = setPositiveNumber;
+		}
+	} );
+
+	jQuery.fn.extend( {
+		css: function( name, value ) {
+			return access( this, function( elem, name, value ) {
+				var styles, len,
+					map = {},
+					i = 0;
+
+				if ( jQuery.isArray( name ) ) {
+					styles = getStyles( elem );
+					len = name.length;
+
+					for ( ; i < len; i++ ) {
+						map[ name[ i ] ] = jQuery.css( elem, name[ i ], false, styles );
+					}
+
+					return map;
+				}
+
+				return value !== undefined ?
+					jQuery.style( elem, name, value ) :
+					jQuery.css( elem, name );
+			}, name, value, arguments.length > 1 );
+		},
+		show: function() {
+			return showHide( this, true );
+		},
+		hide: function() {
+			return showHide( this );
+		},
+		toggle: function( state ) {
+			if ( typeof state === "boolean" ) {
+				return state ? this.show() : this.hide();
+			}
+
+			return this.each( function() {
+				if ( isHidden( this ) ) {
+					jQuery( this ).show();
+				} else {
+					jQuery( this ).hide();
+				}
+			} );
+		}
+	} );
+
+
+	function Tween( elem, options, prop, end, easing ) {
+		return new Tween.prototype.init( elem, options, prop, end, easing );
+	}
+	jQuery.Tween = Tween;
+
+	Tween.prototype = {
+		constructor: Tween,
+		init: function( elem, options, prop, end, easing, unit ) {
+			this.elem = elem;
+			this.prop = prop;
+			this.easing = easing || jQuery.easing._default;
+			this.options = options;
+			this.start = this.now = this.cur();
+			this.end = end;
+			this.unit = unit || ( jQuery.cssNumber[ prop ] ? "" : "px" );
+		},
+		cur: function() {
+			var hooks = Tween.propHooks[ this.prop ];
+
+			return hooks && hooks.get ?
+				hooks.get( this ) :
+				Tween.propHooks._default.get( this );
+		},
+		run: function( percent ) {
+			var eased,
+				hooks = Tween.propHooks[ this.prop ];
+
+			if ( this.options.duration ) {
+				this.pos = eased = jQuery.easing[ this.easing ](
+					percent, this.options.duration * percent, 0, 1, this.options.duration
+				);
+			} else {
+				this.pos = eased = percent;
+			}
+			this.now = ( this.end - this.start ) * eased + this.start;
+
+			if ( this.options.step ) {
+				this.options.step.call( this.elem, this.now, this );
+			}
+
+			if ( hooks && hooks.set ) {
+				hooks.set( this );
+			} else {
+				Tween.propHooks._default.set( this );
+			}
+			return this;
+		}
+	};
+
+	Tween.prototype.init.prototype = Tween.prototype;
+
+	Tween.propHooks = {
+		_default: {
+			get: function( tween ) {
+				var result;
+
+				// Use a property on the element directly when it is not a DOM element,
+				// or when there is no matching style property that exists.
+				if ( tween.elem.nodeType !== 1 ||
+					tween.elem[ tween.prop ] != null && tween.elem.style[ tween.prop ] == null ) {
+					return tween.elem[ tween.prop ];
+				}
+
+				// Passing an empty string as a 3rd parameter to .css will automatically
+				// attempt a parseFloat and fallback to a string if the parse fails.
+				// Simple values such as "10px" are parsed to Float;
+				// complex values such as "rotate(1rad)" are returned as-is.
+				result = jQuery.css( tween.elem, tween.prop, "" );
+
+				// Empty strings, null, undefined and "auto" are converted to 0.
+				return !result || result === "auto" ? 0 : result;
+			},
+			set: function( tween ) {
+
+				// Use step hook for back compat.
+				// Use cssHook if its there.
+				// Use .style if available and use plain properties where available.
+				if ( jQuery.fx.step[ tween.prop ] ) {
+					jQuery.fx.step[ tween.prop ]( tween );
+				} else if ( tween.elem.nodeType === 1 &&
+					( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null ||
+						jQuery.cssHooks[ tween.prop ] ) ) {
+					jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
+				} else {
+					tween.elem[ tween.prop ] = tween.now;
+				}
+			}
+		}
+	};
+
+	// Support: IE9
+	// Panic based approach to setting things on disconnected nodes
+	Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
+		set: function( tween ) {
+			if ( tween.elem.nodeType && tween.elem.parentNode ) {
+				tween.elem[ tween.prop ] = tween.now;
+			}
+		}
+	};
+
+	jQuery.easing = {
+		linear: function( p ) {
+			return p;
+		},
+		swing: function( p ) {
+			return 0.5 - Math.cos( p * Math.PI ) / 2;
+		},
+		_default: "swing"
+	};
+
+	jQuery.fx = Tween.prototype.init;
+
+	// Back Compat <1.8 extension point
+	jQuery.fx.step = {};
+
+
+
+
+	var
+		fxNow, timerId,
+		rfxtypes = /^(?:toggle|show|hide)$/,
+		rrun = /queueHooks$/;
+
+	// Animations created synchronously will run synchronously
+	function createFxNow() {
+		window.setTimeout( function() {
+			fxNow = undefined;
+		} );
+		return ( fxNow = jQuery.now() );
+	}
+
+	// Generate parameters to create a standard animation
+	function genFx( type, includeWidth ) {
+		var which,
+			i = 0,
+			attrs = { height: type };
+
+		// If we include width, step value is 1 to do all cssExpand values,
+		// otherwise step value is 2 to skip over Left and Right
+		includeWidth = includeWidth ? 1 : 0;
+		for ( ; i < 4 ; i += 2 - includeWidth ) {
+			which = cssExpand[ i ];
+			attrs[ "margin" + which ] = attrs[ "padding" + which ] = type;
+		}
+
+		if ( includeWidth ) {
+			attrs.opacity = attrs.width = type;
+		}
+
+		return attrs;
+	}
+
+	function createTween( value, prop, animation ) {
+		var tween,
+			collection = ( Animation.tweeners[ prop ] || [] ).concat( Animation.tweeners[ "*" ] ),
+			index = 0,
+			length = collection.length;
+		for ( ; index < length; index++ ) {
+			if ( ( tween = collection[ index ].call( animation, prop, value ) ) ) {
+
+				// We're done with this property
+				return tween;
+			}
+		}
+	}
+
+	function defaultPrefilter( elem, props, opts ) {
+		/* jshint validthis: true */
+		var prop, value, toggle, tween, hooks, oldfire, display, checkDisplay,
+			anim = this,
+			orig = {},
+			style = elem.style,
+			hidden = elem.nodeType && isHidden( elem ),
+			dataShow = dataPriv.get( elem, "fxshow" );
+
+		// Handle queue: false promises
+		if ( !opts.queue ) {
+			hooks = jQuery._queueHooks( elem, "fx" );
+			if ( hooks.unqueued == null ) {
+				hooks.unqueued = 0;
+				oldfire = hooks.empty.fire;
+				hooks.empty.fire = function() {
+					if ( !hooks.unqueued ) {
+						oldfire();
+					}
+				};
+			}
+			hooks.unqueued++;
+
+			anim.always( function() {
+
+				// Ensure the complete handler is called before this completes
+				anim.always( function() {
+					hooks.unqueued--;
+					if ( !jQuery.queue( elem, "fx" ).length ) {
+						hooks.empty.fire();
+					}
+				} );
+			} );
+		}
+
+		// Height/width overflow pass
+		if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
+
+			// Make sure that nothing sneaks out
+			// Record all 3 overflow attributes because IE9-10 do not
+			// change the overflow attribute when overflowX and
+			// overflowY are set to the same value
+			opts.overflow = [ style.overflow, style.overflowX, style.overflowY ];
+
+			// Set display property to inline-block for height/width
+			// animations on inline elements that are having width/height animated
+			display = jQuery.css( elem, "display" );
+
+			// Test default display if display is currently "none"
+			checkDisplay = display === "none" ?
+				dataPriv.get( elem, "olddisplay" ) || defaultDisplay( elem.nodeName ) : display;
+
+			if ( checkDisplay === "inline" && jQuery.css( elem, "float" ) === "none" ) {
+				style.display = "inline-block";
+			}
+		}
+
+		if ( opts.overflow ) {
+			style.overflow = "hidden";
+			anim.always( function() {
+				style.overflow = opts.overflow[ 0 ];
+				style.overflowX = opts.overflow[ 1 ];
+				style.overflowY = opts.overflow[ 2 ];
+			} );
+		}
+
+		// show/hide pass
+		for ( prop in props ) {
+			value = props[ prop ];
+			if ( rfxtypes.exec( value ) ) {
+				delete props[ prop ];
+				toggle = toggle || value === "toggle";
+				if ( value === ( hidden ? "hide" : "show" ) ) {
+
+					// If there is dataShow left over from a stopped hide or show
+					// and we are going to proceed with show, we should pretend to be hidden
+					if ( value === "show" && dataShow && dataShow[ prop ] !== undefined ) {
+						hidden = true;
+					} else {
+						continue;
+					}
+				}
+				orig[ prop ] = dataShow && dataShow[ prop ] || jQuery.style( elem, prop );
+
+			// Any non-fx value stops us from restoring the original display value
+			} else {
+				display = undefined;
+			}
+		}
+
+		if ( !jQuery.isEmptyObject( orig ) ) {
+			if ( dataShow ) {
+				if ( "hidden" in dataShow ) {
+					hidden = dataShow.hidden;
+				}
+			} else {
+				dataShow = dataPriv.access( elem, "fxshow", {} );
+			}
+
+			// Store state if its toggle - enables .stop().toggle() to "reverse"
+			if ( toggle ) {
+				dataShow.hidden = !hidden;
+			}
+			if ( hidden ) {
+				jQuery( elem ).show();
+			} else {
+				anim.done( function() {
+					jQuery( elem ).hide();
+				} );
+			}
+			anim.done( function() {
+				var prop;
+
+				dataPriv.remove( elem, "fxshow" );
+				for ( prop in orig ) {
+					jQuery.style( elem, prop, orig[ prop ] );
+				}
+			} );
+			for ( prop in orig ) {
+				tween = createTween( hidden ? dataShow[ prop ] : 0, prop, anim );
+
+				if ( !( prop in dataShow ) ) {
+					dataShow[ prop ] = tween.start;
+					if ( hidden ) {
+						tween.end = tween.start;
+						tween.start = prop === "width" || prop === "height" ? 1 : 0;
+					}
+				}
+			}
+
+		// If this is a noop like .hide().hide(), restore an overwritten display value
+		} else if ( ( display === "none" ? defaultDisplay( elem.nodeName ) : display ) === "inline" ) {
+			style.display = display;
+		}
+	}
+
+	function propFilter( props, specialEasing ) {
+		var index, name, easing, value, hooks;
+
+		// camelCase, specialEasing and expand cssHook pass
+		for ( index in props ) {
+			name = jQuery.camelCase( index );
+			easing = specialEasing[ name ];
+			value = props[ index ];
+			if ( jQuery.isArray( value ) ) {
+				easing = value[ 1 ];
+				value = props[ index ] = value[ 0 ];
+			}
+
+			if ( index !== name ) {
+				props[ name ] = value;
+				delete props[ index ];
+			}
+
+			hooks = jQuery.cssHooks[ name ];
+			if ( hooks && "expand" in hooks ) {
+				value = hooks.expand( value );
+				delete props[ name ];
+
+				// Not quite $.extend, this won't overwrite existing keys.
+				// Reusing 'index' because we have the correct "name"
+				for ( index in value ) {
+					if ( !( index in props ) ) {
+						props[ index ] = value[ index ];
+						specialEasing[ index ] = easing;
+					}
+				}
+			} else {
+				specialEasing[ name ] = easing;
+			}
+		}
+	}
+
+	function Animation( elem, properties, options ) {
+		var result,
+			stopped,
+			index = 0,
+			length = Animation.prefilters.length,
+			deferred = jQuery.Deferred().always( function() {
+
+				// Don't match elem in the :animated selector
+				delete tick.elem;
+			} ),
+			tick = function() {
+				if ( stopped ) {
+					return false;
+				}
+				var currentTime = fxNow || createFxNow(),
+					remaining = Math.max( 0, animation.startTime + animation.duration - currentTime ),
+
+					// Support: Android 2.3
+					// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
+					temp = remaining / animation.duration || 0,
+					percent = 1 - temp,
+					index = 0,
+					length = animation.tweens.length;
+
+				for ( ; index < length ; index++ ) {
+					animation.tweens[ index ].run( percent );
+				}
+
+				deferred.notifyWith( elem, [ animation, percent, remaining ] );
+
+				if ( percent < 1 && length ) {
+					return remaining;
+				} else {
+					deferred.resolveWith( elem, [ animation ] );
+					return false;
+				}
+			},
+			animation = deferred.promise( {
+				elem: elem,
+				props: jQuery.extend( {}, properties ),
+				opts: jQuery.extend( true, {
+					specialEasing: {},
+					easing: jQuery.easing._default
+				}, options ),
+				originalProperties: properties,
+				originalOptions: options,
+				startTime: fxNow || createFxNow(),
+				duration: options.duration,
+				tweens: [],
+				createTween: function( prop, end ) {
+					var tween = jQuery.Tween( elem, animation.opts, prop, end,
+							animation.opts.specialEasing[ prop ] || animation.opts.easing );
+					animation.tweens.push( tween );
+					return tween;
+				},
+				stop: function( gotoEnd ) {
+					var index = 0,
+
+						// If we are going to the end, we want to run all the tweens
+						// otherwise we skip this part
+						length = gotoEnd ? animation.tweens.length : 0;
+					if ( stopped ) {
+						return this;
+					}
+					stopped = true;
+					for ( ; index < length ; index++ ) {
+						animation.tweens[ index ].run( 1 );
+					}
+
+					// Resolve when we played the last frame; otherwise, reject
+					if ( gotoEnd ) {
+						deferred.notifyWith( elem, [ animation, 1, 0 ] );
+						deferred.resolveWith( elem, [ animation, gotoEnd ] );
+					} else {
+						deferred.rejectWith( elem, [ animation, gotoEnd ] );
+					}
+					return this;
+				}
+			} ),
+			props = animation.props;
+
+		propFilter( props, animation.opts.specialEasing );
+
+		for ( ; index < length ; index++ ) {
+			result = Animation.prefilters[ index ].call( animation, elem, props, animation.opts );
+			if ( result ) {
+				if ( jQuery.isFunction( result.stop ) ) {
+					jQuery._queueHooks( animation.elem, animation.opts.queue ).stop =
+						jQuery.proxy( result.stop, result );
+				}
+				return result;
+			}
+		}
+
+		jQuery.map( props, createTween, animation );
+
+		if ( jQuery.isFunction( animation.opts.start ) ) {
+			animation.opts.start.call( elem, animation );
+		}
+
+		jQuery.fx.timer(
+			jQuery.extend( tick, {
+				elem: elem,
+				anim: animation,
+				queue: animation.opts.queue
+			} )
+		);
+
+		// attach callbacks from options
+		return animation.progress( animation.opts.progress )
+			.done( animation.opts.done, animation.opts.complete )
+			.fail( animation.opts.fail )
+			.always( animation.opts.always );
+	}
+
+	jQuery.Animation = jQuery.extend( Animation, {
+		tweeners: {
+			"*": [ function( prop, value ) {
+				var tween = this.createTween( prop, value );
+				adjustCSS( tween.elem, prop, rcssNum.exec( value ), tween );
+				return tween;
+			} ]
+		},
+
+		tweener: function( props, callback ) {
+			if ( jQuery.isFunction( props ) ) {
+				callback = props;
+				props = [ "*" ];
+			} else {
+				props = props.match( rnotwhite );
+			}
+
+			var prop,
+				index = 0,
+				length = props.length;
+
+			for ( ; index < length ; index++ ) {
+				prop = props[ index ];
+				Animation.tweeners[ prop ] = Animation.tweeners[ prop ] || [];
+				Animation.tweeners[ prop ].unshift( callback );
+			}
+		},
+
+		prefilters: [ defaultPrefilter ],
+
+		prefilter: function( callback, prepend ) {
+			if ( prepend ) {
+				Animation.prefilters.unshift( callback );
+			} else {
+				Animation.prefilters.push( callback );
+			}
+		}
+	} );
+
+	jQuery.speed = function( speed, easing, fn ) {
+		var opt = speed && typeof speed === "object" ? jQuery.extend( {}, speed ) : {
+			complete: fn || !fn && easing ||
+				jQuery.isFunction( speed ) && speed,
+			duration: speed,
+			easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
+		};
+
+		opt.duration = jQuery.fx.off ? 0 : typeof opt.duration === "number" ?
+			opt.duration : opt.duration in jQuery.fx.speeds ?
+				jQuery.fx.speeds[ opt.duration ] : jQuery.fx.speeds._default;
+
+		// Normalize opt.queue - true/undefined/null -> "fx"
+		if ( opt.queue == null || opt.queue === true ) {
+			opt.queue = "fx";
+		}
+
+		// Queueing
+		opt.old = opt.complete;
+
+		opt.complete = function() {
+			if ( jQuery.isFunction( opt.old ) ) {
+				opt.old.call( this );
+			}
+
+			if ( opt.queue ) {
+				jQuery.dequeue( this, opt.queue );
+			}
+		};
+
+		return opt;
+	};
+
+	jQuery.fn.extend( {
+		fadeTo: function( speed, to, easing, callback ) {
+
+			// Show any hidden elements after setting opacity to 0
+			return this.filter( isHidden ).css( "opacity", 0 ).show()
+
+				// Animate to the value specified
+				.end().animate( { opacity: to }, speed, easing, callback );
+		},
+		animate: function( prop, speed, easing, callback ) {
+			var empty = jQuery.isEmptyObject( prop ),
+				optall = jQuery.speed( speed, easing, callback ),
+				doAnimation = function() {
+
+					// Operate on a copy of prop so per-property easing won't be lost
+					var anim = Animation( this, jQuery.extend( {}, prop ), optall );
+
+					// Empty animations, or finishing resolves immediately
+					if ( empty || dataPriv.get( this, "finish" ) ) {
+						anim.stop( true );
+					}
+				};
+				doAnimation.finish = doAnimation;
+
+			return empty || optall.queue === false ?
+				this.each( doAnimation ) :
+				this.queue( optall.queue, doAnimation );
+		},
+		stop: function( type, clearQueue, gotoEnd ) {
+			var stopQueue = function( hooks ) {
+				var stop = hooks.stop;
+				delete hooks.stop;
+				stop( gotoEnd );
+			};
+
+			if ( typeof type !== "string" ) {
+				gotoEnd = clearQueue;
+				clearQueue = type;
+				type = undefined;
+			}
+			if ( clearQueue && type !== false ) {
+				this.queue( type || "fx", [] );
+			}
+
+			return this.each( function() {
+				var dequeue = true,
+					index = type != null && type + "queueHooks",
+					timers = jQuery.timers,
+					data = dataPriv.get( this );
+
+				if ( index ) {
+					if ( data[ index ] && data[ index ].stop ) {
+						stopQueue( data[ index ] );
+					}
+				} else {
+					for ( index in data ) {
+						if ( data[ index ] && data[ index ].stop && rrun.test( index ) ) {
+							stopQueue( data[ index ] );
+						}
+					}
+				}
+
+				for ( index = timers.length; index--; ) {
+					if ( timers[ index ].elem === this &&
+						( type == null || timers[ index ].queue === type ) ) {
+
+						timers[ index ].anim.stop( gotoEnd );
+						dequeue = false;
+						timers.splice( index, 1 );
+					}
+				}
+
+				// Start the next in the queue if the last step wasn't forced.
+				// Timers currently will call their complete callbacks, which
+				// will dequeue but only if they were gotoEnd.
+				if ( dequeue || !gotoEnd ) {
+					jQuery.dequeue( this, type );
+				}
+			} );
+		},
+		finish: function( type ) {
+			if ( type !== false ) {
+				type = type || "fx";
+			}
+			return this.each( function() {
+				var index,
+					data = dataPriv.get( this ),
+					queue = data[ type + "queue" ],
+					hooks = data[ type + "queueHooks" ],
+					timers = jQuery.timers,
+					length = queue ? queue.length : 0;
+
+				// Enable finishing flag on private data
+				data.finish = true;
+
+				// Empty the queue first
+				jQuery.queue( this, type, [] );
+
+				if ( hooks && hooks.stop ) {
+					hooks.stop.call( this, true );
+				}
+
+				// Look for any active animations, and finish them
+				for ( index = timers.length; index--; ) {
+					if ( timers[ index ].elem === this && timers[ index ].queue === type ) {
+						timers[ index ].anim.stop( true );
+						timers.splice( index, 1 );
+					}
+				}
+
+				// Look for any animations in the old queue and finish them
+				for ( index = 0; index < length; index++ ) {
+					if ( queue[ index ] && queue[ index ].finish ) {
+						queue[ index ].finish.call( this );
+					}
+				}
+
+				// Turn off finishing flag
+				delete data.finish;
+			} );
+		}
+	} );
+
+	jQuery.each( [ "toggle", "show", "hide" ], function( i, name ) {
+		var cssFn = jQuery.fn[ name ];
+		jQuery.fn[ name ] = function( speed, easing, callback ) {
+			return speed == null || typeof speed === "boolean" ?
+				cssFn.apply( this, arguments ) :
+				this.animate( genFx( name, true ), speed, easing, callback );
+		};
+	} );
+
+	// Generate shortcuts for custom animations
+	jQuery.each( {
+		slideDown: genFx( "show" ),
+		slideUp: genFx( "hide" ),
+		slideToggle: genFx( "toggle" ),
+		fadeIn: { opacity: "show" },
+		fadeOut: { opacity: "hide" },
+		fadeToggle: { opacity: "toggle" }
+	}, function( name, props ) {
+		jQuery.fn[ name ] = function( speed, easing, callback ) {
+			return this.animate( props, speed, easing, callback );
+		};
+	} );
+
+	jQuery.timers = [];
+	jQuery.fx.tick = function() {
+		var timer,
+			i = 0,
+			timers = jQuery.timers;
+
+		fxNow = jQuery.now();
+
+		for ( ; i < timers.length; i++ ) {
+			timer = timers[ i ];
+
+			// Checks the timer has not already been removed
+			if ( !timer() && timers[ i ] === timer ) {
+				timers.splice( i--, 1 );
+			}
+		}
+
+		if ( !timers.length ) {
+			jQuery.fx.stop();
+		}
+		fxNow = undefined;
+	};
+
+	jQuery.fx.timer = function( timer ) {
+		jQuery.timers.push( timer );
+		if ( timer() ) {
+			jQuery.fx.start();
+		} else {
+			jQuery.timers.pop();
+		}
+	};
+
+	jQuery.fx.interval = 13;
+	jQuery.fx.start = function() {
+		if ( !timerId ) {
+			timerId = window.setInterval( jQuery.fx.tick, jQuery.fx.interval );
+		}
+	};
+
+	jQuery.fx.stop = function() {
+		window.clearInterval( timerId );
+
+		timerId = null;
+	};
+
+	jQuery.fx.speeds = {
+		slow: 600,
+		fast: 200,
+
+		// Default speed
+		_default: 400
+	};
+
+
+	// Based off of the plugin by Clint Helfers, with permission.
+	// http://web.archive.org/web/20100324014747/http://blindsignals.com/index.php/2009/07/jquery-delay/
+	jQuery.fn.delay = function( time, type ) {
+		time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
+		type = type || "fx";
+
+		return this.queue( type, function( next, hooks ) {
+			var timeout = window.setTimeout( next, time );
+			hooks.stop = function() {
+				window.clearTimeout( timeout );
+			};
+		} );
+	};
+
+
+	( function() {
+		var input = document.createElement( "input" ),
+			select = document.createElement( "select" ),
+			opt = select.appendChild( document.createElement( "option" ) );
+
+		input.type = "checkbox";
+
+		// Support: iOS<=5.1, Android<=4.2+
+		// Default value for a checkbox should be "on"
+		support.checkOn = input.value !== "";
+
+		// Support: IE<=11+
+		// Must access selectedIndex to make default options select
+		support.optSelected = opt.selected;
+
+		// Support: Android<=2.3
+		// Options inside disabled selects are incorrectly marked as disabled
+		select.disabled = true;
+		support.optDisabled = !opt.disabled;
+
+		// Support: IE<=11+
+		// An input loses its value after becoming a radio
+		input = document.createElement( "input" );
+		input.value = "t";
+		input.type = "radio";
+		support.radioValue = input.value === "t";
+	} )();
+
+
+	var boolHook,
+		attrHandle = jQuery.expr.attrHandle;
+
+	jQuery.fn.extend( {
+		attr: function( name, value ) {
+			return access( this, jQuery.attr, name, value, arguments.length > 1 );
+		},
+
+		removeAttr: function( name ) {
+			return this.each( function() {
+				jQuery.removeAttr( this, name );
+			} );
+		}
+	} );
+
+	jQuery.extend( {
+		attr: function( elem, name, value ) {
+			var ret, hooks,
+				nType = elem.nodeType;
+
+			// Don't get/set attributes on text, comment and attribute nodes
+			if ( nType === 3 || nType === 8 || nType === 2 ) {
+				return;
+			}
+
+			// Fallback to prop when attributes are not supported
+			if ( typeof elem.getAttribute === "undefined" ) {
+				return jQuery.prop( elem, name, value );
+			}
+
+			// All attributes are lowercase
+			// Grab necessary hook if one is defined
+			if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
+				name = name.toLowerCase();
+				hooks = jQuery.attrHooks[ name ] ||
+					( jQuery.expr.match.bool.test( name ) ? boolHook : undefined );
+			}
+
+			if ( value !== undefined ) {
+				if ( value === null ) {
+					jQuery.removeAttr( elem, name );
+					return;
+				}
+
+				if ( hooks && "set" in hooks &&
+					( ret = hooks.set( elem, value, name ) ) !== undefined ) {
+					return ret;
+				}
+
+				elem.setAttribute( name, value + "" );
+				return value;
+			}
+
+			if ( hooks && "get" in hooks && ( ret = hooks.get( elem, name ) ) !== null ) {
+				return ret;
+			}
+
+			ret = jQuery.find.attr( elem, name );
+
+			// Non-existent attributes return null, we normalize to undefined
+			return ret == null ? undefined : ret;
+		},
+
+		attrHooks: {
+			type: {
+				set: function( elem, value ) {
+					if ( !support.radioValue && value === "radio" &&
+						jQuery.nodeName( elem, "input" ) ) {
+						var val = elem.value;
+						elem.setAttribute( "type", value );
+						if ( val ) {
+							elem.value = val;
+						}
+						return value;
+					}
+				}
+			}
+		},
+
+		removeAttr: function( elem, value ) {
+			var name, propName,
+				i = 0,
+				attrNames = value && value.match( rnotwhite );
+
+			if ( attrNames && elem.nodeType === 1 ) {
+				while ( ( name = attrNames[ i++ ] ) ) {
+					propName = jQuery.propFix[ name ] || name;
+
+					// Boolean attributes get special treatment (#10870)
+					if ( jQuery.expr.match.bool.test( name ) ) {
+
+						// Set corresponding property to false
+						elem[ propName ] = false;
+					}
+
+					elem.removeAttribute( name );
+				}
+			}
+		}
+	} );
+
+	// Hooks for boolean attributes
+	boolHook = {
+		set: function( elem, value, name ) {
+			if ( value === false ) {
+
+				// Remove boolean attributes when set to false
+				jQuery.removeAttr( elem, name );
+			} else {
+				elem.setAttribute( name, name );
+			}
+			return name;
+		}
+	};
+	jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( i, name ) {
+		var getter = attrHandle[ name ] || jQuery.find.attr;
+
+		attrHandle[ name ] = function( elem, name, isXML ) {
+			var ret, handle;
+			if ( !isXML ) {
+
+				// Avoid an infinite loop by temporarily removing this function from the getter
+				handle = attrHandle[ name ];
+				attrHandle[ name ] = ret;
+				ret = getter( elem, name, isXML ) != null ?
+					name.toLowerCase() :
+					null;
+				attrHandle[ name ] = handle;
+			}
+			return ret;
+		};
+	} );
+
+
+
+
+	var rfocusable = /^(?:input|select|textarea|button)$/i,
+		rclickable = /^(?:a|area)$/i;
+
+	jQuery.fn.extend( {
+		prop: function( name, value ) {
+			return access( this, jQuery.prop, name, value, arguments.length > 1 );
+		},
+
+		removeProp: function( name ) {
+			return this.each( function() {
+				delete this[ jQuery.propFix[ name ] || name ];
+			} );
+		}
+	} );
+
+	jQuery.extend( {
+		prop: function( elem, name, value ) {
+			var ret, hooks,
+				nType = elem.nodeType;
+
+			// Don't get/set properties on text, comment and attribute nodes
+			if ( nType === 3 || nType === 8 || nType === 2 ) {
+				return;
+			}
+
+			if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
+
+				// Fix name and attach hooks
+				name = jQuery.propFix[ name ] || name;
+				hooks = jQuery.propHooks[ name ];
+			}
+
+			if ( value !== undefined ) {
+				if ( hooks && "set" in hooks &&
+					( ret = hooks.set( elem, value, name ) ) !== undefined ) {
+					return ret;
+				}
+
+				return ( elem[ name ] = value );
+			}
+
+			if ( hooks && "get" in hooks && ( ret = hooks.get( elem, name ) ) !== null ) {
+				return ret;
+			}
+
+			return elem[ name ];
+		},
+
+		propHooks: {
+			tabIndex: {
+				get: function( elem ) {
+
+					// elem.tabIndex doesn't always return the
+					// correct value when it hasn't been explicitly set
+					// http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
+					// Use proper attribute retrieval(#12072)
+					var tabindex = jQuery.find.attr( elem, "tabindex" );
+
+					return tabindex ?
+						parseInt( tabindex, 10 ) :
+						rfocusable.test( elem.nodeName ) ||
+							rclickable.test( elem.nodeName ) && elem.href ?
+								0 :
+								-1;
+				}
+			}
+		},
+
+		propFix: {
+			"for": "htmlFor",
+			"class": "className"
+		}
+	} );
+
+	if ( !support.optSelected ) {
+		jQuery.propHooks.selected = {
+			get: function( elem ) {
+				var parent = elem.parentNode;
+				if ( parent && parent.parentNode ) {
+					parent.parentNode.selectedIndex;
+				}
+				return null;
+			}
+		};
+	}
+
+	jQuery.each( [
+		"tabIndex",
+		"readOnly",
+		"maxLength",
+		"cellSpacing",
+		"cellPadding",
+		"rowSpan",
+		"colSpan",
+		"useMap",
+		"frameBorder",
+		"contentEditable"
+	], function() {
+		jQuery.propFix[ this.toLowerCase() ] = this;
+	} );
+
+
+
+
+	var rclass = /[\t\r\n\f]/g;
+
+	function getClass( elem ) {
+		return elem.getAttribute && elem.getAttribute( "class" ) || "";
+	}
+
+	jQuery.fn.extend( {
+		addClass: function( value ) {
+			var classes, elem, cur, curValue, clazz, j, finalValue,
+				i = 0;
+
+			if ( jQuery.isFunction( value ) ) {
+				return this.each( function( j ) {
+					jQuery( this ).addClass( value.call( this, j, getClass( this ) ) );
+				} );
+			}
+
+			if ( typeof value === "string" && value ) {
+				classes = value.match( rnotwhite ) || [];
+
+				while ( ( elem = this[ i++ ] ) ) {
+					curValue = getClass( elem );
+					cur = elem.nodeType === 1 &&
+						( " " + curValue + " " ).replace( rclass, " " );
+
+					if ( cur ) {
+						j = 0;
+						while ( ( clazz = classes[ j++ ] ) ) {
+							if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
+								cur += clazz + " ";
+							}
+						}
+
+						// Only assign if different to avoid unneeded rendering.
+						finalValue = jQuery.trim( cur );
+						if ( curValue !== finalValue ) {
+							elem.setAttribute( "class", finalValue );
+						}
+					}
+				}
+			}
+
+			return this;
+		},
+
+		removeClass: function( value ) {
+			var classes, elem, cur, curValue, clazz, j, finalValue,
+				i = 0;
+
+			if ( jQuery.isFunction( value ) ) {
+				return this.each( function( j ) {
+					jQuery( this ).removeClass( value.call( this, j, getClass( this ) ) );
+				} );
+			}
+
+			if ( !arguments.length ) {
+				return this.attr( "class", "" );
+			}
+
+			if ( typeof value === "string" && value ) {
+				classes = value.match( rnotwhite ) || [];
+
+				while ( ( elem = this[ i++ ] ) ) {
+					curValue = getClass( elem );
+
+					// This expression is here for better compressibility (see addClass)
+					cur = elem.nodeType === 1 &&
+						( " " + curValue + " " ).replace( rclass, " " );
+
+					if ( cur ) {
+						j = 0;
+						while ( ( clazz = classes[ j++ ] ) ) {
+
+							// Remove *all* instances
+							while ( cur.indexOf( " " + clazz + " " ) > -1 ) {
+								cur = cur.replace( " " + clazz + " ", " " );
+							}
+						}
+
+						// Only assign if different to avoid unneeded rendering.
+						finalValue = jQuery.trim( cur );
+						if ( curValue !== finalValue ) {
+							elem.setAttribute( "class", finalValue );
+						}
+					}
+				}
+			}
+
+			return this;
+		},
+
+		toggleClass: function( value, stateVal ) {
+			var type = typeof value;
+
+			if ( typeof stateVal === "boolean" && type === "string" ) {
+				return stateVal ? this.addClass( value ) : this.removeClass( value );
+			}
+
+			if ( jQuery.isFunction( value ) ) {
+				return this.each( function( i ) {
+					jQuery( this ).toggleClass(
+						value.call( this, i, getClass( this ), stateVal ),
+						stateVal
+					);
+				} );
+			}
+
+			return this.each( function() {
+				var className, i, self, classNames;
+
+				if ( type === "string" ) {
+
+					// Toggle individual class names
+					i = 0;
+					self = jQuery( this );
+					classNames = value.match( rnotwhite ) || [];
+
+					while ( ( className = classNames[ i++ ] ) ) {
+
+						// Check each className given, space separated list
+						if ( self.hasClass( className ) ) {
+							self.removeClass( className );
+						} else {
+							self.addClass( className );
+						}
+					}
+
+				// Toggle whole class name
+				} else if ( value === undefined || type === "boolean" ) {
+					className = getClass( this );
+					if ( className ) {
+
+						// Store className if set
+						dataPriv.set( this, "__className__", className );
+					}
+
+					// If the element has a class name or if we're passed `false`,
+					// then remove the whole classname (if there was one, the above saved it).
+					// Otherwise bring back whatever was previously saved (if anything),
+					// falling back to the empty string if nothing was stored.
+					if ( this.setAttribute ) {
+						this.setAttribute( "class",
+							className || value === false ?
+							"" :
+							dataPriv.get( this, "__className__" ) || ""
+						);
+					}
+				}
+			} );
+		},
+
+		hasClass: function( selector ) {
+			var className, elem,
+				i = 0;
+
+			className = " " + selector + " ";
+			while ( ( elem = this[ i++ ] ) ) {
+				if ( elem.nodeType === 1 &&
+					( " " + getClass( elem ) + " " ).replace( rclass, " " )
+						.indexOf( className ) > -1
+				) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	} );
+
+
+
+
+	var rreturn = /\r/g;
+
+	jQuery.fn.extend( {
+		val: function( value ) {
+			var hooks, ret, isFunction,
+				elem = this[ 0 ];
+
+			if ( !arguments.length ) {
+				if ( elem ) {
+					hooks = jQuery.valHooks[ elem.type ] ||
+						jQuery.valHooks[ elem.nodeName.toLowerCase() ];
+
+					if ( hooks &&
+						"get" in hooks &&
+						( ret = hooks.get( elem, "value" ) ) !== undefined
+					) {
+						return ret;
+					}
+
+					ret = elem.value;
+
+					return typeof ret === "string" ?
+
+						// Handle most common string cases
+						ret.replace( rreturn, "" ) :
+
+						// Handle cases where value is null/undef or number
+						ret == null ? "" : ret;
+				}
+
+				return;
+			}
+
+			isFunction = jQuery.isFunction( value );
+
+			return this.each( function( i ) {
+				var val;
+
+				if ( this.nodeType !== 1 ) {
+					return;
+				}
+
+				if ( isFunction ) {
+					val = value.call( this, i, jQuery( this ).val() );
+				} else {
+					val = value;
+				}
+
+				// Treat null/undefined as ""; convert numbers to string
+				if ( val == null ) {
+					val = "";
+
+				} else if ( typeof val === "number" ) {
+					val += "";
+
+				} else if ( jQuery.isArray( val ) ) {
+					val = jQuery.map( val, function( value ) {
+						return value == null ? "" : value + "";
+					} );
+				}
+
+				hooks = jQuery.valHooks[ this.type ] || jQuery.valHooks[ this.nodeName.toLowerCase() ];
+
+				// If set returns undefined, fall back to normal setting
+				if ( !hooks || !( "set" in hooks ) || hooks.set( this, val, "value" ) === undefined ) {
+					this.value = val;
+				}
+			} );
+		}
+	} );
+
+	jQuery.extend( {
+		valHooks: {
+			option: {
+				get: function( elem ) {
+
+					// Support: IE<11
+					// option.value not trimmed (#14858)
+					return jQuery.trim( elem.value );
+				}
+			},
+			select: {
+				get: function( elem ) {
+					var value, option,
+						options = elem.options,
+						index = elem.selectedIndex,
+						one = elem.type === "select-one" || index < 0,
+						values = one ? null : [],
+						max = one ? index + 1 : options.length,
+						i = index < 0 ?
+							max :
+							one ? index : 0;
+
+					// Loop through all the selected options
+					for ( ; i < max; i++ ) {
+						option = options[ i ];
+
+						// IE8-9 doesn't update selected after form reset (#2551)
+						if ( ( option.selected || i === index ) &&
+
+								// Don't return options that are disabled or in a disabled optgroup
+								( support.optDisabled ?
+									!option.disabled : option.getAttribute( "disabled" ) === null ) &&
+								( !option.parentNode.disabled ||
+									!jQuery.nodeName( option.parentNode, "optgroup" ) ) ) {
+
+							// Get the specific value for the option
+							value = jQuery( option ).val();
+
+							// We don't need an array for one selects
+							if ( one ) {
+								return value;
+							}
+
+							// Multi-Selects return an array
+							values.push( value );
+						}
+					}
+
+					return values;
+				},
+
+				set: function( elem, value ) {
+					var optionSet, option,
+						options = elem.options,
+						values = jQuery.makeArray( value ),
+						i = options.length;
+
+					while ( i-- ) {
+						option = options[ i ];
+						if ( option.selected =
+								jQuery.inArray( jQuery.valHooks.option.get( option ), values ) > -1
+						) {
+							optionSet = true;
+						}
+					}
+
+					// Force browsers to behave consistently when non-matching value is set
+					if ( !optionSet ) {
+						elem.selectedIndex = -1;
+					}
+					return values;
+				}
+			}
+		}
+	} );
+
+	// Radios and checkboxes getter/setter
+	jQuery.each( [ "radio", "checkbox" ], function() {
+		jQuery.valHooks[ this ] = {
+			set: function( elem, value ) {
+				if ( jQuery.isArray( value ) ) {
+					return ( elem.checked = jQuery.inArray( jQuery( elem ).val(), value ) > -1 );
+				}
+			}
+		};
+		if ( !support.checkOn ) {
+			jQuery.valHooks[ this ].get = function( elem ) {
+				return elem.getAttribute( "value" ) === null ? "on" : elem.value;
+			};
+		}
+	} );
+
+
+
+
+	// Return jQuery for attributes-only inclusion
+
+
+	var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/;
+
+	jQuery.extend( jQuery.event, {
+
+		trigger: function( event, data, elem, onlyHandlers ) {
+
+			var i, cur, tmp, bubbleType, ontype, handle, special,
+				eventPath = [ elem || document ],
+				type = hasOwn.call( event, "type" ) ? event.type : event,
+				namespaces = hasOwn.call( event, "namespace" ) ? event.namespace.split( "." ) : [];
+
+			cur = tmp = elem = elem || document;
+
+			// Don't do events on text and comment nodes
+			if ( elem.nodeType === 3 || elem.nodeType === 8 ) {
+				return;
+			}
+
+			// focus/blur morphs to focusin/out; ensure we're not firing them right now
+			if ( rfocusMorph.test( type + jQuery.event.triggered ) ) {
+				return;
+			}
+
+			if ( type.indexOf( "." ) > -1 ) {
+
+				// Namespaced trigger; create a regexp to match event type in handle()
+				namespaces = type.split( "." );
+				type = namespaces.shift();
+				namespaces.sort();
+			}
+			ontype = type.indexOf( ":" ) < 0 && "on" + type;
+
+			// Caller can pass in a jQuery.Event object, Object, or just an event type string
+			event = event[ jQuery.expando ] ?
+				event :
+				new jQuery.Event( type, typeof event === "object" && event );
+
+			// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
+			event.isTrigger = onlyHandlers ? 2 : 3;
+			event.namespace = namespaces.join( "." );
+			event.rnamespace = event.namespace ?
+				new RegExp( "(^|\\.)" + namespaces.join( "\\.(?:.*\\.|)" ) + "(\\.|$)" ) :
+				null;
+
+			// Clean up the event in case it is being reused
+			event.result = undefined;
+			if ( !event.target ) {
+				event.target = elem;
+			}
+
+			// Clone any incoming data and prepend the event, creating the handler arg list
+			data = data == null ?
+				[ event ] :
+				jQuery.makeArray( data, [ event ] );
+
+			// Allow special events to draw outside the lines
+			special = jQuery.event.special[ type ] || {};
+			if ( !onlyHandlers && special.trigger && special.trigger.apply( elem, data ) === false ) {
+				return;
+			}
+
+			// Determine event propagation path in advance, per W3C events spec (#9951)
+			// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
+			if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
+
+				bubbleType = special.delegateType || type;
+				if ( !rfocusMorph.test( bubbleType + type ) ) {
+					cur = cur.parentNode;
+				}
+				for ( ; cur; cur = cur.parentNode ) {
+					eventPath.push( cur );
+					tmp = cur;
+				}
+
+				// Only add window if we got to document (e.g., not plain obj or detached DOM)
+				if ( tmp === ( elem.ownerDocument || document ) ) {
+					eventPath.push( tmp.defaultView || tmp.parentWindow || window );
+				}
+			}
+
+			// Fire handlers on the event path
+			i = 0;
+			while ( ( cur = eventPath[ i++ ] ) && !event.isPropagationStopped() ) {
+
+				event.type = i > 1 ?
+					bubbleType :
+					special.bindType || type;
+
+				// jQuery handler
+				handle = ( dataPriv.get( cur, "events" ) || {} )[ event.type ] &&
+					dataPriv.get( cur, "handle" );
+				if ( handle ) {
+					handle.apply( cur, data );
+				}
+
+				// Native handler
+				handle = ontype && cur[ ontype ];
+				if ( handle && handle.apply && acceptData( cur ) ) {
+					event.result = handle.apply( cur, data );
+					if ( event.result === false ) {
+						event.preventDefault();
+					}
+				}
+			}
+			event.type = type;
+
+			// If nobody prevented the default action, do it now
+			if ( !onlyHandlers && !event.isDefaultPrevented() ) {
+
+				if ( ( !special._default ||
+					special._default.apply( eventPath.pop(), data ) === false ) &&
+					acceptData( elem ) ) {
+
+					// Call a native DOM method on the target with the same name name as the event.
+					// Don't do default actions on window, that's where global variables be (#6170)
+					if ( ontype && jQuery.isFunction( elem[ type ] ) && !jQuery.isWindow( elem ) ) {
+
+						// Don't re-trigger an onFOO event when we call its FOO() method
+						tmp = elem[ ontype ];
+
+						if ( tmp ) {
+							elem[ ontype ] = null;
+						}
+
+						// Prevent re-triggering of the same event, since we already bubbled it above
+						jQuery.event.triggered = type;
+						elem[ type ]();
+						jQuery.event.triggered = undefined;
+
+						if ( tmp ) {
+							elem[ ontype ] = tmp;
+						}
+					}
+				}
+			}
+
+			return event.result;
+		},
+
+		// Piggyback on a donor event to simulate a different one
+		simulate: function( type, elem, event ) {
+			var e = jQuery.extend(
+				new jQuery.Event(),
+				event,
+				{
+					type: type,
+					isSimulated: true
+
+					// Previously, `originalEvent: {}` was set here, so stopPropagation call
+					// would not be triggered on donor event, since in our own
+					// jQuery.event.stopPropagation function we had a check for existence of
+					// originalEvent.stopPropagation method, so, consequently it would be a noop.
+					//
+					// But now, this "simulate" function is used only for events
+					// for which stopPropagation() is noop, so there is no need for that anymore.
+					//
+					// For the 1.x branch though, guard for "click" and "submit"
+					// events is still used, but was moved to jQuery.event.stopPropagation function
+					// because `originalEvent` should point to the original event for the constancy
+					// with other events and for more focused logic
+				}
+			);
+
+			jQuery.event.trigger( e, null, elem );
+
+			if ( e.isDefaultPrevented() ) {
+				event.preventDefault();
+			}
+		}
+
+	} );
+
+	jQuery.fn.extend( {
+
+		trigger: function( type, data ) {
+			return this.each( function() {
+				jQuery.event.trigger( type, data, this );
+			} );
+		},
+		triggerHandler: function( type, data ) {
+			var elem = this[ 0 ];
+			if ( elem ) {
+				return jQuery.event.trigger( type, data, elem, true );
+			}
+		}
+	} );
+
+
+	jQuery.each( ( "blur focus focusin focusout load resize scroll unload click dblclick " +
+		"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
+		"change select submit keydown keypress keyup error contextmenu" ).split( " " ),
+		function( i, name ) {
+
+		// Handle event binding
+		jQuery.fn[ name ] = function( data, fn ) {
+			return arguments.length > 0 ?
+				this.on( name, null, data, fn ) :
+				this.trigger( name );
+		};
+	} );
+
+	jQuery.fn.extend( {
+		hover: function( fnOver, fnOut ) {
+			return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
+		}
+	} );
+
+
+
+
+	support.focusin = "onfocusin" in window;
+
+
+	// Support: Firefox
+	// Firefox doesn't have focus(in | out) events
+	// Related ticket - https://bugzilla.mozilla.org/show_bug.cgi?id=687787
+	//
+	// Support: Chrome, Safari
+	// focus(in | out) events fire after focus & blur events,
+	// which is spec violation - http://www.w3.org/TR/DOM-Level-3-Events/#events-focusevent-event-order
+	// Related ticket - https://code.google.com/p/chromium/issues/detail?id=449857
+	if ( !support.focusin ) {
+		jQuery.each( { focus: "focusin", blur: "focusout" }, function( orig, fix ) {
+
+			// Attach a single capturing handler on the document while someone wants focusin/focusout
+			var handler = function( event ) {
+				jQuery.event.simulate( fix, event.target, jQuery.event.fix( event ) );
+			};
+
+			jQuery.event.special[ fix ] = {
+				setup: function() {
+					var doc = this.ownerDocument || this,
+						attaches = dataPriv.access( doc, fix );
+
+					if ( !attaches ) {
+						doc.addEventListener( orig, handler, true );
+					}
+					dataPriv.access( doc, fix, ( attaches || 0 ) + 1 );
+				},
+				teardown: function() {
+					var doc = this.ownerDocument || this,
+						attaches = dataPriv.access( doc, fix ) - 1;
+
+					if ( !attaches ) {
+						doc.removeEventListener( orig, handler, true );
+						dataPriv.remove( doc, fix );
+
+					} else {
+						dataPriv.access( doc, fix, attaches );
+					}
+				}
+			};
+		} );
+	}
+	var location = window.location;
+
+	var nonce = jQuery.now();
+
+	var rquery = ( /\?/ );
+
+
+
+	// Support: Android 2.3
+	// Workaround failure to string-cast null input
+	jQuery.parseJSON = function( data ) {
+		return JSON.parse( data + "" );
+	};
+
+
+	// Cross-browser xml parsing
+	jQuery.parseXML = function( data ) {
+		var xml;
+		if ( !data || typeof data !== "string" ) {
+			return null;
+		}
+
+		// Support: IE9
+		try {
+			xml = ( new window.DOMParser() ).parseFromString( data, "text/xml" );
+		} catch ( e ) {
+			xml = undefined;
+		}
+
+		if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) {
+			jQuery.error( "Invalid XML: " + data );
+		}
+		return xml;
+	};
+
+
+	var
+		rhash = /#.*$/,
+		rts = /([?&])_=[^&]*/,
+		rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg,
+
+		// #7653, #8125, #8152: local protocol detection
+		rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
+		rnoContent = /^(?:GET|HEAD)$/,
+		rprotocol = /^\/\//,
+
+		/* Prefilters
+		 * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.js for an example)
+		 * 2) These are called:
+		 *    - BEFORE asking for a transport
+		 *    - AFTER param serialization (s.data is a string if s.processData is true)
+		 * 3) key is the dataType
+		 * 4) the catchall symbol "*" can be used
+		 * 5) execution will start with transport dataType and THEN continue down to "*" if needed
+		 */
+		prefilters = {},
+
+		/* Transports bindings
+		 * 1) key is the dataType
+		 * 2) the catchall symbol "*" can be used
+		 * 3) selection will start with transport dataType and THEN go to "*" if needed
+		 */
+		transports = {},
+
+		// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
+		allTypes = "*/".concat( "*" ),
+
+		// Anchor tag for parsing the document origin
+		originAnchor = document.createElement( "a" );
+		originAnchor.href = location.href;
+
+	// Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
+	function addToPrefiltersOrTransports( structure ) {
+
+		// dataTypeExpression is optional and defaults to "*"
+		return function( dataTypeExpression, func ) {
+
+			if ( typeof dataTypeExpression !== "string" ) {
+				func = dataTypeExpression;
+				dataTypeExpression = "*";
+			}
+
+			var dataType,
+				i = 0,
+				dataTypes = dataTypeExpression.toLowerCase().match( rnotwhite ) || [];
+
+			if ( jQuery.isFunction( func ) ) {
+
+				// For each dataType in the dataTypeExpression
+				while ( ( dataType = dataTypes[ i++ ] ) ) {
+
+					// Prepend if requested
+					if ( dataType[ 0 ] === "+" ) {
+						dataType = dataType.slice( 1 ) || "*";
+						( structure[ dataType ] = structure[ dataType ] || [] ).unshift( func );
+
+					// Otherwise append
+					} else {
+						( structure[ dataType ] = structure[ dataType ] || [] ).push( func );
+					}
+				}
+			}
+		};
+	}
+
+	// Base inspection function for prefilters and transports
+	function inspectPrefiltersOrTransports( structure, options, originalOptions, jqXHR ) {
+
+		var inspected = {},
+			seekingTransport = ( structure === transports );
+
+		function inspect( dataType ) {
+			var selected;
+			inspected[ dataType ] = true;
+			jQuery.each( structure[ dataType ] || [], function( _, prefilterOrFactory ) {
+				var dataTypeOrTransport = prefilterOrFactory( options, originalOptions, jqXHR );
+				if ( typeof dataTypeOrTransport === "string" &&
+					!seekingTransport && !inspected[ dataTypeOrTransport ] ) {
+
+					options.dataTypes.unshift( dataTypeOrTransport );
+					inspect( dataTypeOrTransport );
+					return false;
+				} else if ( seekingTransport ) {
+					return !( selected = dataTypeOrTransport );
+				}
+			} );
+			return selected;
+		}
+
+		return inspect( options.dataTypes[ 0 ] ) || !inspected[ "*" ] && inspect( "*" );
+	}
+
+	// A special extend for ajax options
+	// that takes "flat" options (not to be deep extended)
+	// Fixes #9887
+	function ajaxExtend( target, src ) {
+		var key, deep,
+			flatOptions = jQuery.ajaxSettings.flatOptions || {};
+
+		for ( key in src ) {
+			if ( src[ key ] !== undefined ) {
+				( flatOptions[ key ] ? target : ( deep || ( deep = {} ) ) )[ key ] = src[ key ];
+			}
+		}
+		if ( deep ) {
+			jQuery.extend( true, target, deep );
+		}
+
+		return target;
+	}
+
+	/* Handles responses to an ajax request:
+	 * - finds the right dataType (mediates between content-type and expected dataType)
+	 * - returns the corresponding response
+	 */
+	function ajaxHandleResponses( s, jqXHR, responses ) {
+
+		var ct, type, finalDataType, firstDataType,
+			contents = s.contents,
+			dataTypes = s.dataTypes;
+
+		// Remove auto dataType and get content-type in the process
+		while ( dataTypes[ 0 ] === "*" ) {
+			dataTypes.shift();
+			if ( ct === undefined ) {
+				ct = s.mimeType || jqXHR.getResponseHeader( "Content-Type" );
+			}
+		}
+
+		// Check if we're dealing with a known content-type
+		if ( ct ) {
+			for ( type in contents ) {
+				if ( contents[ type ] && contents[ type ].test( ct ) ) {
+					dataTypes.unshift( type );
+					break;
+				}
+			}
+		}
+
+		// Check to see if we have a response for the expected dataType
+		if ( dataTypes[ 0 ] in responses ) {
+			finalDataType = dataTypes[ 0 ];
+		} else {
+
+			// Try convertible dataTypes
+			for ( type in responses ) {
+				if ( !dataTypes[ 0 ] || s.converters[ type + " " + dataTypes[ 0 ] ] ) {
+					finalDataType = type;
+					break;
+				}
+				if ( !firstDataType ) {
+					firstDataType = type;
+				}
+			}
+
+			// Or just use first one
+			finalDataType = finalDataType || firstDataType;
+		}
+
+		// If we found a dataType
+		// We add the dataType to the list if needed
+		// and return the corresponding response
+		if ( finalDataType ) {
+			if ( finalDataType !== dataTypes[ 0 ] ) {
+				dataTypes.unshift( finalDataType );
+			}
+			return responses[ finalDataType ];
+		}
+	}
+
+	/* Chain conversions given the request and the original response
+	 * Also sets the responseXXX fields on the jqXHR instance
+	 */
+	function ajaxConvert( s, response, jqXHR, isSuccess ) {
+		var conv2, current, conv, tmp, prev,
+			converters = {},
+
+			// Work with a copy of dataTypes in case we need to modify it for conversion
+			dataTypes = s.dataTypes.slice();
+
+		// Create converters map with lowercased keys
+		if ( dataTypes[ 1 ] ) {
+			for ( conv in s.converters ) {
+				converters[ conv.toLowerCase() ] = s.converters[ conv ];
+			}
+		}
+
+		current = dataTypes.shift();
+
+		// Convert to each sequential dataType
+		while ( current ) {
+
+			if ( s.responseFields[ current ] ) {
+				jqXHR[ s.responseFields[ current ] ] = response;
+			}
+
+			// Apply the dataFilter if provided
+			if ( !prev && isSuccess && s.dataFilter ) {
+				response = s.dataFilter( response, s.dataType );
+			}
+
+			prev = current;
+			current = dataTypes.shift();
+
+			if ( current ) {
+
+			// There's only work to do if current dataType is non-auto
+				if ( current === "*" ) {
+
+					current = prev;
+
+				// Convert response if prev dataType is non-auto and differs from current
+				} else if ( prev !== "*" && prev !== current ) {
+
+					// Seek a direct converter
+					conv = converters[ prev + " " + current ] || converters[ "* " + current ];
+
+					// If none found, seek a pair
+					if ( !conv ) {
+						for ( conv2 in converters ) {
+
+							// If conv2 outputs current
+							tmp = conv2.split( " " );
+							if ( tmp[ 1 ] === current ) {
+
+								// If prev can be converted to accepted input
+								conv = converters[ prev + " " + tmp[ 0 ] ] ||
+									converters[ "* " + tmp[ 0 ] ];
+								if ( conv ) {
+
+									// Condense equivalence converters
+									if ( conv === true ) {
+										conv = converters[ conv2 ];
+
+									// Otherwise, insert the intermediate dataType
+									} else if ( converters[ conv2 ] !== true ) {
+										current = tmp[ 0 ];
+										dataTypes.unshift( tmp[ 1 ] );
+									}
+									break;
+								}
+							}
+						}
+					}
+
+					// Apply converter (if not an equivalence)
+					if ( conv !== true ) {
+
+						// Unless errors are allowed to bubble, catch and return them
+						if ( conv && s.throws ) {
+							response = conv( response );
+						} else {
+							try {
+								response = conv( response );
+							} catch ( e ) {
+								return {
+									state: "parsererror",
+									error: conv ? e : "No conversion from " + prev + " to " + current
+								};
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return { state: "success", data: response };
+	}
+
+	jQuery.extend( {
+
+		// Counter for holding the number of active queries
+		active: 0,
+
+		// Last-Modified header cache for next request
+		lastModified: {},
+		etag: {},
+
+		ajaxSettings: {
+			url: location.href,
+			type: "GET",
+			isLocal: rlocalProtocol.test( location.protocol ),
+			global: true,
+			processData: true,
+			async: true,
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			/*
+			timeout: 0,
+			data: null,
+			dataType: null,
+			username: null,
+			password: null,
+			cache: null,
+			throws: false,
+			traditional: false,
+			headers: {},
+			*/
+
+			accepts: {
+				"*": allTypes,
+				text: "text/plain",
+				html: "text/html",
+				xml: "application/xml, text/xml",
+				json: "application/json, text/javascript"
+			},
+
+			contents: {
+				xml: /\bxml\b/,
+				html: /\bhtml/,
+				json: /\bjson\b/
+			},
+
+			responseFields: {
+				xml: "responseXML",
+				text: "responseText",
+				json: "responseJSON"
+			},
+
+			// Data converters
+			// Keys separate source (or catchall "*") and destination types with a single space
+			converters: {
+
+				// Convert anything to text
+				"* text": String,
+
+				// Text to html (true = no transformation)
+				"text html": true,
+
+				// Evaluate text as a json expression
+				"text json": jQuery.parseJSON,
+
+				// Parse text as xml
+				"text xml": jQuery.parseXML
+			},
+
+			// For options that shouldn't be deep extended:
+			// you can add your own custom options here if
+			// and when you create one that shouldn't be
+			// deep extended (see ajaxExtend)
+			flatOptions: {
+				url: true,
+				context: true
+			}
+		},
+
+		// Creates a full fledged settings object into target
+		// with both ajaxSettings and settings fields.
+		// If target is omitted, writes into ajaxSettings.
+		ajaxSetup: function( target, settings ) {
+			return settings ?
+
+				// Building a settings object
+				ajaxExtend( ajaxExtend( target, jQuery.ajaxSettings ), settings ) :
+
+				// Extending ajaxSettings
+				ajaxExtend( jQuery.ajaxSettings, target );
+		},
+
+		ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
+		ajaxTransport: addToPrefiltersOrTransports( transports ),
+
+		// Main method
+		ajax: function( url, options ) {
+
+			// If url is an object, simulate pre-1.5 signature
+			if ( typeof url === "object" ) {
+				options = url;
+				url = undefined;
+			}
+
+			// Force options to be an object
+			options = options || {};
+
+			var transport,
+
+				// URL without anti-cache param
+				cacheURL,
+
+				// Response headers
+				responseHeadersString,
+				responseHeaders,
+
+				// timeout handle
+				timeoutTimer,
+
+				// Url cleanup var
+				urlAnchor,
+
+				// To know if global events are to be dispatched
+				fireGlobals,
+
+				// Loop variable
+				i,
+
+				// Create the final options object
+				s = jQuery.ajaxSetup( {}, options ),
+
+				// Callbacks context
+				callbackContext = s.context || s,
+
+				// Context for global events is callbackContext if it is a DOM node or jQuery collection
+				globalEventContext = s.context &&
+					( callbackContext.nodeType || callbackContext.jquery ) ?
+						jQuery( callbackContext ) :
+						jQuery.event,
+
+				// Deferreds
+				deferred = jQuery.Deferred(),
+				completeDeferred = jQuery.Callbacks( "once memory" ),
+
+				// Status-dependent callbacks
+				statusCode = s.statusCode || {},
+
+				// Headers (they are sent all at once)
+				requestHeaders = {},
+				requestHeadersNames = {},
+
+				// The jqXHR state
+				state = 0,
+
+				// Default abort message
+				strAbort = "canceled",
+
+				// Fake xhr
+				jqXHR = {
+					readyState: 0,
+
+					// Builds headers hashtable if needed
+					getResponseHeader: function( key ) {
+						var match;
+						if ( state === 2 ) {
+							if ( !responseHeaders ) {
+								responseHeaders = {};
+								while ( ( match = rheaders.exec( responseHeadersString ) ) ) {
+									responseHeaders[ match[ 1 ].toLowerCase() ] = match[ 2 ];
+								}
+							}
+							match = responseHeaders[ key.toLowerCase() ];
+						}
+						return match == null ? null : match;
+					},
+
+					// Raw string
+					getAllResponseHeaders: function() {
+						return state === 2 ? responseHeadersString : null;
+					},
+
+					// Caches the header
+					setRequestHeader: function( name, value ) {
+						var lname = name.toLowerCase();
+						if ( !state ) {
+							name = requestHeadersNames[ lname ] = requestHeadersNames[ lname ] || name;
+							requestHeaders[ name ] = value;
+						}
+						return this;
+					},
+
+					// Overrides response content-type header
+					overrideMimeType: function( type ) {
+						if ( !state ) {
+							s.mimeType = type;
+						}
+						return this;
+					},
+
+					// Status-dependent callbacks
+					statusCode: function( map ) {
+						var code;
+						if ( map ) {
+							if ( state < 2 ) {
+								for ( code in map ) {
+
+									// Lazy-add the new callback in a way that preserves old ones
+									statusCode[ code ] = [ statusCode[ code ], map[ code ] ];
+								}
+							} else {
+
+								// Execute the appropriate callbacks
+								jqXHR.always( map[ jqXHR.status ] );
+							}
+						}
+						return this;
+					},
+
+					// Cancel the request
+					abort: function( statusText ) {
+						var finalText = statusText || strAbort;
+						if ( transport ) {
+							transport.abort( finalText );
+						}
+						done( 0, finalText );
+						return this;
+					}
+				};
+
+			// Attach deferreds
+			deferred.promise( jqXHR ).complete = completeDeferred.add;
+			jqXHR.success = jqXHR.done;
+			jqXHR.error = jqXHR.fail;
+
+			// Remove hash character (#7531: and string promotion)
+			// Add protocol if not provided (prefilters might expect it)
+			// Handle falsy url in the settings object (#10093: consistency with old signature)
+			// We also use the url parameter if available
+			s.url = ( ( url || s.url || location.href ) + "" ).replace( rhash, "" )
+				.replace( rprotocol, location.protocol + "//" );
+
+			// Alias method option to type as per ticket #12004
+			s.type = options.method || options.type || s.method || s.type;
+
+			// Extract dataTypes list
+			s.dataTypes = jQuery.trim( s.dataType || "*" ).toLowerCase().match( rnotwhite ) || [ "" ];
+
+			// A cross-domain request is in order when the origin doesn't match the current origin.
+			if ( s.crossDomain == null ) {
+				urlAnchor = document.createElement( "a" );
+
+				// Support: IE8-11+
+				// IE throws exception if url is malformed, e.g. http://example.com:80x/
+				try {
+					urlAnchor.href = s.url;
+
+					// Support: IE8-11+
+					// Anchor's host property isn't correctly set when s.url is relative
+					urlAnchor.href = urlAnchor.href;
+					s.crossDomain = originAnchor.protocol + "//" + originAnchor.host !==
+						urlAnchor.protocol + "//" + urlAnchor.host;
+				} catch ( e ) {
+
+					// If there is an error parsing the URL, assume it is crossDomain,
+					// it can be rejected by the transport if it is invalid
+					s.crossDomain = true;
+				}
+			}
+
+			// Convert data if not already a string
+			if ( s.data && s.processData && typeof s.data !== "string" ) {
+				s.data = jQuery.param( s.data, s.traditional );
+			}
+
+			// Apply prefilters
+			inspectPrefiltersOrTransports( prefilters, s, options, jqXHR );
+
+			// If request was aborted inside a prefilter, stop there
+			if ( state === 2 ) {
+				return jqXHR;
+			}
+
+			// We can fire global events as of now if asked to
+			// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
+			fireGlobals = jQuery.event && s.global;
+
+			// Watch for a new set of requests
+			if ( fireGlobals && jQuery.active++ === 0 ) {
+				jQuery.event.trigger( "ajaxStart" );
+			}
+
+			// Uppercase the type
+			s.type = s.type.toUpperCase();
+
+			// Determine if request has content
+			s.hasContent = !rnoContent.test( s.type );
+
+			// Save the URL in case we're toying with the If-Modified-Since
+			// and/or If-None-Match header later on
+			cacheURL = s.url;
+
+			// More options handling for requests with no content
+			if ( !s.hasContent ) {
+
+				// If data is available, append data to url
+				if ( s.data ) {
+					cacheURL = ( s.url += ( rquery.test( cacheURL ) ? "&" : "?" ) + s.data );
+
+					// #9682: remove data so that it's not used in an eventual retry
+					delete s.data;
+				}
+
+				// Add anti-cache in url if needed
+				if ( s.cache === false ) {
+					s.url = rts.test( cacheURL ) ?
+
+						// If there is already a '_' parameter, set its value
+						cacheURL.replace( rts, "$1_=" + nonce++ ) :
+
+						// Otherwise add one to the end
+						cacheURL + ( rquery.test( cacheURL ) ? "&" : "?" ) + "_=" + nonce++;
+				}
+			}
+
+			// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
+			if ( s.ifModified ) {
+				if ( jQuery.lastModified[ cacheURL ] ) {
+					jqXHR.setRequestHeader( "If-Modified-Since", jQuery.lastModified[ cacheURL ] );
+				}
+				if ( jQuery.etag[ cacheURL ] ) {
+					jqXHR.setRequestHeader( "If-None-Match", jQuery.etag[ cacheURL ] );
+				}
+			}
+
+			// Set the correct header, if data is being sent
+			if ( s.data && s.hasContent && s.contentType !== false || options.contentType ) {
+				jqXHR.setRequestHeader( "Content-Type", s.contentType );
+			}
+
+			// Set the Accepts header for the server, depending on the dataType
+			jqXHR.setRequestHeader(
+				"Accept",
+				s.dataTypes[ 0 ] && s.accepts[ s.dataTypes[ 0 ] ] ?
+					s.accepts[ s.dataTypes[ 0 ] ] +
+						( s.dataTypes[ 0 ] !== "*" ? ", " + allTypes + "; q=0.01" : "" ) :
+					s.accepts[ "*" ]
+			);
+
+			// Check for headers option
+			for ( i in s.headers ) {
+				jqXHR.setRequestHeader( i, s.headers[ i ] );
+			}
+
+			// Allow custom headers/mimetypes and early abort
+			if ( s.beforeSend &&
+				( s.beforeSend.call( callbackContext, jqXHR, s ) === false || state === 2 ) ) {
+
+				// Abort if not done already and return
+				return jqXHR.abort();
+			}
+
+			// Aborting is no longer a cancellation
+			strAbort = "abort";
+
+			// Install callbacks on deferreds
+			for ( i in { success: 1, error: 1, complete: 1 } ) {
+				jqXHR[ i ]( s[ i ] );
+			}
+
+			// Get transport
+			transport = inspectPrefiltersOrTransports( transports, s, options, jqXHR );
+
+			// If no transport, we auto-abort
+			if ( !transport ) {
+				done( -1, "No Transport" );
+			} else {
+				jqXHR.readyState = 1;
+
+				// Send global event
+				if ( fireGlobals ) {
+					globalEventContext.trigger( "ajaxSend", [ jqXHR, s ] );
+				}
+
+				// If request was aborted inside ajaxSend, stop there
+				if ( state === 2 ) {
+					return jqXHR;
+				}
+
+				// Timeout
+				if ( s.async && s.timeout > 0 ) {
+					timeoutTimer = window.setTimeout( function() {
+						jqXHR.abort( "timeout" );
+					}, s.timeout );
+				}
+
+				try {
+					state = 1;
+					transport.send( requestHeaders, done );
+				} catch ( e ) {
+
+					// Propagate exception as error if not done
+					if ( state < 2 ) {
+						done( -1, e );
+
+					// Simply rethrow otherwise
+					} else {
+						throw e;
+					}
+				}
+			}
+
+			// Callback for when everything is done
+			function done( status, nativeStatusText, responses, headers ) {
+				var isSuccess, success, error, response, modified,
+					statusText = nativeStatusText;
+
+				// Called once
+				if ( state === 2 ) {
+					return;
+				}
+
+				// State is "done" now
+				state = 2;
+
+				// Clear timeout if it exists
+				if ( timeoutTimer ) {
+					window.clearTimeout( timeoutTimer );
+				}
+
+				// Dereference transport for early garbage collection
+				// (no matter how long the jqXHR object will be used)
+				transport = undefined;
+
+				// Cache response headers
+				responseHeadersString = headers || "";
+
+				// Set readyState
+				jqXHR.readyState = status > 0 ? 4 : 0;
+
+				// Determine if successful
+				isSuccess = status >= 200 && status < 300 || status === 304;
+
+				// Get response data
+				if ( responses ) {
+					response = ajaxHandleResponses( s, jqXHR, responses );
+				}
+
+				// Convert no matter what (that way responseXXX fields are always set)
+				response = ajaxConvert( s, response, jqXHR, isSuccess );
+
+				// If successful, handle type chaining
+				if ( isSuccess ) {
+
+					// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
+					if ( s.ifModified ) {
+						modified = jqXHR.getResponseHeader( "Last-Modified" );
+						if ( modified ) {
+							jQuery.lastModified[ cacheURL ] = modified;
+						}
+						modified = jqXHR.getResponseHeader( "etag" );
+						if ( modified ) {
+							jQuery.etag[ cacheURL ] = modified;
+						}
+					}
+
+					// if no content
+					if ( status === 204 || s.type === "HEAD" ) {
+						statusText = "nocontent";
+
+					// if not modified
+					} else if ( status === 304 ) {
+						statusText = "notmodified";
+
+					// If we have data, let's convert it
+					} else {
+						statusText = response.state;
+						success = response.data;
+						error = response.error;
+						isSuccess = !error;
+					}
+				} else {
+
+					// Extract error from statusText and normalize for non-aborts
+					error = statusText;
+					if ( status || !statusText ) {
+						statusText = "error";
+						if ( status < 0 ) {
+							status = 0;
+						}
+					}
+				}
+
+				// Set data for the fake xhr object
+				jqXHR.status = status;
+				jqXHR.statusText = ( nativeStatusText || statusText ) + "";
+
+				// Success/Error
+				if ( isSuccess ) {
+					deferred.resolveWith( callbackContext, [ success, statusText, jqXHR ] );
+				} else {
+					deferred.rejectWith( callbackContext, [ jqXHR, statusText, error ] );
+				}
+
+				// Status-dependent callbacks
+				jqXHR.statusCode( statusCode );
+				statusCode = undefined;
+
+				if ( fireGlobals ) {
+					globalEventContext.trigger( isSuccess ? "ajaxSuccess" : "ajaxError",
+						[ jqXHR, s, isSuccess ? success : error ] );
+				}
+
+				// Complete
+				completeDeferred.fireWith( callbackContext, [ jqXHR, statusText ] );
+
+				if ( fireGlobals ) {
+					globalEventContext.trigger( "ajaxComplete", [ jqXHR, s ] );
+
+					// Handle the global AJAX counter
+					if ( !( --jQuery.active ) ) {
+						jQuery.event.trigger( "ajaxStop" );
+					}
+				}
+			}
+
+			return jqXHR;
+		},
+
+		getJSON: function( url, data, callback ) {
+			return jQuery.get( url, data, callback, "json" );
+		},
+
+		getScript: function( url, callback ) {
+			return jQuery.get( url, undefined, callback, "script" );
+		}
+	} );
+
+	jQuery.each( [ "get", "post" ], function( i, method ) {
+		jQuery[ method ] = function( url, data, callback, type ) {
+
+			// Shift arguments if data argument was omitted
+			if ( jQuery.isFunction( data ) ) {
+				type = type || callback;
+				callback = data;
+				data = undefined;
+			}
+
+			// The url can be an options object (which then must have .url)
+			return jQuery.ajax( jQuery.extend( {
+				url: url,
+				type: method,
+				dataType: type,
+				data: data,
+				success: callback
+			}, jQuery.isPlainObject( url ) && url ) );
+		};
+	} );
+
+
+	jQuery._evalUrl = function( url ) {
+		return jQuery.ajax( {
+			url: url,
+
+			// Make this explicit, since user can override this through ajaxSetup (#11264)
+			type: "GET",
+			dataType: "script",
+			async: false,
+			global: false,
+			"throws": true
+		} );
+	};
+
+
+	jQuery.fn.extend( {
+		wrapAll: function( html ) {
+			var wrap;
+
+			if ( jQuery.isFunction( html ) ) {
+				return this.each( function( i ) {
+					jQuery( this ).wrapAll( html.call( this, i ) );
+				} );
+			}
+
+			if ( this[ 0 ] ) {
+
+				// The elements to wrap the target around
+				wrap = jQuery( html, this[ 0 ].ownerDocument ).eq( 0 ).clone( true );
+
+				if ( this[ 0 ].parentNode ) {
+					wrap.insertBefore( this[ 0 ] );
+				}
+
+				wrap.map( function() {
+					var elem = this;
+
+					while ( elem.firstElementChild ) {
+						elem = elem.firstElementChild;
+					}
+
+					return elem;
+				} ).append( this );
+			}
+
+			return this;
+		},
+
+		wrapInner: function( html ) {
+			if ( jQuery.isFunction( html ) ) {
+				return this.each( function( i ) {
+					jQuery( this ).wrapInner( html.call( this, i ) );
+				} );
+			}
+
+			return this.each( function() {
+				var self = jQuery( this ),
+					contents = self.contents();
+
+				if ( contents.length ) {
+					contents.wrapAll( html );
+
+				} else {
+					self.append( html );
+				}
+			} );
+		},
+
+		wrap: function( html ) {
+			var isFunction = jQuery.isFunction( html );
+
+			return this.each( function( i ) {
+				jQuery( this ).wrapAll( isFunction ? html.call( this, i ) : html );
+			} );
+		},
+
+		unwrap: function() {
+			return this.parent().each( function() {
+				if ( !jQuery.nodeName( this, "body" ) ) {
+					jQuery( this ).replaceWith( this.childNodes );
+				}
+			} ).end();
+		}
+	} );
+
+
+	jQuery.expr.filters.hidden = function( elem ) {
+		return !jQuery.expr.filters.visible( elem );
+	};
+	jQuery.expr.filters.visible = function( elem ) {
+
+		// Support: Opera <= 12.12
+		// Opera reports offsetWidths and offsetHeights less than zero on some elements
+		// Use OR instead of AND as the element is not visible if either is true
+		// See tickets #10406 and #13132
+		return elem.offsetWidth > 0 || elem.offsetHeight > 0 || elem.getClientRects().length > 0;
+	};
+
+
+
+
+	var r20 = /%20/g,
+		rbracket = /\[\]$/,
+		rCRLF = /\r?\n/g,
+		rsubmitterTypes = /^(?:submit|button|image|reset|file)$/i,
+		rsubmittable = /^(?:input|select|textarea|keygen)/i;
+
+	function buildParams( prefix, obj, traditional, add ) {
+		var name;
+
+		if ( jQuery.isArray( obj ) ) {
+
+			// Serialize array item.
+			jQuery.each( obj, function( i, v ) {
+				if ( traditional || rbracket.test( prefix ) ) {
+
+					// Treat each array item as a scalar.
+					add( prefix, v );
+
+				} else {
+
+					// Item is non-scalar (array or object), encode its numeric index.
+					buildParams(
+						prefix + "[" + ( typeof v === "object" && v != null ? i : "" ) + "]",
+						v,
+						traditional,
+						add
+					);
+				}
+			} );
+
+		} else if ( !traditional && jQuery.type( obj ) === "object" ) {
+
+			// Serialize object item.
+			for ( name in obj ) {
+				buildParams( prefix + "[" + name + "]", obj[ name ], traditional, add );
+			}
+
+		} else {
+
+			// Serialize scalar item.
+			add( prefix, obj );
+		}
+	}
+
+	// Serialize an array of form elements or a set of
+	// key/values into a query string
+	jQuery.param = function( a, traditional ) {
+		var prefix,
+			s = [],
+			add = function( key, value ) {
+
+				// If value is a function, invoke it and return its value
+				value = jQuery.isFunction( value ) ? value() : ( value == null ? "" : value );
+				s[ s.length ] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
+			};
+
+		// Set traditional to true for jQuery <= 1.3.2 behavior.
+		if ( traditional === undefined ) {
+			traditional = jQuery.ajaxSettings && jQuery.ajaxSettings.traditional;
+		}
+
+		// If an array was passed in, assume that it is an array of form elements.
+		if ( jQuery.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
+
+			// Serialize the form elements
+			jQuery.each( a, function() {
+				add( this.name, this.value );
+			} );
+
+		} else {
+
+			// If traditional, encode the "old" way (the way 1.3.2 or older
+			// did it), otherwise encode params recursively.
+			for ( prefix in a ) {
+				buildParams( prefix, a[ prefix ], traditional, add );
+			}
+		}
+
+		// Return the resulting serialization
+		return s.join( "&" ).replace( r20, "+" );
+	};
+
+	jQuery.fn.extend( {
+		serialize: function() {
+			return jQuery.param( this.serializeArray() );
+		},
+		serializeArray: function() {
+			return this.map( function() {
+
+				// Can add propHook for "elements" to filter or add form elements
+				var elements = jQuery.prop( this, "elements" );
+				return elements ? jQuery.makeArray( elements ) : this;
+			} )
+			.filter( function() {
+				var type = this.type;
+
+				// Use .is( ":disabled" ) so that fieldset[disabled] works
+				return this.name && !jQuery( this ).is( ":disabled" ) &&
+					rsubmittable.test( this.nodeName ) && !rsubmitterTypes.test( type ) &&
+					( this.checked || !rcheckableType.test( type ) );
+			} )
+			.map( function( i, elem ) {
+				var val = jQuery( this ).val();
+
+				return val == null ?
+					null :
+					jQuery.isArray( val ) ?
+						jQuery.map( val, function( val ) {
+							return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+						} ) :
+						{ name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+			} ).get();
+		}
+	} );
+
+
+	jQuery.ajaxSettings.xhr = function() {
+		try {
+			return new window.XMLHttpRequest();
+		} catch ( e ) {}
+	};
+
+	var xhrSuccessStatus = {
+
+			// File protocol always yields status code 0, assume 200
+			0: 200,
+
+			// Support: IE9
+			// #1450: sometimes IE returns 1223 when it should be 204
+			1223: 204
+		},
+		xhrSupported = jQuery.ajaxSettings.xhr();
+
+	support.cors = !!xhrSupported && ( "withCredentials" in xhrSupported );
+	support.ajax = xhrSupported = !!xhrSupported;
+
+	jQuery.ajaxTransport( function( options ) {
+		var callback, errorCallback;
+
+		// Cross domain only allowed if supported through XMLHttpRequest
+		if ( support.cors || xhrSupported && !options.crossDomain ) {
+			return {
+				send: function( headers, complete ) {
+					var i,
+						xhr = options.xhr();
+
+					xhr.open(
+						options.type,
+						options.url,
+						options.async,
+						options.username,
+						options.password
+					);
+
+					// Apply custom fields if provided
+					if ( options.xhrFields ) {
+						for ( i in options.xhrFields ) {
+							xhr[ i ] = options.xhrFields[ i ];
+						}
+					}
+
+					// Override mime type if needed
+					if ( options.mimeType && xhr.overrideMimeType ) {
+						xhr.overrideMimeType( options.mimeType );
+					}
+
+					// X-Requested-With header
+					// For cross-domain requests, seeing as conditions for a preflight are
+					// akin to a jigsaw puzzle, we simply never set it to be sure.
+					// (it can always be set on a per-request basis or even using ajaxSetup)
+					// For same-domain requests, won't change header if already provided.
+					if ( !options.crossDomain && !headers[ "X-Requested-With" ] ) {
+						headers[ "X-Requested-With" ] = "XMLHttpRequest";
+					}
+
+					// Set headers
+					for ( i in headers ) {
+						xhr.setRequestHeader( i, headers[ i ] );
+					}
+
+					// Callback
+					callback = function( type ) {
+						return function() {
+							if ( callback ) {
+								callback = errorCallback = xhr.onload =
+									xhr.onerror = xhr.onabort = xhr.onreadystatechange = null;
+
+								if ( type === "abort" ) {
+									xhr.abort();
+								} else if ( type === "error" ) {
+
+									// Support: IE9
+									// On a manual native abort, IE9 throws
+									// errors on any property access that is not readyState
+									if ( typeof xhr.status !== "number" ) {
+										complete( 0, "error" );
+									} else {
+										complete(
+
+											// File: protocol always yields status 0; see #8605, #14207
+											xhr.status,
+											xhr.statusText
+										);
+									}
+								} else {
+									complete(
+										xhrSuccessStatus[ xhr.status ] || xhr.status,
+										xhr.statusText,
+
+										// Support: IE9 only
+										// IE9 has no XHR2 but throws on binary (trac-11426)
+										// For XHR2 non-text, let the caller handle it (gh-2498)
+										( xhr.responseType || "text" ) !== "text"  ||
+										typeof xhr.responseText !== "string" ?
+											{ binary: xhr.response } :
+											{ text: xhr.responseText },
+										xhr.getAllResponseHeaders()
+									);
+								}
+							}
+						};
+					};
+
+					// Listen to events
+					xhr.onload = callback();
+					errorCallback = xhr.onerror = callback( "error" );
+
+					// Support: IE9
+					// Use onreadystatechange to replace onabort
+					// to handle uncaught aborts
+					if ( xhr.onabort !== undefined ) {
+						xhr.onabort = errorCallback;
+					} else {
+						xhr.onreadystatechange = function() {
+
+							// Check readyState before timeout as it changes
+							if ( xhr.readyState === 4 ) {
+
+								// Allow onerror to be called first,
+								// but that will not handle a native abort
+								// Also, save errorCallback to a variable
+								// as xhr.onerror cannot be accessed
+								window.setTimeout( function() {
+									if ( callback ) {
+										errorCallback();
+									}
+								} );
+							}
+						};
+					}
+
+					// Create the abort callback
+					callback = callback( "abort" );
+
+					try {
+
+						// Do send the request (this may raise an exception)
+						xhr.send( options.hasContent && options.data || null );
+					} catch ( e ) {
+
+						// #14683: Only rethrow if this hasn't been notified as an error yet
+						if ( callback ) {
+							throw e;
+						}
+					}
+				},
+
+				abort: function() {
+					if ( callback ) {
+						callback();
+					}
+				}
+			};
+		}
+	} );
+
+
+
+
+	// Install script dataType
+	jQuery.ajaxSetup( {
+		accepts: {
+			script: "text/javascript, application/javascript, " +
+				"application/ecmascript, application/x-ecmascript"
+		},
+		contents: {
+			script: /\b(?:java|ecma)script\b/
+		},
+		converters: {
+			"text script": function( text ) {
+				jQuery.globalEval( text );
+				return text;
+			}
+		}
+	} );
+
+	// Handle cache's special case and crossDomain
+	jQuery.ajaxPrefilter( "script", function( s ) {
+		if ( s.cache === undefined ) {
+			s.cache = false;
+		}
+		if ( s.crossDomain ) {
+			s.type = "GET";
+		}
+	} );
+
+	// Bind script tag hack transport
+	jQuery.ajaxTransport( "script", function( s ) {
+
+		// This transport only deals with cross domain requests
+		if ( s.crossDomain ) {
+			var script, callback;
+			return {
+				send: function( _, complete ) {
+					script = jQuery( "<script>" ).prop( {
+						charset: s.scriptCharset,
+						src: s.url
+					} ).on(
+						"load error",
+						callback = function( evt ) {
+							script.remove();
+							callback = null;
+							if ( evt ) {
+								complete( evt.type === "error" ? 404 : 200, evt.type );
+							}
+						}
+					);
+
+					// Use native DOM manipulation to avoid our domManip AJAX trickery
+					document.head.appendChild( script[ 0 ] );
+				},
+				abort: function() {
+					if ( callback ) {
+						callback();
+					}
+				}
+			};
+		}
+	} );
+
+
+
+
+	var oldCallbacks = [],
+		rjsonp = /(=)\?(?=&|$)|\?\?/;
+
+	// Default jsonp settings
+	jQuery.ajaxSetup( {
+		jsonp: "callback",
+		jsonpCallback: function() {
+			var callback = oldCallbacks.pop() || ( jQuery.expando + "_" + ( nonce++ ) );
+			this[ callback ] = true;
+			return callback;
+		}
+	} );
+
+	// Detect, normalize options and install callbacks for jsonp requests
+	jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
+
+		var callbackName, overwritten, responseContainer,
+			jsonProp = s.jsonp !== false && ( rjsonp.test( s.url ) ?
+				"url" :
+				typeof s.data === "string" &&
+					( s.contentType || "" )
+						.indexOf( "application/x-www-form-urlencoded" ) === 0 &&
+					rjsonp.test( s.data ) && "data"
+			);
+
+		// Handle iff the expected data type is "jsonp" or we have a parameter to set
+		if ( jsonProp || s.dataTypes[ 0 ] === "jsonp" ) {
+
+			// Get callback name, remembering preexisting value associated with it
+			callbackName = s.jsonpCallback = jQuery.isFunction( s.jsonpCallback ) ?
+				s.jsonpCallback() :
+				s.jsonpCallback;
+
+			// Insert callback into url or form data
+			if ( jsonProp ) {
+				s[ jsonProp ] = s[ jsonProp ].replace( rjsonp, "$1" + callbackName );
+			} else if ( s.jsonp !== false ) {
+				s.url += ( rquery.test( s.url ) ? "&" : "?" ) + s.jsonp + "=" + callbackName;
+			}
+
+			// Use data converter to retrieve json after script execution
+			s.converters[ "script json" ] = function() {
+				if ( !responseContainer ) {
+					jQuery.error( callbackName + " was not called" );
+				}
+				return responseContainer[ 0 ];
+			};
+
+			// Force json dataType
+			s.dataTypes[ 0 ] = "json";
+
+			// Install callback
+			overwritten = window[ callbackName ];
+			window[ callbackName ] = function() {
+				responseContainer = arguments;
+			};
+
+			// Clean-up function (fires after converters)
+			jqXHR.always( function() {
+
+				// If previous value didn't exist - remove it
+				if ( overwritten === undefined ) {
+					jQuery( window ).removeProp( callbackName );
+
+				// Otherwise restore preexisting value
+				} else {
+					window[ callbackName ] = overwritten;
+				}
+
+				// Save back as free
+				if ( s[ callbackName ] ) {
+
+					// Make sure that re-using the options doesn't screw things around
+					s.jsonpCallback = originalSettings.jsonpCallback;
+
+					// Save the callback name for future use
+					oldCallbacks.push( callbackName );
+				}
+
+				// Call if it was a function and we have a response
+				if ( responseContainer && jQuery.isFunction( overwritten ) ) {
+					overwritten( responseContainer[ 0 ] );
+				}
+
+				responseContainer = overwritten = undefined;
+			} );
+
+			// Delegate to script
+			return "script";
+		}
+	} );
+
+
+
+
+	// Support: Safari 8+
+	// In Safari 8 documents created via document.implementation.createHTMLDocument
+	// collapse sibling forms: the second one becomes a child of the first one.
+	// Because of that, this security measure has to be disabled in Safari 8.
+	// https://bugs.webkit.org/show_bug.cgi?id=137337
+	support.createHTMLDocument = ( function() {
+		var body = document.implementation.createHTMLDocument( "" ).body;
+		body.innerHTML = "<form></form><form></form>";
+		return body.childNodes.length === 2;
+	} )();
+
+
+	// Argument "data" should be string of html
+	// context (optional): If specified, the fragment will be created in this context,
+	// defaults to document
+	// keepScripts (optional): If true, will include scripts passed in the html string
+	jQuery.parseHTML = function( data, context, keepScripts ) {
+		if ( !data || typeof data !== "string" ) {
+			return null;
+		}
+		if ( typeof context === "boolean" ) {
+			keepScripts = context;
+			context = false;
+		}
+
+		// Stop scripts or inline event handlers from being executed immediately
+		// by using document.implementation
+		context = context || ( support.createHTMLDocument ?
+			document.implementation.createHTMLDocument( "" ) :
+			document );
+
+		var parsed = rsingleTag.exec( data ),
+			scripts = !keepScripts && [];
+
+		// Single tag
+		if ( parsed ) {
+			return [ context.createElement( parsed[ 1 ] ) ];
+		}
+
+		parsed = buildFragment( [ data ], context, scripts );
+
+		if ( scripts && scripts.length ) {
+			jQuery( scripts ).remove();
+		}
+
+		return jQuery.merge( [], parsed.childNodes );
+	};
+
+
+	// Keep a copy of the old load method
+	var _load = jQuery.fn.load;
+
+	/**
+	 * Load a url into a page
+	 */
+	jQuery.fn.load = function( url, params, callback ) {
+		if ( typeof url !== "string" && _load ) {
+			return _load.apply( this, arguments );
+		}
+
+		var selector, type, response,
+			self = this,
+			off = url.indexOf( " " );
+
+		if ( off > -1 ) {
+			selector = jQuery.trim( url.slice( off ) );
+			url = url.slice( 0, off );
+		}
+
+		// If it's a function
+		if ( jQuery.isFunction( params ) ) {
+
+			// We assume that it's the callback
+			callback = params;
+			params = undefined;
+
+		// Otherwise, build a param string
+		} else if ( params && typeof params === "object" ) {
+			type = "POST";
+		}
+
+		// If we have elements to modify, make the request
+		if ( self.length > 0 ) {
+			jQuery.ajax( {
+				url: url,
+
+				// If "type" variable is undefined, then "GET" method will be used.
+				// Make value of this field explicit since
+				// user can override it through ajaxSetup method
+				type: type || "GET",
+				dataType: "html",
+				data: params
+			} ).done( function( responseText ) {
+
+				// Save response for use in complete callback
+				response = arguments;
+
+				self.html( selector ?
+
+					// If a selector was specified, locate the right elements in a dummy div
+					// Exclude scripts to avoid IE 'Permission Denied' errors
+					jQuery( "<div>" ).append( jQuery.parseHTML( responseText ) ).find( selector ) :
+
+					// Otherwise use the full result
+					responseText );
+
+			// If the request succeeds, this function gets "data", "status", "jqXHR"
+			// but they are ignored because response was set above.
+			// If it fails, this function gets "jqXHR", "status", "error"
+			} ).always( callback && function( jqXHR, status ) {
+				self.each( function() {
+					callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
+				} );
+			} );
+		}
+
+		return this;
+	};
+
+
+
+
+	// Attach a bunch of functions for handling common AJAX events
+	jQuery.each( [
+		"ajaxStart",
+		"ajaxStop",
+		"ajaxComplete",
+		"ajaxError",
+		"ajaxSuccess",
+		"ajaxSend"
+	], function( i, type ) {
+		jQuery.fn[ type ] = function( fn ) {
+			return this.on( type, fn );
+		};
+	} );
+
+
+
+
+	jQuery.expr.filters.animated = function( elem ) {
+		return jQuery.grep( jQuery.timers, function( fn ) {
+			return elem === fn.elem;
+		} ).length;
+	};
+
+
+
+
+	/**
+	 * Gets a window from an element
+	 */
+	function getWindow( elem ) {
+		return jQuery.isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
+	}
+
+	jQuery.offset = {
+		setOffset: function( elem, options, i ) {
+			var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
+				position = jQuery.css( elem, "position" ),
+				curElem = jQuery( elem ),
+				props = {};
+
+			// Set position first, in-case top/left are set even on static elem
+			if ( position === "static" ) {
+				elem.style.position = "relative";
+			}
+
+			curOffset = curElem.offset();
+			curCSSTop = jQuery.css( elem, "top" );
+			curCSSLeft = jQuery.css( elem, "left" );
+			calculatePosition = ( position === "absolute" || position === "fixed" ) &&
+				( curCSSTop + curCSSLeft ).indexOf( "auto" ) > -1;
+
+			// Need to be able to calculate position if either
+			// top or left is auto and position is either absolute or fixed
+			if ( calculatePosition ) {
+				curPosition = curElem.position();
+				curTop = curPosition.top;
+				curLeft = curPosition.left;
+
+			} else {
+				curTop = parseFloat( curCSSTop ) || 0;
+				curLeft = parseFloat( curCSSLeft ) || 0;
+			}
+
+			if ( jQuery.isFunction( options ) ) {
+
+				// Use jQuery.extend here to allow modification of coordinates argument (gh-1848)
+				options = options.call( elem, i, jQuery.extend( {}, curOffset ) );
+			}
+
+			if ( options.top != null ) {
+				props.top = ( options.top - curOffset.top ) + curTop;
+			}
+			if ( options.left != null ) {
+				props.left = ( options.left - curOffset.left ) + curLeft;
+			}
+
+			if ( "using" in options ) {
+				options.using.call( elem, props );
+
+			} else {
+				curElem.css( props );
+			}
+		}
+	};
+
+	jQuery.fn.extend( {
+		offset: function( options ) {
+			if ( arguments.length ) {
+				return options === undefined ?
+					this :
+					this.each( function( i ) {
+						jQuery.offset.setOffset( this, options, i );
+					} );
+			}
+
+			var docElem, win,
+				elem = this[ 0 ],
+				box = { top: 0, left: 0 },
+				doc = elem && elem.ownerDocument;
+
+			if ( !doc ) {
+				return;
+			}
+
+			docElem = doc.documentElement;
+
+			// Make sure it's not a disconnected DOM node
+			if ( !jQuery.contains( docElem, elem ) ) {
+				return box;
+			}
+
+			box = elem.getBoundingClientRect();
+			win = getWindow( doc );
+			return {
+				top: box.top + win.pageYOffset - docElem.clientTop,
+				left: box.left + win.pageXOffset - docElem.clientLeft
+			};
+		},
+
+		position: function() {
+			if ( !this[ 0 ] ) {
+				return;
+			}
+
+			var offsetParent, offset,
+				elem = this[ 0 ],
+				parentOffset = { top: 0, left: 0 };
+
+			// Fixed elements are offset from window (parentOffset = {top:0, left: 0},
+			// because it is its only offset parent
+			if ( jQuery.css( elem, "position" ) === "fixed" ) {
+
+				// Assume getBoundingClientRect is there when computed position is fixed
+				offset = elem.getBoundingClientRect();
+
+			} else {
+
+				// Get *real* offsetParent
+				offsetParent = this.offsetParent();
+
+				// Get correct offsets
+				offset = this.offset();
+				if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
+					parentOffset = offsetParent.offset();
+				}
+
+				// Add offsetParent borders
+				parentOffset.top += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true );
+				parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true );
+			}
+
+			// Subtract parent offsets and element margins
+			return {
+				top: offset.top - parentOffset.top - jQuery.css( elem, "marginTop", true ),
+				left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
+			};
+		},
+
+		// This method will return documentElement in the following cases:
+		// 1) For the element inside the iframe without offsetParent, this method will return
+		//    documentElement of the parent window
+		// 2) For the hidden or detached element
+		// 3) For body or html element, i.e. in case of the html node - it will return itself
+		//
+		// but those exceptions were never presented as a real life use-cases
+		// and might be considered as more preferable results.
+		//
+		// This logic, however, is not guaranteed and can change at any point in the future
+		offsetParent: function() {
+			return this.map( function() {
+				var offsetParent = this.offsetParent;
+
+				while ( offsetParent && jQuery.css( offsetParent, "position" ) === "static" ) {
+					offsetParent = offsetParent.offsetParent;
+				}
+
+				return offsetParent || documentElement;
+			} );
+		}
+	} );
+
+	// Create scrollLeft and scrollTop methods
+	jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( method, prop ) {
+		var top = "pageYOffset" === prop;
+
+		jQuery.fn[ method ] = function( val ) {
+			return access( this, function( elem, method, val ) {
+				var win = getWindow( elem );
+
+				if ( val === undefined ) {
+					return win ? win[ prop ] : elem[ method ];
+				}
+
+				if ( win ) {
+					win.scrollTo(
+						!top ? val : win.pageXOffset,
+						top ? val : win.pageYOffset
+					);
+
+				} else {
+					elem[ method ] = val;
+				}
+			}, method, val, arguments.length );
+		};
+	} );
+
+	// Support: Safari<7-8+, Chrome<37-44+
+	// Add the top/left cssHooks using jQuery.fn.position
+	// Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
+	// Blink bug: https://code.google.com/p/chromium/issues/detail?id=229280
+	// getComputedStyle returns percent when specified for top/left/bottom/right;
+	// rather than make the css module depend on the offset module, just check for it here
+	jQuery.each( [ "top", "left" ], function( i, prop ) {
+		jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
+			function( elem, computed ) {
+				if ( computed ) {
+					computed = curCSS( elem, prop );
+
+					// If curCSS returns percentage, fallback to offset
+					return rnumnonpx.test( computed ) ?
+						jQuery( elem ).position()[ prop ] + "px" :
+						computed;
+				}
+			}
+		);
+	} );
+
+
+	// Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
+	jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
+		jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name },
+			function( defaultExtra, funcName ) {
+
+			// Margin is only for outerHeight, outerWidth
+			jQuery.fn[ funcName ] = function( margin, value ) {
+				var chainable = arguments.length && ( defaultExtra || typeof margin !== "boolean" ),
+					extra = defaultExtra || ( margin === true || value === true ? "margin" : "border" );
+
+				return access( this, function( elem, type, value ) {
+					var doc;
+
+					if ( jQuery.isWindow( elem ) ) {
+
+						// As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+						// isn't a whole lot we can do. See pull request at this URL for discussion:
+						// https://github.com/jquery/jquery/pull/764
+						return elem.document.documentElement[ "client" + name ];
+					}
+
+					// Get document width or height
+					if ( elem.nodeType === 9 ) {
+						doc = elem.documentElement;
+
+						// Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
+						// whichever is greatest
+						return Math.max(
+							elem.body[ "scroll" + name ], doc[ "scroll" + name ],
+							elem.body[ "offset" + name ], doc[ "offset" + name ],
+							doc[ "client" + name ]
+						);
+					}
+
+					return value === undefined ?
+
+						// Get width or height on the element, requesting but not forcing parseFloat
+						jQuery.css( elem, type, extra ) :
+
+						// Set width or height on the element
+						jQuery.style( elem, type, value, extra );
+				}, type, chainable ? margin : undefined, chainable, null );
+			};
+		} );
+	} );
+
+
+	jQuery.fn.extend( {
+
+		bind: function( types, data, fn ) {
+			return this.on( types, null, data, fn );
+		},
+		unbind: function( types, fn ) {
+			return this.off( types, null, fn );
+		},
+
+		delegate: function( selector, types, data, fn ) {
+			return this.on( types, selector, data, fn );
+		},
+		undelegate: function( selector, types, fn ) {
+
+			// ( namespace ) or ( selector, types [, fn] )
+			return arguments.length === 1 ?
+				this.off( selector, "**" ) :
+				this.off( types, selector || "**", fn );
+		},
+		size: function() {
+			return this.length;
+		}
+	} );
+
+	jQuery.fn.andSelf = jQuery.fn.addBack;
+
+
+
+
+	// Register as a named AMD module, since jQuery can be concatenated with other
+	// files that may use define, but not via a proper concatenation script that
+	// understands anonymous AMD modules. A named AMD is safest and most robust
+	// way to register. Lowercase jquery is used because AMD module names are
+	// derived from file names, and jQuery is normally delivered in a lowercase
+	// file name. Do this after creating the global so that if an AMD module wants
+	// to call noConflict to hide this version of jQuery, it will work.
+
+	// Note that for maximum portability, libraries that are not jQuery should
+	// declare themselves as anonymous modules, and avoid setting a global if an
+	// AMD loader is present. jQuery is a special case. For more information, see
+	// https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
+
+	if ( true ) {
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+			return jQuery;
+		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	}
+
+
+
+	var
+
+		// Map over jQuery in case of overwrite
+		_jQuery = window.jQuery,
+
+		// Map over the $ in case of overwrite
+		_$ = window.$;
+
+	jQuery.noConflict = function( deep ) {
+		if ( window.$ === jQuery ) {
+			window.$ = _$;
+		}
+
+		if ( deep && window.jQuery === jQuery ) {
+			window.jQuery = _jQuery;
+		}
+
+		return jQuery;
+	};
+
+	// Expose jQuery and $ identifiers, even in AMD
+	// (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
+	// and CommonJS for browser emulators (#13566)
+	if ( !noGlobal ) {
+		window.jQuery = window.$ = jQuery;
+	}
+
+	return jQuery;
+	}));
+
+
+/***/ },
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -54511,15661 +70200,6 @@
 	}.call(this));
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(168)(module), (function() { return this; }())))
-
-/***/ },
-/* 309 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _selectableEnhance = __webpack_require__(310);
-
-	var _list = __webpack_require__(311);
-
-	var _list2 = _interopRequireDefault(_list);
-
-	var _listItem = __webpack_require__(312);
-
-	var _listItem2 = _interopRequireDefault(_listItem);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var SelectableList = (0, _selectableEnhance.SelectableContainerEnhance)(_list2.default);
-
-	var style = {
-	  listItem: {
-	    // 아이템 스타일 작성
-
-	  }
-	};
-
-	function wrapState(ComposedComponent) {
-	  var StateWrapper = _react2.default.createClass({
-	    displayName: 'StateWrapper',
-	    getInitialState: function getInitialState() {
-	      return { selectedIndex: 1 };
-	    },
-	    handleUpdateSelectedIndex: function handleUpdateSelectedIndex(e, index) {
-	      this.setState({
-	        selectedIndex: index
-	      });
-	    },
-	    render: function render() {
-	      return _react2.default.createElement(ComposedComponent, _extends({}, this.props, this.state, {
-	        valueLink: { value: this.state.selectedIndex, requestChange: this.handleUpdateSelectedIndex }
-	      }));
-	    }
-	  });
-	  return StateWrapper;
-	}
-
-	SelectableList = wrapState(SelectableList);
-
-	var SideItemWrapper = function (_React$Component) {
-	  _inherits(SideItemWrapper, _React$Component);
-
-	  function SideItemWrapper(props) {
-	    _classCallCheck(this, SideItemWrapper);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SideItemWrapper).call(this, props));
-
-	    _this.displayName = 'SideItemWrapper';
-	    return _this;
-	  }
-
-	  _createClass(SideItemWrapper, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      // 채널 리스트를 뿌려주는 메소드
-	      var showItemList = function showItemList() {
-	        var itemDom = [];
-	        var items = _this2.props.itemArr; // 아이템 이름 배열
-	        if (items.length > 0) {
-	          var index = 1;
-	          var _iteratorNormalCompletion = true;
-	          var _didIteratorError = false;
-	          var _iteratorError = undefined;
-
-	          try {
-	            for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	              var item = _step.value;
-
-	              itemDom.push(_react2.default.createElement(_listItem2.default, {
-	                key: index,
-	                value: index++,
-	                leftIcon: _this2.props.leftIcon,
-	                primaryText: item,
-	                onClick: _this2.props.handleItemClick,
-	                style: style.listItem }));
-	            }
-	          } catch (err) {
-	            _didIteratorError = true;
-	            _iteratorError = err;
-	          } finally {
-	            try {
-	              if (!_iteratorNormalCompletion && _iterator.return) {
-	                _iterator.return();
-	              }
-	            } finally {
-	              if (_didIteratorError) {
-	                throw _iteratorError;
-	              }
-	            }
-	          }
-	        }
-	        return itemDom;
-	      };
-	      return _react2.default.createElement(
-	        SelectableList,
-	        null,
-	        showItemList()
-	      );
-	    }
-	  }]);
-
-	  return SideItemWrapper;
-	}(_react2.default.Component);
-
-	exports.default = SideItemWrapper;
-
-/***/ },
-/* 310 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.SelectableContainerEnhance = undefined;
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _colorManipulator = __webpack_require__(274);
-
-	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var SelectableContainerEnhance = exports.SelectableContainerEnhance = function SelectableContainerEnhance(Component) {
-	  var composed = _react2.default.createClass({
-
-	    displayName: 'Selectable' + Component.displayName,
-
-	    propTypes: {
-	      children: _react2.default.PropTypes.node,
-	      selectedItemStyle: _react2.default.PropTypes.object,
-	      valueLink: _react2.default.PropTypes.shape({
-	        value: _react2.default.PropTypes.any,
-	        requestChange: _react2.default.PropTypes.func
-	      }).isRequired
-	    },
-
-	    contextTypes: {
-	      muiTheme: _react2.default.PropTypes.object
-	    },
-
-	    childContextTypes: {
-	      muiTheme: _react2.default.PropTypes.object
-	    },
-
-	    mixins: [_stylePropable2.default],
-
-	    getInitialState: function getInitialState() {
-	      return {
-	        muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	      };
-	    },
-	    getChildContext: function getChildContext() {
-	      return {
-	        muiTheme: this.state.muiTheme
-	      };
-	    },
-	    componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	      var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	      this.setState({ muiTheme: newMuiTheme });
-	    },
-
-	    getValueLink: function getValueLink(props) {
-	      return props.valueLink || {
-	        value: props.value,
-	        requestChange: props.onChange
-	      };
-	    },
-
-	    extendChild: function extendChild(child, styles, selectedItemStyle) {
-	      var _this = this;
-
-	      if (child && child.type && child.type.displayName === 'ListItem') {
-	        var selected = this.isChildSelected(child, this.props);
-	        var selectedChildrenStyles = {};
-	        if (selected) {
-	          selectedChildrenStyles = this.mergeStyles(styles, selectedItemStyle);
-	        }
-
-	        var mergedChildrenStyles = this.mergeStyles(child.props.style || {}, selectedChildrenStyles);
-
-	        this.keyIndex += 1;
-
-	        return _react2.default.cloneElement(child, {
-	          onTouchTap: function onTouchTap(e) {
-	            _this.handleItemTouchTap(e, child);
-	            if (child.props.onTouchTap) {
-	              child.props.onTouchTap(e);
-	            }
-	          },
-	          key: this.keyIndex,
-	          style: mergedChildrenStyles,
-	          nestedItems: child.props.nestedItems.map(function (child) {
-	            return _this.extendChild(child, styles, selectedItemStyle);
-	          }),
-	          initiallyOpen: this.isInitiallyOpen(child)
-	        });
-	      } else {
-	        return child;
-	      }
-	    },
-	    isInitiallyOpen: function isInitiallyOpen(child) {
-	      if (child.props.initiallyOpen) {
-	        return child.props.initiallyOpen;
-	      }
-	      return this.hasSelectedDescendant(false, child);
-	    },
-	    hasSelectedDescendant: function hasSelectedDescendant(previousValue, child) {
-	      if (_react2.default.isValidElement(child) && child.props.nestedItems && child.props.nestedItems.length > 0) {
-	        return child.props.nestedItems.reduce(this.hasSelectedDescendant, previousValue);
-	      }
-	      return previousValue || this.isChildSelected(child, this.props);
-	    },
-	    isChildSelected: function isChildSelected(child, props) {
-	      var itemValue = this.getValueLink(props).value;
-	      var childValue = child.props.value;
-
-	      return itemValue === childValue;
-	    },
-	    handleItemTouchTap: function handleItemTouchTap(e, item) {
-	      var valueLink = this.getValueLink(this.props);
-	      var itemValue = item.props.value;
-	      var menuValue = valueLink.value;
-	      if (itemValue !== menuValue) {
-	        valueLink.requestChange(e, itemValue);
-	      }
-	    },
-	    render: function render() {
-	      var _this2 = this;
-
-	      var _props = this.props;
-	      var children = _props.children;
-	      var selectedItemStyle = _props.selectedItemStyle;
-
-	      this.keyIndex = 0;
-	      var styles = {};
-
-	      if (!selectedItemStyle) {
-	        var textColor = this.state.muiTheme.rawTheme.palette.textColor;
-	        var selectedColor = _colorManipulator2.default.fade(textColor, 0.2);
-	        styles = {
-	          backgroundColor: selectedColor
-	        };
-	      }
-
-	      var newChildren = _react2.default.Children.map(children, function (child) {
-	        return _this2.extendChild(child, styles, selectedItemStyle);
-	      });
-
-	      return _react2.default.createElement(
-	        Component,
-	        _extends({}, this.props, this.state),
-	        newChildren
-	      );
-	    }
-	  });
-
-	  return composed;
-	};
-
-	exports.default = SelectableContainerEnhance;
-
-/***/ },
-/* 311 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _propTypes = __webpack_require__(255);
-
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _typography = __webpack_require__(305);
-
-	var _typography2 = _interopRequireDefault(_typography);
-
-	var _paper = __webpack_require__(251);
-
-	var _paper2 = _interopRequireDefault(_paper);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var List = _react2.default.createClass({
-	  displayName: 'List',
-
-	  propTypes: {
-	    /**
-	     * These are usually ListItems that are passed to
-	     * be part of the list.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * If true, the subheader will be indented by 72px.
-	     */
-	    insetSubheader: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * The subheader string that will be displayed at the top of the list.
-	     */
-	    subheader: _react2.default.PropTypes.node,
-
-	    /**
-	     * The style object to override subheader styles.
-	     */
-	    subheaderStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The zDepth prop passed to the Paper element inside list.
-	     */
-	    zDepth: _propTypes2.default.zDepth
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      insetSubheader: false,
-	      zDepth: 0
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var children = _props.children;
-	    var insetSubheader = _props.insetSubheader;
-	    var style = _props.style;
-	    var subheader = _props.subheader;
-	    var subheaderStyle = _props.subheaderStyle;
-	    var zDepth = _props.zDepth;
-
-	    var other = _objectWithoutProperties(_props, ['children', 'insetSubheader', 'style', 'subheader', 'subheaderStyle', 'zDepth']);
-
-	    var styles = {
-	      root: {
-	        padding: 0,
-	        paddingBottom: 8,
-	        paddingTop: subheader ? 0 : 8
-	      },
-
-	      subheader: {
-	        color: _typography2.default.textLightBlack,
-	        fontSize: 14,
-	        fontWeight: _typography2.default.fontWeightMedium,
-	        lineHeight: '48px',
-	        paddingLeft: insetSubheader ? 72 : 16
-	      }
-	    };
-
-	    var subheaderElement = undefined;
-	    if (subheader) {
-	      var mergedSubheaderStyles = this.mergeStyles(styles.subheader, subheaderStyle);
-	      subheaderElement = _react2.default.createElement(
-	        'div',
-	        { style: this.prepareStyles(mergedSubheaderStyles) },
-	        subheader
-	      );
-	    }
-
-	    return _react2.default.createElement(
-	      _paper2.default,
-	      _extends({}, other, {
-	        style: this.mergeStyles(styles.root, style),
-	        zDepth: zDepth
-	      }),
-	      subheaderElement,
-	      children
-	    );
-	  }
-	});
-
-	exports.default = List;
-	module.exports = exports['default'];
-
-/***/ },
-/* 312 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _colorManipulator = __webpack_require__(274);
-
-	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _colors = __webpack_require__(250);
-
-	var _colors2 = _interopRequireDefault(_colors);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _typography = __webpack_require__(305);
-
-	var _typography2 = _interopRequireDefault(_typography);
-
-	var _enhancedButton = __webpack_require__(313);
-
-	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
-
-	var _iconButton = __webpack_require__(317);
-
-	var _iconButton2 = _interopRequireDefault(_iconButton);
-
-	var _arrowDropUp = __webpack_require__(321);
-
-	var _arrowDropUp2 = _interopRequireDefault(_arrowDropUp);
-
-	var _arrowDropDown = __webpack_require__(323);
-
-	var _arrowDropDown2 = _interopRequireDefault(_arrowDropDown);
-
-	var _nestedList = __webpack_require__(324);
-
-	var _nestedList2 = _interopRequireDefault(_nestedList);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var ListItem = _react2.default.createClass({
-	  displayName: 'ListItem',
-
-	  propTypes: {
-	    /**
-	     * Generate a nested list indicator icon when
-	     * nested list items are detected. Set to false
-	     * if you do not want an indicator auto-generated.
-	     * Note that an indicator will not be created if a
-	     * rightIcon/Button has been specified.
-	     */
-	    autoGenerateNestedIndicator: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Children passed into the ListItem.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * Does not allow the element to be focused by the keyboard.
-	     */
-	    disableKeyboardFocus: _react2.default.PropTypes.bool,
-
-	    /**
-	     * If true, the list-item will not be clickable
-	     * and will not display hover affects.
-	     * This is automatically disabled if leftCheckbox
-	     * or rightToggle is set.
-	     */
-	    disabled: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Controls whether or not the child ListItems are initially displayed.
-	     */
-	    initiallyOpen: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Style prop for the innder div element.
-	     */
-	    innerDivStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * If true, the children will be indented by 72px.
-	     * Only needed if there is no left avatar or left icon.
-	     */
-	    insetChildren: _react2.default.PropTypes.bool,
-
-	    /**
-	     * This is the Avatar element to be displayed on the left side.
-	     */
-	    leftAvatar: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the Checkbox element to be displayed on the left side.
-	     */
-	    leftCheckbox: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the SvgIcon or FontIcon to be displayed on the left side.
-	     */
-	    leftIcon: _react2.default.PropTypes.element,
-
-	    /**
-	     * An array of ListItems to nest underneath the current ListItem.
-	     */
-	    nestedItems: _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.element),
-
-	    /**
-	     * Controls how deep a ListItem appears.
-	     * This property is automatically managed so modify at your own risk.
-	     */
-	    nestedLevel: _react2.default.PropTypes.number,
-
-	    /**
-	     * Override the inline-styles of the nestedItems NestedList.
-	     */
-	    nestedListStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Called when the ListItem has keyboard focus.
-	     */
-	    onKeyboardFocus: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when the mouse is over the ListItem.
-	     */
-	    onMouseEnter: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when the mouse is no longer over the ListItem.
-	     */
-	    onMouseLeave: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when the ListItem toggles its nested ListItems.
-	     */
-	    onNestedListToggle: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when touches start.
-	     */
-	    onTouchStart: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when a touch tap event occures on the component.
-	     */
-	    onTouchTap: _react2.default.PropTypes.func,
-
-	    /**
-	     * This is the block element that contains the primary text.
-	     * If a string is passed in, a div tag will be rendered.
-	     */
-	    primaryText: _react2.default.PropTypes.node,
-
-	    /**
-	     * If provided, tapping on the primary text
-	     * of the item toggles the nested list.
-	     */
-	    primaryTogglesNestedList: _react2.default.PropTypes.bool,
-
-	    /**
-	     * This is the avatar element to be displayed on the right side.
-	     */
-	    rightAvatar: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the SvgIcon or FontIcon to be displayed on the right side.
-	     */
-	    rightIcon: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the IconButton to be displayed on the right side.
-	     * Hovering over this button will remove the ListItem hover.
-	     * Also, clicking on this button will not trigger a
-	     * ListItem ripple. The event will be stopped and prevented
-	     * from bubbling up to cause a ListItem click.
-	     */
-	    rightIconButton: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the Toggle element to display on the right side.
-	     */
-	    rightToggle: _react2.default.PropTypes.element,
-
-	    /**
-	     * This is the block element that contains the secondary text.
-	     * If a string is passed in, a div tag will be rendered.
-	     */
-	    secondaryText: _react2.default.PropTypes.node,
-
-	    /**
-	     * Can be 1 or 2. This is the number of secondary
-	     * text lines before ellipsis will show.
-	     */
-	    secondaryTextLines: _react2.default.PropTypes.oneOf([1, 2]),
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      autoGenerateNestedIndicator: true,
-	      disableKeyboardFocus: false,
-	      disabled: false,
-	      initiallyOpen: false,
-	      insetChildren: false,
-	      nestedItems: [],
-	      nestedLevel: 0,
-	      onKeyboardFocus: function onKeyboardFocus() {},
-	      onMouseEnter: function onMouseEnter() {},
-	      onMouseLeave: function onMouseLeave() {},
-	      onNestedListToggle: function onNestedListToggle() {},
-	      onTouchStart: function onTouchStart() {},
-	      primaryTogglesNestedList: false,
-	      secondaryTextLines: 1
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      hovered: false,
-	      isKeyboardFocused: false,
-	      open: this.props.initiallyOpen,
-	      rightIconButtonHovered: false,
-	      rightIconButtonKeyboardFocused: false,
-	      touch: false,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  applyFocusState: function applyFocusState(focusState) {
-	    var button = this.refs.enhancedButton;
-	    var buttonEl = _reactDom2.default.findDOMNode(button);
-
-	    if (button) {
-	      switch (focusState) {
-	        case 'none':
-	          buttonEl.blur();
-	          break;
-	        case 'focused':
-	          buttonEl.focus();
-	          break;
-	        case 'keyboard-focused':
-	          button.setKeyboardFocus();
-	          buttonEl.focus();
-	          break;
-	      }
-	    }
-	  },
-	  _createDisabledElement: function _createDisabledElement(styles, contentChildren, additionalProps) {
-	    var _props = this.props;
-	    var innerDivStyle = _props.innerDivStyle;
-	    var style = _props.style;
-
-	    var mergedDivStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, style);
-
-	    return _react2.default.createElement(
-	      'div',
-	      _extends({}, additionalProps, {
-	        style: this.prepareStyles(mergedDivStyles)
-	      }),
-	      contentChildren
-	    );
-	  },
-	  _createLabelElement: function _createLabelElement(styles, contentChildren, additionalProps) {
-	    var _props2 = this.props;
-	    var innerDivStyle = _props2.innerDivStyle;
-	    var style = _props2.style;
-
-	    var mergedLabelStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, styles.label, style);
-
-	    return _react2.default.createElement(
-	      'label',
-	      _extends({}, additionalProps, {
-	        style: this.prepareStyles(mergedLabelStyles)
-	      }),
-	      contentChildren
-	    );
-	  },
-	  _createTextElement: function _createTextElement(styles, data, key) {
-	    var isAnElement = _react2.default.isValidElement(data);
-	    var mergedStyles = isAnElement ? this.mergeStyles(styles, data.props.style) : null;
-
-	    return isAnElement ? _react2.default.cloneElement(data, {
-	      key: key,
-	      style: this.prepareStyles(mergedStyles)
-	    }) : _react2.default.createElement(
-	      'div',
-	      { key: key, style: this.prepareStyles(styles) },
-	      data
-	    );
-	  },
-	  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
-	    this.setState({ isKeyboardFocused: isKeyboardFocused });
-	    this.props.onKeyboardFocus(e, isKeyboardFocused);
-	  },
-	  _handleMouseEnter: function _handleMouseEnter(e) {
-	    if (!this.state.touch) this.setState({ hovered: true });
-	    this.props.onMouseEnter(e);
-	  },
-	  _handleMouseLeave: function _handleMouseLeave(e) {
-	    this.setState({ hovered: false });
-	    this.props.onMouseLeave(e);
-	  },
-	  _handleNestedListToggle: function _handleNestedListToggle(e) {
-	    e.stopPropagation();
-	    this.setState({ open: !this.state.open });
-	    this.props.onNestedListToggle(this);
-	  },
-	  _handleRightIconButtonKeyboardFocus: function _handleRightIconButtonKeyboardFocus(e, isKeyboardFocused) {
-	    var iconButton = this.props.rightIconButton;
-	    var newState = {};
-
-	    newState.rightIconButtonKeyboardFocused = isKeyboardFocused;
-	    if (isKeyboardFocused) newState.isKeyboardFocused = false;
-	    this.setState(newState);
-
-	    if (iconButton && iconButton.props.onKeyboardFocus) iconButton.props.onKeyboardFocus(e, isKeyboardFocused);
-	  },
-	  _handleRightIconButtonMouseDown: function _handleRightIconButtonMouseDown(e) {
-	    var iconButton = this.props.rightIconButton;
-	    e.stopPropagation();
-	    if (iconButton && iconButton.props.onMouseDown) iconButton.props.onMouseDown(e);
-	  },
-	  _handleRightIconButtonMouseLeave: function _handleRightIconButtonMouseLeave(e) {
-	    var iconButton = this.props.rightIconButton;
-	    this.setState({ rightIconButtonHovered: false });
-	    if (iconButton && iconButton.props.onMouseLeave) iconButton.props.onMouseLeave(e);
-	  },
-	  _handleRightIconButtonMouseEnter: function _handleRightIconButtonMouseEnter(e) {
-	    var iconButton = this.props.rightIconButton;
-	    this.setState({ rightIconButtonHovered: true });
-	    if (iconButton && iconButton.props.onMouseEnter) iconButton.props.onMouseEnter(e);
-	  },
-	  _handleRightIconButtonMouseUp: function _handleRightIconButtonMouseUp(e) {
-	    var iconButton = this.props.rightIconButton;
-	    e.stopPropagation();
-	    if (iconButton && iconButton.props.onMouseUp) iconButton.props.onMouseUp(e);
-	  },
-	  _handleRightIconButtonTouchTap: function _handleRightIconButtonTouchTap(e) {
-	    var iconButton = this.props.rightIconButton;
-
-	    //Stop the event from bubbling up to the list-item
-	    e.stopPropagation();
-	    if (iconButton && iconButton.props.onTouchTap) iconButton.props.onTouchTap(e);
-	  },
-	  _handleTouchStart: function _handleTouchStart(e) {
-	    this.setState({ touch: true });
-	    this.props.onTouchStart(e);
-	  },
-	  _pushElement: function _pushElement(children, element, baseStyles, additionalProps) {
-	    if (element) {
-	      var styles = this.mergeStyles(baseStyles, element.props.style);
-	      children.push(_react2.default.cloneElement(element, _extends({
-	        key: children.length,
-	        style: styles
-	      }, additionalProps)));
-	    }
-	  },
-	  render: function render() {
-	    var _props3 = this.props;
-	    var autoGenerateNestedIndicator = _props3.autoGenerateNestedIndicator;
-	    var children = _props3.children;
-	    var disabled = _props3.disabled;
-	    var disableKeyboardFocus = _props3.disableKeyboardFocus;
-	    var innerDivStyle = _props3.innerDivStyle;
-	    var insetChildren = _props3.insetChildren;
-	    var leftAvatar = _props3.leftAvatar;
-	    var leftCheckbox = _props3.leftCheckbox;
-	    var leftIcon = _props3.leftIcon;
-	    var nestedItems = _props3.nestedItems;
-	    var nestedLevel = _props3.nestedLevel;
-	    var nestedListStyle = _props3.nestedListStyle;
-	    var onKeyboardFocus = _props3.onKeyboardFocus;
-	    var onMouseLeave = _props3.onMouseLeave;
-	    var onMouseEnter = _props3.onMouseEnter;
-	    var onTouchStart = _props3.onTouchStart;
-	    var onTouchTap = _props3.onTouchTap;
-	    var rightAvatar = _props3.rightAvatar;
-	    var rightIcon = _props3.rightIcon;
-	    var rightIconButton = _props3.rightIconButton;
-	    var rightToggle = _props3.rightToggle;
-	    var primaryText = _props3.primaryText;
-	    var primaryTogglesNestedList = _props3.primaryTogglesNestedList;
-	    var secondaryText = _props3.secondaryText;
-	    var secondaryTextLines = _props3.secondaryTextLines;
-	    var style = _props3.style;
-
-	    var other = _objectWithoutProperties(_props3, ['autoGenerateNestedIndicator', 'children', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedItems', 'nestedLevel', 'nestedListStyle', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'onTouchTap', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'primaryTogglesNestedList', 'secondaryText', 'secondaryTextLines', 'style']);
-
-	    var textColor = this.state.muiTheme.rawTheme.palette.textColor;
-	    var hoverColor = _colorManipulator2.default.fade(textColor, 0.1);
-	    var singleAvatar = !secondaryText && (leftAvatar || rightAvatar);
-	    var singleNoAvatar = !secondaryText && !(leftAvatar || rightAvatar);
-	    var twoLine = secondaryText && secondaryTextLines === 1;
-	    var threeLine = secondaryText && secondaryTextLines > 1;
-	    var hasCheckbox = leftCheckbox || rightToggle;
-
-	    var styles = {
-	      root: {
-	        backgroundColor: (this.state.isKeyboardFocused || this.state.hovered) && !this.state.rightIconButtonHovered && !this.state.rightIconButtonKeyboardFocused ? hoverColor : null,
-	        color: textColor,
-	        display: 'block',
-	        fontSize: 16,
-	        lineHeight: '16px',
-	        position: 'relative',
-	        transition: _transitions2.default.easeOut()
-	      },
-
-	      //This inner div is needed so that ripples will span the entire container
-	      innerDiv: {
-	        marginLeft: nestedLevel * this.state.muiTheme.listItem.nestedLevelDepth,
-	        paddingLeft: leftIcon || leftAvatar || leftCheckbox || insetChildren ? 72 : 16,
-	        paddingRight: rightIcon || rightAvatar || rightIconButton ? 56 : rightToggle ? 72 : 16,
-	        paddingBottom: singleAvatar ? 20 : 16,
-	        paddingTop: singleNoAvatar || threeLine ? 16 : 20,
-	        position: 'relative'
-	      },
-
-	      icons: {
-	        height: 24,
-	        width: 24,
-	        display: 'block',
-	        position: 'absolute',
-	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
-	        margin: 12
-	      },
-
-	      leftIcon: {
-	        color: _colors2.default.grey600,
-	        fill: _colors2.default.grey600,
-	        left: 4
-	      },
-
-	      rightIcon: {
-	        color: _colors2.default.grey400,
-	        fill: _colors2.default.grey400,
-	        right: 4
-	      },
-
-	      avatars: {
-	        position: 'absolute',
-	        top: singleAvatar ? 8 : 16
-	      },
-
-	      label: {
-	        cursor: 'pointer'
-	      },
-
-	      leftAvatar: {
-	        left: 16
-	      },
-
-	      rightAvatar: {
-	        right: 16
-	      },
-
-	      leftCheckbox: {
-	        position: 'absolute',
-	        display: 'block',
-	        width: 24,
-	        top: twoLine ? 24 : singleAvatar ? 16 : 12,
-	        left: 16
-	      },
-
-	      primaryText: {},
-
-	      rightIconButton: {
-	        position: 'absolute',
-	        display: 'block',
-	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
-	        right: 4
-	      },
-
-	      rightToggle: {
-	        position: 'absolute',
-	        display: 'block',
-	        width: 54,
-	        top: twoLine ? 25 : singleAvatar ? 17 : 13,
-	        right: 8
-	      },
-
-	      secondaryText: {
-	        fontSize: 14,
-	        lineHeight: threeLine ? '18px' : '16px',
-	        height: threeLine ? 36 : 16,
-	        margin: 0,
-	        marginTop: 4,
-	        color: _typography2.default.textLightBlack,
-
-	        //needed for 2 and 3 line ellipsis
-	        overflow: 'hidden',
-	        textOverflow: 'ellipsis',
-	        whiteSpace: threeLine ? null : 'nowrap',
-	        display: threeLine ? '-webkit-box' : null,
-	        WebkitLineClamp: threeLine ? 2 : null,
-	        WebkitBoxOrient: threeLine ? 'vertical' : null
-	      }
-	    };
-
-	    var contentChildren = [children];
-
-	    if (leftIcon) {
-	      this._pushElement(contentChildren, leftIcon, this.mergeStyles(styles.icons, styles.leftIcon));
-	    }
-
-	    if (rightIcon) {
-	      this._pushElement(contentChildren, rightIcon, this.mergeStyles(styles.icons, styles.rightIcon));
-	    }
-
-	    if (leftAvatar) {
-	      this._pushElement(contentChildren, leftAvatar, this.mergeStyles(styles.avatars, styles.leftAvatar));
-	    }
-
-	    if (rightAvatar) {
-	      this._pushElement(contentChildren, rightAvatar, this.mergeStyles(styles.avatars, styles.rightAvatar));
-	    }
-
-	    if (leftCheckbox) {
-	      this._pushElement(contentChildren, leftCheckbox, this.mergeStyles(styles.leftCheckbox));
-	    }
-
-	    //RightIconButtonElement
-	    var hasNestListItems = nestedItems.length;
-	    var hasRightElement = rightAvatar || rightIcon || rightIconButton || rightToggle;
-	    var needsNestedIndicator = hasNestListItems && autoGenerateNestedIndicator && !hasRightElement;
-
-	    if (rightIconButton || needsNestedIndicator) {
-	      var rightIconButtonElement = rightIconButton;
-	      var rightIconButtonHandlers = {
-	        onKeyboardFocus: this._handleRightIconButtonKeyboardFocus,
-	        onMouseEnter: this._handleRightIconButtonMouseEnter,
-	        onMouseLeave: this._handleRightIconButtonMouseLeave,
-	        onTouchTap: this._handleRightIconButtonTouchTap,
-	        onMouseDown: this._handleRightIconButtonMouseUp,
-	        onMouseUp: this._handleRightIconButtonMouseUp
-	      };
-
-	      // Create a nested list indicator icon if we don't have an icon on the right
-	      if (needsNestedIndicator) {
-	        rightIconButtonElement = this.state.open ? _react2.default.createElement(
-	          _iconButton2.default,
-	          null,
-	          _react2.default.createElement(_arrowDropUp2.default, null)
-	        ) : _react2.default.createElement(
-	          _iconButton2.default,
-	          null,
-	          _react2.default.createElement(_arrowDropDown2.default, null)
-	        );
-	        rightIconButtonHandlers.onTouchTap = this._handleNestedListToggle;
-	      }
-
-	      this._pushElement(contentChildren, rightIconButtonElement, this.mergeStyles(styles.rightIconButton), rightIconButtonHandlers);
-	    }
-
-	    if (rightToggle) {
-	      this._pushElement(contentChildren, rightToggle, this.mergeStyles(styles.rightToggle));
-	    }
-
-	    if (primaryText) {
-	      var secondaryTextElement = this._createTextElement(styles.primaryText, primaryText, 'primaryText');
-	      contentChildren.push(secondaryTextElement);
-	    }
-
-	    if (secondaryText) {
-	      var secondaryTextElement = this._createTextElement(styles.secondaryText, secondaryText, 'secondaryText');
-	      contentChildren.push(secondaryTextElement);
-	    }
-
-	    var nestedList = nestedItems.length ? _react2.default.createElement(
-	      _nestedList2.default,
-	      { nestedLevel: nestedLevel + 1, open: this.state.open, style: nestedListStyle },
-	      nestedItems
-	    ) : undefined;
-
-	    return _react2.default.createElement(
-	      'div',
-	      null,
-	      hasCheckbox ? this._createLabelElement(styles, contentChildren, other) : disabled ? this._createDisabledElement(styles, contentChildren, other) : _react2.default.createElement(
-	        _enhancedButton2.default,
-	        _extends({}, other, {
-	          disabled: disabled,
-	          disableKeyboardFocus: disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused,
-	          linkButton: true,
-	          onKeyboardFocus: this._handleKeyboardFocus,
-	          onMouseLeave: this._handleMouseLeave,
-	          onMouseEnter: this._handleMouseEnter,
-	          onTouchStart: this._handleTouchStart,
-	          onTouchTap: primaryTogglesNestedList ? this._handleNestedListToggle : onTouchTap,
-	          ref: 'enhancedButton',
-	          style: this.mergeStyles(styles.root, style)
-	        }),
-	        _react2.default.createElement(
-	          'div',
-	          { style: this.prepareStyles(styles.innerDiv, innerDivStyle) },
-	          contentChildren
-	        )
-	      ),
-	      nestedList
-	    );
-	  }
-	});
-
-	exports.default = ListItem;
-	module.exports = exports['default'];
-
-/***/ },
-/* 313 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _colors = __webpack_require__(250);
-
-	var _colors2 = _interopRequireDefault(_colors);
-
-	var _children = __webpack_require__(314);
-
-	var _children2 = _interopRequireDefault(_children);
-
-	var _events = __webpack_require__(248);
-
-	var _events2 = _interopRequireDefault(_events);
-
-	var _keyCode = __webpack_require__(221);
-
-	var _keyCode2 = _interopRequireDefault(_keyCode);
-
-	var _focusRipple = __webpack_require__(295);
-
-	var _focusRipple2 = _interopRequireDefault(_focusRipple);
-
-	var _touchRipple = __webpack_require__(301);
-
-	var _touchRipple2 = _interopRequireDefault(_touchRipple);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var styleInjected = false;
-	var listening = false;
-	var tabPressed = false;
-
-	function injectStyle() {
-	  if (!styleInjected) {
-	    // Remove inner padding and border in Firefox 4+.
-	    var style = document.createElement('style');
-	    style.innerHTML = '\n      button::-moz-focus-inner,\n      input::-moz-focus-inner {\n        border: 0;\n        padding: 0;\n      }\n    ';
-
-	    document.body.appendChild(style);
-	    styleInjected = true;
-	  }
-	}
-
-	function listenForTabPresses() {
-	  if (!listening) {
-	    _events2.default.on(window, 'keydown', function (e) {
-	      tabPressed = e.keyCode === _keyCode2.default.TAB;
-	    });
-	    listening = true;
-	  }
-	}
-
-	var EnhancedButton = _react2.default.createClass({
-	  displayName: 'EnhancedButton',
-
-	  propTypes: {
-	    centerRipple: _react2.default.PropTypes.bool,
-	    children: _react2.default.PropTypes.node,
-	    containerElement: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.element]),
-	    disableFocusRipple: _react2.default.PropTypes.bool,
-	    disableKeyboardFocus: _react2.default.PropTypes.bool,
-	    disableTouchRipple: _react2.default.PropTypes.bool,
-	    disabled: _react2.default.PropTypes.bool,
-	    focusRippleColor: _react2.default.PropTypes.string,
-	    focusRippleOpacity: _react2.default.PropTypes.number,
-	    keyboardFocused: _react2.default.PropTypes.bool,
-	    linkButton: _react2.default.PropTypes.bool,
-	    onBlur: _react2.default.PropTypes.func,
-	    onFocus: _react2.default.PropTypes.func,
-	    onKeyDown: _react2.default.PropTypes.func,
-	    onKeyUp: _react2.default.PropTypes.func,
-	    onKeyboardFocus: _react2.default.PropTypes.func,
-	    onTouchTap: _react2.default.PropTypes.func,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-	    tabIndex: _react2.default.PropTypes.number,
-	    touchRippleColor: _react2.default.PropTypes.string,
-	    touchRippleOpacity: _react2.default.PropTypes.number,
-	    type: _react2.default.PropTypes.string
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      containerElement: 'button',
-	      onBlur: function onBlur() {},
-	      onFocus: function onFocus() {},
-	      onKeyboardFocus: function onKeyboardFocus() {},
-	      onKeyDown: function onKeyDown() {},
-	      onKeyUp: function onKeyUp() {},
-	      onTouchTap: function onTouchTap() {},
-	      tabIndex: 0,
-	      type: 'button'
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      isKeyboardFocused: !this.props.disabled && this.props.keyboardFocused && !this.props.disableKeyboardFocus,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    injectStyle();
-	    listenForTabPresses();
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-
-	    if ((nextProps.disabled || nextProps.disableKeyboardFocus) && this.state.isKeyboardFocused) {
-	      this.setState({ isKeyboardFocused: false });
-	      if (nextProps.onKeyboardFocus) {
-	        nextProps.onKeyboardFocus(null, false);
-	      }
-	    }
-	  },
-	  isKeyboardFocused: function isKeyboardFocused() {
-	    return this.state.isKeyboardFocused;
-	  },
-	  removeKeyboardFocus: function removeKeyboardFocus(e) {
-	    if (this.state.isKeyboardFocused) {
-	      this.setState({ isKeyboardFocused: false });
-	      this.props.onKeyboardFocus(e, false);
-	    }
-	  },
-	  setKeyboardFocus: function setKeyboardFocus(e) {
-	    if (!this.state.isKeyboardFocused) {
-	      this.setState({ isKeyboardFocused: true });
-	      this.props.onKeyboardFocus(e, true);
-	    }
-	  },
-	  _cancelFocusTimeout: function _cancelFocusTimeout() {
-	    if (this._focusTimeout) {
-	      clearTimeout(this._focusTimeout);
-	      this._focusTimeout = null;
-	    }
-	  },
-	  _createButtonChildren: function _createButtonChildren() {
-	    var _props = this.props;
-	    var centerRipple = _props.centerRipple;
-	    var children = _props.children;
-	    var disabled = _props.disabled;
-	    var disableFocusRipple = _props.disableFocusRipple;
-	    var disableKeyboardFocus = _props.disableKeyboardFocus;
-	    var disableTouchRipple = _props.disableTouchRipple;
-	    var focusRippleColor = _props.focusRippleColor;
-	    var focusRippleOpacity = _props.focusRippleOpacity;
-	    var touchRippleColor = _props.touchRippleColor;
-	    var touchRippleOpacity = _props.touchRippleOpacity;
-	    var isKeyboardFocused = this.state.isKeyboardFocused;
-
-	    //Focus Ripple
-
-	    var focusRipple = isKeyboardFocused && !disabled && !disableFocusRipple && !disableKeyboardFocus ? _react2.default.createElement(_focusRipple2.default, {
-	      color: focusRippleColor,
-	      muiTheme: this.state.muiTheme,
-	      opacity: focusRippleOpacity,
-	      show: isKeyboardFocused
-	    }) : undefined;
-
-	    //Touch Ripple
-	    var touchRipple = !disabled && !disableTouchRipple ? _react2.default.createElement(
-	      _touchRipple2.default,
-	      {
-	        centerRipple: centerRipple,
-	        color: touchRippleColor,
-	        muiTheme: this.state.muiTheme,
-	        opacity: touchRippleOpacity
-	      },
-	      children
-	    ) : undefined;
-
-	    return _children2.default.create({
-	      focusRipple: focusRipple,
-	      touchRipple: touchRipple,
-	      children: touchRipple ? undefined : children
-	    });
-	  },
-	  _handleKeyDown: function _handleKeyDown(e) {
-	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
-	      if (e.keyCode === _keyCode2.default.ENTER && this.state.isKeyboardFocused) {
-	        this._handleTouchTap(e);
-	      }
-	    }
-	    this.props.onKeyDown(e);
-	  },
-	  _handleKeyUp: function _handleKeyUp(e) {
-	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
-	      if (e.keyCode === _keyCode2.default.SPACE && this.state.isKeyboardFocused) {
-	        this._handleTouchTap(e);
-	      }
-	    }
-	    this.props.onKeyUp(e);
-	  },
-	  _handleBlur: function _handleBlur(e) {
-	    this._cancelFocusTimeout();
-	    this.removeKeyboardFocus(e);
-	    this.props.onBlur(e);
-	  },
-	  _handleFocus: function _handleFocus(e) {
-	    var _this = this;
-
-	    if (!this.props.disabled && !this.props.disableKeyboardFocus) {
-	      //setTimeout is needed because the focus event fires first
-	      //Wait so that we can capture if this was a keyboard focus
-	      //or touch focus
-	      this._focusTimeout = setTimeout(function () {
-	        if (tabPressed) {
-	          _this.setKeyboardFocus(e);
-	        }
-	      }, 150);
-
-	      this.props.onFocus(e);
-	    }
-	  },
-	  _handleTouchTap: function _handleTouchTap(e) {
-	    this._cancelFocusTimeout();
-	    if (!this.props.disabled) {
-	      tabPressed = false;
-	      this.removeKeyboardFocus(e);
-	      this.props.onTouchTap(e);
-	    }
-	  },
-	  render: function render() {
-	    var _props2 = this.props;
-	    var centerRipple = _props2.centerRipple;
-	    var children = _props2.children;
-	    var containerElement = _props2.containerElement;
-	    var disabled = _props2.disabled;
-	    var disableFocusRipple = _props2.disableFocusRipple;
-	    var disableKeyboardFocus = _props2.disableKeyboardFocus;
-	    var disableTouchRipple = _props2.disableTouchRipple;
-	    var focusRippleColor = _props2.focusRippleColor;
-	    var focusRippleOpacity = _props2.focusRippleOpacity;
-	    var linkButton = _props2.linkButton;
-	    var touchRippleColor = _props2.touchRippleColor;
-	    var touchRippleOpacity = _props2.touchRippleOpacity;
-	    var onBlur = _props2.onBlur;
-	    var onFocus = _props2.onFocus;
-	    var onKeyUp = _props2.onKeyUp;
-	    var onKeyDown = _props2.onKeyDown;
-	    var onTouchTap = _props2.onTouchTap;
-	    var style = _props2.style;
-	    var tabIndex = _props2.tabIndex;
-	    var type = _props2.type;
-
-	    var other = _objectWithoutProperties(_props2, ['centerRipple', 'children', 'containerElement', 'disabled', 'disableFocusRipple', 'disableKeyboardFocus', 'disableTouchRipple', 'focusRippleColor', 'focusRippleOpacity', 'linkButton', 'touchRippleColor', 'touchRippleOpacity', 'onBlur', 'onFocus', 'onKeyUp', 'onKeyDown', 'onTouchTap', 'style', 'tabIndex', 'type']);
-
-	    var mergedStyles = this.mergeStyles({
-	      border: 10,
-	      background: 'none',
-	      boxSizing: 'border-box',
-	      display: 'inline-block',
-	      font: 'inherit',
-	      fontFamily: this.state.muiTheme.rawTheme.fontFamily,
-	      tapHighlightColor: _colors2.default.transparent,
-	      appearance: linkButton ? null : 'button',
-	      cursor: disabled ? 'default' : 'pointer',
-	      textDecoration: 'none',
-	      outline: 'none',
-	      /*
-	        This is needed so that ripples do not bleed
-	        past border radius.
-	        See: http://stackoverflow.com/questions/17298739/
-	          css-overflow-hidden-not-working-in-chrome-when-parent-has-border-radius-and-chil
-	       */
-	      transform: disableTouchRipple && disableFocusRipple ? null : 'translate3d(0, 0, 0)',
-	      verticalAlign: other.hasOwnProperty('href') ? 'middle' : null
-	    }, style);
-
-	    if (disabled && linkButton) {
-	      return _react2.default.createElement(
-	        'span',
-	        _extends({}, other, {
-	          style: mergedStyles
-	        }),
-	        children
-	      );
-	    }
-
-	    var buttonProps = _extends({}, other, {
-	      style: this.prepareStyles(mergedStyles),
-	      disabled: disabled,
-	      onBlur: this._handleBlur,
-	      onFocus: this._handleFocus,
-	      onTouchTap: this._handleTouchTap,
-	      onKeyUp: this._handleKeyUp,
-	      onKeyDown: this._handleKeyDown,
-	      tabIndex: tabIndex,
-	      type: type
-	    });
-	    var buttonChildren = this._createButtonChildren();
-
-	    // Provides backward compatibity. Added to support wrapping around <a> element.
-	    var targetLinkElement = buttonProps.hasOwnProperty('href') ? 'a' : 'span';
-
-	    return _react2.default.isValidElement(containerElement) ? _react2.default.cloneElement(containerElement, buttonProps, buttonChildren) : _react2.default.createElement(linkButton ? targetLinkElement : containerElement, buttonProps, buttonChildren);
-	  }
-	});
-
-	exports.default = EnhancedButton;
-	module.exports = exports['default'];
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsCreateFragment = __webpack_require__(315);
-
-	var _reactAddonsCreateFragment2 = _interopRequireDefault(_reactAddonsCreateFragment);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	  create: function create(fragments) {
-	    var newFragments = {};
-	    var validChildrenCount = 0;
-	    var firstKey = undefined;
-
-	    //Only create non-empty key fragments
-	    for (var key in fragments) {
-	      var currentChild = fragments[key];
-
-	      if (currentChild) {
-	        if (validChildrenCount === 0) firstKey = key;
-	        newFragments[key] = currentChild;
-	        validChildrenCount++;
-	      }
-	    }
-
-	    if (validChildrenCount === 0) return undefined;
-	    if (validChildrenCount === 1) return newFragments[firstKey];
-	    return (0, _reactAddonsCreateFragment2.default)(newFragments);
-	  },
-	  extend: function extend(children, extendedProps, extendedChildren) {
-
-	    return _react2.default.isValidElement(children) ? _react2.default.Children.map(children, function (child) {
-
-	      var newProps = typeof extendedProps === 'function' ? extendedProps(child) : extendedProps;
-
-	      var newChildren = typeof extendedChildren === 'function' ? extendedChildren(child) : extendedChildren ? extendedChildren : child.props.children;
-
-	      return _react2.default.cloneElement(child, newProps, newChildren);
-	    }) : children;
-	  }
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 315 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(316).create;
-
-/***/ },
-/* 316 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactFragment
-	 */
-
-	'use strict';
-
-	var ReactChildren = __webpack_require__(109);
-	var ReactElement = __webpack_require__(41);
-
-	var emptyFunction = __webpack_require__(14);
-	var invariant = __webpack_require__(12);
-	var warning = __webpack_require__(24);
-
-	/**
-	 * We used to allow keyed objects to serve as a collection of ReactElements,
-	 * or nested sets. This allowed us a way to explicitly key a set a fragment of
-	 * components. This is now being replaced with an opaque data structure.
-	 * The upgrade path is to call React.addons.createFragment({ key: value }) to
-	 * create a keyed fragment. The resulting data structure is an array.
-	 */
-
-	var numericPropertyRegex = /^\d+$/;
-
-	var warnedAboutNumeric = false;
-
-	var ReactFragment = {
-	  // Wrap a keyed object in an opaque proxy that warns you if you access any
-	  // of its properties.
-	  create: function (object) {
-	    if (typeof object !== 'object' || !object || Array.isArray(object)) {
-	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment only accepts a single object. Got: %s', object) : undefined;
-	      return object;
-	    }
-	    if (ReactElement.isValidElement(object)) {
-	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment does not accept a ReactElement ' + 'without a wrapper object.') : undefined;
-	      return object;
-	    }
-
-	    !(object.nodeType !== 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'React.addons.createFragment(...): Encountered an invalid child; DOM ' + 'elements are not valid children of React components.') : invariant(false) : undefined;
-
-	    var result = [];
-
-	    for (var key in object) {
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (!warnedAboutNumeric && numericPropertyRegex.test(key)) {
-	          process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment(...): Child objects should have ' + 'non-numeric keys so ordering is preserved.') : undefined;
-	          warnedAboutNumeric = true;
-	        }
-	      }
-	      ReactChildren.mapIntoWithKeyPrefixInternal(object[key], result, key, emptyFunction.thatReturnsArgument);
-	    }
-
-	    return result;
-	  }
-	};
-
-	module.exports = ReactFragment;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 317 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _contextPure = __webpack_require__(318);
-
-	var _contextPure2 = _interopRequireDefault(_contextPure);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _propTypes = __webpack_require__(255);
-
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-
-	var _enhancedButton = __webpack_require__(313);
-
-	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
-
-	var _fontIcon = __webpack_require__(289);
-
-	var _fontIcon2 = _interopRequireDefault(_fontIcon);
-
-	var _tooltip = __webpack_require__(320);
-
-	var _tooltip2 = _interopRequireDefault(_tooltip);
-
-	var _children = __webpack_require__(314);
-
-	var _children2 = _interopRequireDefault(_children);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var IconButton = _react2.default.createClass({
-	  displayName: 'IconButton',
-
-	  propTypes: {
-	    /**
-	     * Can be used to pass a font icon as the icon for the button.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * The css class name of the root element.
-	     */
-	    className: _react2.default.PropTypes.string,
-
-	    /**
-	     * Disables the icon button.
-	     */
-	    disabled: _react2.default.PropTypes.bool,
-
-	    /**
-	     * If you are using a stylesheet for your
-	     * icons, enter the class name for the icon to be used here.
-	     */
-	    iconClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the icon element.
-	     */
-	    iconStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Callback function for when the component loses focus.
-	     */
-	    onBlur: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when the component gains focus.
-	     */
-	    onFocus: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when the component
-	     * receives keyboard focus.
-	     */
-	    onKeyboardFocus: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when mouse enters element.
-	     */
-	    onMouseEnter: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when mouse leaves element.
-	     */
-	    onMouseLeave: _react2.default.PropTypes.func,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * The tooltip text to show.
-	     */
-	    tooltip: _react2.default.PropTypes.node,
-
-	    /**
-	     * Allows the tooltip to be viewed with different
-	     * alignments: "bottom-center", "top-center",
-	     * "bottom-right", "top-right", "bottom-left" and "top-left".
-	     */
-	    tooltipPosition: _propTypes2.default.cornersAndCenter,
-
-	    /**
-	     * Styles prop passed down to the tooltip.
-	     */
-	    tooltipStyles: _react2.default.PropTypes.object,
-
-	    /**
-	     * Prop for tooltip to make it larger for mobile.
-	     */
-	    touch: _react2.default.PropTypes.bool
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default, _contextPure2.default],
-
-	  statics: {
-	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
-	      var spacing = muiTheme.rawTheme.spacing;
-	      var palette = muiTheme.rawTheme.palette;
-
-	      return {
-	        iconSize: spacing.iconSize,
-	        textColor: palette.textColor,
-	        disabledColor: palette.disabledColor
-	      };
-	    },
-	    getChildrenClasses: function getChildrenClasses() {
-	      return [_enhancedButton2.default, _fontIcon2.default, _tooltip2.default];
-	    }
-	  },
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      disabled: false,
-	      iconStyle: {},
-	      tooltipPosition: 'bottom-center',
-	      touch: false
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      tooltipShown: false,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  getStyles: function getStyles() {
-	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
-
-	    var iconSize = _constructor$getRelev.iconSize;
-	    var textColor = _constructor$getRelev.textColor;
-	    var disabledColor = _constructor$getRelev.disabledColor;
-
-	    var styles = {
-	      root: {
-	        position: 'relative',
-	        boxSizing: 'border-box',
-	        transition: _transitions2.default.easeOut(),
-	        padding: iconSize / 2,
-	        width: iconSize * 2,
-	        height: iconSize * 2,
-	        fontSize: 0
-	      },
-	      tooltip: {
-	        boxSizing: 'border-box'
-	      },
-	      icon: {
-	        color: textColor,
-	        fill: textColor
-	      },
-	      overlay: {
-	        position: 'relative',
-	        top: 0,
-	        width: '100%',
-	        height: '100%',
-	        background: disabledColor
-	      },
-	      disabled: {
-	        color: disabledColor,
-	        fill: disabledColor
-	      }
-	    };
-
-	    return styles;
-	  },
-	  setKeyboardFocus: function setKeyboardFocus() {
-	    this.refs.button.setKeyboardFocus();
-	  },
-	  _showTooltip: function _showTooltip() {
-	    if (this.props.tooltip) {
-	      this.setState({ tooltipShown: true });
-	    }
-	  },
-	  _hideTooltip: function _hideTooltip() {
-	    if (this.props.tooltip) this.setState({ tooltipShown: false });
-	  },
-	  _handleBlur: function _handleBlur(e) {
-	    this._hideTooltip();
-	    if (this.props.onBlur) this.props.onBlur(e);
-	  },
-	  _handleFocus: function _handleFocus(e) {
-	    this._showTooltip();
-	    if (this.props.onFocus) this.props.onFocus(e);
-	  },
-	  _handleMouseLeave: function _handleMouseLeave(e) {
-	    if (!this.refs.button.isKeyboardFocused()) this._hideTooltip();
-	    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
-	  },
-	  _handleMouseEnter: function _handleMouseEnter(e) {
-	    this._showTooltip();
-	    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
-	  },
-	  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
-	    if (keyboardFocused && !this.props.disabled) {
-	      this._showTooltip();
-	      if (this.props.onFocus) this.props.onFocus(e);
-	    } else if (!this.state.hovered) {
-	      this._hideTooltip();
-	      if (this.props.onBlur) this.props.onBlur(e);
-	    }
-
-	    if (this.props.onKeyboardFocus) this.props.onKeyboardFocus(e, keyboardFocused);
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var disabled = _props.disabled;
-	    var iconClassName = _props.iconClassName;
-	    var tooltip = _props.tooltip;
-	    var touch = _props.touch;
-	    var iconStyle = _props.iconStyle;
-
-	    var other = _objectWithoutProperties(_props, ['disabled', 'iconClassName', 'tooltip', 'touch', 'iconStyle']);
-
-	    var fonticon = undefined;
-
-	    var styles = this.getStyles();
-	    var tooltipPosition = this.props.tooltipPosition.split('-');
-
-	    var tooltipElement = tooltip ? _react2.default.createElement(_tooltip2.default, {
-	      ref: 'tooltip',
-	      label: tooltip,
-	      show: this.state.tooltipShown,
-	      touch: touch,
-	      style: this.mergeStyles(styles.tooltip, this.props.tooltipStyles),
-	      verticalPosition: tooltipPosition[0],
-	      horizontalPosition: tooltipPosition[1]
-	    }) : null;
-
-	    if (iconClassName) {
-	      var iconHoverColor = iconStyle.iconHoverColor;
-
-	      var iconStyleFontIcon = _objectWithoutProperties(iconStyle, ['iconHoverColor']);
-
-	      fonticon = _react2.default.createElement(
-	        _fontIcon2.default,
-	        {
-	          className: iconClassName,
-	          hoverColor: disabled ? null : iconHoverColor,
-	          style: this.mergeStyles(styles.icon, disabled ? styles.disabled : {}, iconStyleFontIcon)
-	        },
-	        this.props.children
-	      );
-	    }
-
-	    var childrenStyle = disabled ? this.mergeStyles(iconStyle, styles.disabled) : iconStyle;
-
-	    return _react2.default.createElement(
-	      _enhancedButton2.default,
-	      _extends({}, other, {
-	        ref: 'button',
-	        centerRipple: true,
-	        disabled: disabled,
-	        style: this.mergeStyles(styles.root, this.props.style),
-	        onBlur: this._handleBlur,
-	        onFocus: this._handleFocus,
-	        onMouseLeave: this._handleMouseLeave,
-	        onMouseEnter: this._handleMouseEnter,
-	        onKeyboardFocus: this._handleKeyboardFocus
-	      }),
-	      tooltipElement,
-	      fonticon,
-	      _children2.default.extend(this.props.children, {
-	        style: childrenStyle
-	      })
-	    );
-	  }
-	});
-
-	exports.default = IconButton;
-	module.exports = exports['default'];
-
-/***/ },
-/* 318 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _shallowEqual = __webpack_require__(319);
-
-	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function relevantContextKeysEqual(classObject, currentContext, nextContext) {
-
-	  //Get those keys from current object's context that we care
-	  //about and check whether those keys have changed or not
-	  if (classObject.getRelevantContextKeys) {
-	    var currentContextKeys = classObject.getRelevantContextKeys(currentContext);
-	    var nextContextKeys = classObject.getRelevantContextKeys(nextContext);
-
-	    if (!(0, _shallowEqual2.default)(currentContextKeys, nextContextKeys)) {
-	      return false;
-	    }
-	  }
-
-	  //Check if children context keys changed
-	  if (classObject.getChildrenClasses) {
-	    var childrenArray = classObject.getChildrenClasses();
-	    for (var i = 0; i < childrenArray.length; i++) {
-	      if (!relevantContextKeysEqual(childrenArray[i], currentContext, nextContext)) {
-	        return false;
-	      }
-	    }
-	  }
-
-	  //context keys are equal
-	  return true;
-	}
-
-	exports.default = {
-
-	  //Don't update if state, prop, and context are equal
-
-	  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState, nextContext) {
-
-	    //If either the props or state have changed, component should update
-	    if (!(0, _shallowEqual2.default)(this.props, nextProps) || !(0, _shallowEqual2.default)(this.state, nextState)) {
-	      return true;
-	    }
-
-	    //If current theme and next theme are both undefined, do not update
-	    if (!this.context.muiTheme && !nextContext.muiTheme) {
-	      return false;
-	    }
-
-	    //If both themes exist, compare keys only if current theme is not static
-	    if (this.context.muiTheme && nextContext.muiTheme) {
-	      return !this.context.muiTheme.static && !relevantContextKeysEqual(this.constructor, this.context.muiTheme, nextContext.muiTheme);
-	    }
-
-	    //At this point it is guaranteed that exactly one theme is undefined so simply update
-	    return true;
-	  }
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 319 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = shallowEqual;
-	function shallowEqual(objA, objB) {
-	  if (objA === objB) {
-	    return true;
-	  }
-
-	  if ((typeof objA === 'undefined' ? 'undefined' : _typeof(objA)) !== 'object' || objA === null || (typeof objB === 'undefined' ? 'undefined' : _typeof(objB)) !== 'object' || objB === null) {
-	    return false;
-	  }
-
-	  var keysA = Object.keys(objA);
-	  var keysB = Object.keys(objB);
-
-	  if (keysA.length !== keysB.length) {
-	    return false;
-	  }
-
-	  // Test for A's keys different from B.
-	  var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
-	  for (var i = 0; i < keysA.length; i++) {
-	    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-	      return false;
-	    }
-	  }
-
-	  return true;
-	}
-	module.exports = exports['default'];
-
-/***/ },
-/* 320 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _colors = __webpack_require__(250);
-
-	var _colors2 = _interopRequireDefault(_colors);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var Tooltip = _react2.default.createClass({
-	  displayName: 'Tooltip',
-
-	  propTypes: {
-	    /**
-	     * The css class name of the root element.
-	     */
-	    className: _react2.default.PropTypes.string,
-	    horizontalPosition: _react2.default.PropTypes.oneOf(['left', 'right', 'center']),
-	    label: _react2.default.PropTypes.node.isRequired,
-	    show: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-	    touch: _react2.default.PropTypes.bool,
-	    verticalPosition: _react2.default.PropTypes.oneOf(['top', 'bottom'])
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default],
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      offsetWidth: null,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this._setRippleSize();
-	    this._setTooltipPosition();
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    this._setTooltipPosition();
-
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  componentDidUpdate: function componentDidUpdate() {
-	    this._setRippleSize();
-	  },
-	  getStyles: function getStyles() {
-	    var verticalPosition = this.props.verticalPosition;
-	    var horizontalPosition = this.props.horizontalPosition;
-	    var touchMarginOffset = this.props.touch ? 10 : 0;
-	    var touchOffsetTop = this.props.touch ? -20 : -10;
-	    var offset = verticalPosition === 'bottom' ? 14 + touchMarginOffset : -14 - touchMarginOffset;
-
-	    var muiTheme = this.state.muiTheme;
-	    var rawTheme = muiTheme.rawTheme;
-
-	    var styles = {
-	      root: {
-	        position: 'absolute',
-	        fontFamily: rawTheme.fontFamily,
-	        fontSize: '10px',
-	        lineHeight: '22px',
-	        padding: '0 8px',
-	        zIndex: muiTheme.zIndex.tooltip,
-	        color: _colors2.default.white,
-	        overflow: 'hidden',
-	        top: -10000,
-	        borderRadius: 2,
-	        userSelect: 'none',
-	        opacity: 0,
-	        right: horizontalPosition === 'left' ? 12 : null,
-	        left: horizontalPosition === 'center' ? (this.state.offsetWidth - 48) / 2 * -1 : null,
-	        transition: _transitions2.default.easeOut('0ms', 'top', '450ms') + ',' + _transitions2.default.easeOut('450ms', 'transform', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'opacity', '0ms')
-	      },
-	      label: {
-	        position: 'relative',
-	        whiteSpace: 'nowrap'
-	      },
-	      ripple: {
-	        position: 'absolute',
-	        left: horizontalPosition === 'center' ? '50%' : horizontalPosition === 'left' ? '100%' : '0%',
-	        top: verticalPosition === 'bottom' ? 0 : '100%',
-	        transform: 'translate(-50%, -50%)',
-	        borderRadius: '50%',
-	        backgroundColor: 'transparent',
-	        transition: _transitions2.default.easeOut('0ms', 'width', '450ms') + ',' + _transitions2.default.easeOut('0ms', 'height', '450ms') + ',' + _transitions2.default.easeOut('450ms', 'backgroundColor', '0ms')
-	      },
-	      rootWhenShown: {
-	        top: verticalPosition === 'top' ? touchOffsetTop : 36,
-	        opacity: 0.9,
-	        transform: 'translate3d(0px, ' + offset + 'px, 0px)',
-	        transition: _transitions2.default.easeOut('0ms', 'top', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'transform', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'opacity', '0ms')
-	      },
-	      rootWhenTouched: {
-	        fontSize: '14px',
-	        lineHeight: '32px',
-	        padding: '0 16px'
-	      },
-	      rippleWhenShown: {
-	        backgroundColor: _colors2.default.grey700,
-	        transition: _transitions2.default.easeOut('450ms', 'width', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'height', '0ms') + ',' + _transitions2.default.easeOut('450ms', 'backgroundColor', '0ms')
-	      }
-	    };
-
-	    return styles;
-	  },
-	  _setRippleSize: function _setRippleSize() {
-	    var ripple = _reactDom2.default.findDOMNode(this.refs.ripple);
-	    var tooltip = window.getComputedStyle(_reactDom2.default.findDOMNode(this));
-	    var tooltipWidth = parseInt(tooltip.getPropertyValue('width'), 10) / (this.props.horizontalPosition === 'center' ? 2 : 1);
-	    var tooltipHeight = parseInt(tooltip.getPropertyValue('height'), 10);
-
-	    var rippleDiameter = Math.ceil(Math.sqrt(Math.pow(tooltipHeight, 2) + Math.pow(tooltipWidth, 2)) * 2);
-	    if (this.props.show) {
-	      ripple.style.height = rippleDiameter + 'px';
-	      ripple.style.width = rippleDiameter + 'px';
-	    } else {
-	      ripple.style.width = '0px';
-	      ripple.style.height = '0px';
-	    }
-	  },
-	  _setTooltipPosition: function _setTooltipPosition() {
-	    var tooltip = _reactDom2.default.findDOMNode(this);
-	    this.setState({ offsetWidth: tooltip.offsetWidth });
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var label = _props.label;
-
-	    var other = _objectWithoutProperties(_props, ['label']);
-
-	    var styles = this.getStyles();
-
-	    return _react2.default.createElement(
-	      'div',
-	      _extends({}, other, {
-	        style: this.prepareStyles(styles.root, this.props.show && styles.rootWhenShown, this.props.touch && styles.rootWhenTouched, this.props.style)
-	      }),
-	      _react2.default.createElement('div', {
-	        ref: 'ripple',
-	        style: this.prepareStyles(styles.ripple, this.props.show && styles.rippleWhenShown)
-	      }),
-	      _react2.default.createElement(
-	        'span',
-	        { style: this.prepareStyles(styles.label) },
-	        label
-	      )
-	    );
-	  }
-	});
-
-	exports.default = Tooltip;
-	module.exports = exports['default'];
-
-/***/ },
-/* 321 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _svgIcon = __webpack_require__(322);
-
-	var _svgIcon2 = _interopRequireDefault(_svgIcon);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var NavigationArrowDropUp = _react2.default.createClass({
-	  displayName: 'NavigationArrowDropUp',
-
-	  mixins: [_reactAddonsPureRenderMixin2.default],
-
-	  render: function render() {
-	    return _react2.default.createElement(
-	      _svgIcon2.default,
-	      this.props,
-	      _react2.default.createElement('path', { d: 'M7 14l5-5 5 5z' })
-	    );
-	  }
-	});
-
-	exports.default = NavigationArrowDropUp;
-	module.exports = exports['default'];
-
-/***/ },
-/* 322 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var SvgIcon = _react2.default.createClass({
-	  displayName: 'SvgIcon',
-
-	  propTypes: {
-	    /**
-	     * Elements passed into the SVG Icon.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * This is the fill color of the svg icon.
-	     * If not specified, this component will default
-	     * to muiTheme.palette.textColor.
-	     */
-	    color: _react2.default.PropTypes.string,
-
-	    /**
-	     * This is the icon color when the mouse hovers over the icon.
-	     */
-	    hoverColor: _react2.default.PropTypes.string,
-
-	    /**
-	     * Function called when mouse enters this element.
-	     */
-	    onMouseEnter: _react2.default.PropTypes.func,
-
-	    /**
-	     * Function called when mouse leaves this element.
-	     */
-	    onMouseLeave: _react2.default.PropTypes.func,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * Allows you to redifine what the coordinates
-	     * without units mean inside an svg element. For example,
-	     * if the SVG element is 500 (width) by 200 (height), and you
-	     * pass viewBox="0 0 50 20", this means that the coordinates inside
-	     * the svg will go from the top left corner (0,0) to bottom right (50,20)
-	     * and each unit will be worth 10px.
-	     */
-	    viewBox: _react2.default.PropTypes.string
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      onMouseEnter: function onMouseEnter() {},
-	      onMouseLeave: function onMouseLeave() {},
-	      viewBox: '0 0 24 24'
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      hovered: false,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  _handleMouseLeave: function _handleMouseLeave(e) {
-	    this.setState({ hovered: false });
-	    this.props.onMouseLeave(e);
-	  },
-	  _handleMouseEnter: function _handleMouseEnter(e) {
-	    this.setState({ hovered: true });
-	    this.props.onMouseEnter(e);
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var children = _props.children;
-	    var color = _props.color;
-	    var hoverColor = _props.hoverColor;
-	    var onMouseEnter = _props.onMouseEnter;
-	    var onMouseLeave = _props.onMouseLeave;
-	    var style = _props.style;
-	    var viewBox = _props.viewBox;
-
-	    var other = _objectWithoutProperties(_props, ['children', 'color', 'hoverColor', 'onMouseEnter', 'onMouseLeave', 'style', 'viewBox']);
-
-	    var offColor = color ? color : style && style.fill ? style.fill : this.state.muiTheme.rawTheme.palette.textColor;
-	    var onColor = hoverColor ? hoverColor : offColor;
-
-	    var mergedStyles = this.mergeStyles({
-	      display: 'inline-block',
-	      height: 24,
-	      width: 24,
-	      userSelect: 'none',
-	      transition: _transitions2.default.easeOut()
-	    }, style, {
-	      // Make sure our fill color overrides fill provided in props.style
-	      fill: this.state.hovered ? onColor : offColor
-	    });
-
-	    var events = hoverColor ? {
-	      onMouseEnter: this._handleMouseEnter,
-	      onMouseLeave: this._handleMouseLeave
-	    } : {};
-
-	    return _react2.default.createElement(
-	      'svg',
-	      _extends({}, other, events, {
-	        style: this.prepareStyles(mergedStyles),
-	        viewBox: viewBox
-	      }),
-	      children
-	    );
-	  }
-	});
-
-	exports.default = SvgIcon;
-	module.exports = exports['default'];
-
-/***/ },
-/* 323 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _svgIcon = __webpack_require__(322);
-
-	var _svgIcon2 = _interopRequireDefault(_svgIcon);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var NavigationArrowDropDown = _react2.default.createClass({
-	  displayName: 'NavigationArrowDropDown',
-
-	  mixins: [_reactAddonsPureRenderMixin2.default],
-
-	  render: function render() {
-	    return _react2.default.createElement(
-	      _svgIcon2.default,
-	      this.props,
-	      _react2.default.createElement('path', { d: 'M7 10l5 5 5-5z' })
-	    );
-	  }
-	});
-
-	exports.default = NavigationArrowDropDown;
-	module.exports = exports['default'];
-
-/***/ },
-/* 324 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _styles = __webpack_require__(223);
-
-	var _list = __webpack_require__(311);
-
-	var _list2 = _interopRequireDefault(_list);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var NestedList = function (_React$Component) {
-	  _inherits(NestedList, _React$Component);
-
-	  function NestedList() {
-	    _classCallCheck(this, NestedList);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NestedList).apply(this, arguments));
-	  }
-
-	  _createClass(NestedList, [{
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var children = _props.children;
-	      var open = _props.open;
-	      var nestedLevel = _props.nestedLevel;
-	      var style = _props.style;
-
-	      var styles = {
-	        root: {
-	          display: open ? null : 'none'
-	        }
-	      };
-
-	      return _react2.default.createElement(
-	        _list2.default,
-	        { style: (0, _styles.mergeStyles)(styles.root, style) },
-	        _react2.default.Children.map(children, function (child) {
-	          return _react2.default.isValidElement(child) ? _react2.default.cloneElement(child, {
-	            nestedLevel: nestedLevel + 1
-	          }) : child;
-	        })
-	      );
-	    }
-	  }]);
-
-	  return NestedList;
-	}(_react2.default.Component);
-
-	NestedList.propTypes = {
-	  children: _react2.default.PropTypes.node,
-	  nestedLevel: _react2.default.PropTypes.number,
-	  open: _react2.default.PropTypes.bool,
-
-	  /**
-	   * Override the inline-styles of the root element.
-	   */
-	  style: _react2.default.PropTypes.object
-	};
-	NestedList.defaultProps = {
-	  nestedLevel: 1,
-	  open: false
-	};
-	exports.default = NestedList;
-	module.exports = exports['default'];
-
-/***/ },
-/* 325 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _appBar = __webpack_require__(326);
-
-	var _appBar2 = _interopRequireDefault(_appBar);
-
-	var _iconButton = __webpack_require__(317);
-
-	var _iconButton2 = _interopRequireDefault(_iconButton);
-
-	var _fontIcon = __webpack_require__(289);
-
-	var _fontIcon2 = _interopRequireDefault(_fontIcon);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var style = {
-	  appBar: {
-	    // 앱바 스타일 작성
-	  }
-	};
-
-	var SideAppBar = function (_React$Component) {
-	  _inherits(SideAppBar, _React$Component);
-
-	  function SideAppBar(props) {
-	    _classCallCheck(this, SideAppBar);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SideAppBar).call(this, props));
-
-	    _this.displayName = 'SideAppBar';
-	    return _this;
-	  }
-
-	  _createClass(SideAppBar, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(_appBar2.default, {
-	        title: this.props.title + '(' + this.props.itemLength + ')',
-	        iconElementLeft: _react2.default.createElement('i', null),
-	        iconElementRight: _react2.default.createElement(
-	          _iconButton2.default,
-	          { tooltip: this.props.addToolTip, onClick: this.props.handleAddClick },
-	          _react2.default.createElement(_fontIcon2.default, { className: 'fa fa-plus-circle' })
-	        ),
-	        style: style.appBar });
-	    }
-	  }]);
-
-	  return SideAppBar;
-	}(_react2.default.Component);
-
-	exports.default = SideAppBar;
-
-/***/ },
-/* 326 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _typography = __webpack_require__(305);
-
-	var _typography2 = _interopRequireDefault(_typography);
-
-	var _iconButton = __webpack_require__(317);
-
-	var _iconButton2 = _interopRequireDefault(_iconButton);
-
-	var _menu = __webpack_require__(327);
-
-	var _menu2 = _interopRequireDefault(_menu);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _paper = __webpack_require__(251);
-
-	var _paper2 = _interopRequireDefault(_paper);
-
-	var _propTypes = __webpack_require__(255);
-
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-
-	var _warning = __webpack_require__(243);
-
-	var _warning2 = _interopRequireDefault(_warning);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var AppBar = _react2.default.createClass({
-	  displayName: 'AppBar',
-
-	  propTypes: {
-	    /**
-	     * Can be used to render a tab inside an app bar for instance.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * Applied to the app bar's root element.
-	     */
-	    className: _react2.default.PropTypes.string,
-
-	    /**
-	     * The classname of the icon on the left of the app bar.
-	     * If you are using a stylesheet for your icons, enter the class name for the icon to be used here.
-	     */
-	    iconClassNameLeft: _react2.default.PropTypes.string,
-
-	    /**
-	     * Similiar to the iconClassNameLeft prop except that
-	     * it applies to the icon displayed on the right of the app bar.
-	     */
-	    iconClassNameRight: _react2.default.PropTypes.string,
-
-	    /**
-	     * The custom element to be displayed on the left side of the
-	     * app bar such as an SvgIcon.
-	     */
-	    iconElementLeft: _react2.default.PropTypes.element,
-
-	    /**
-	     * Similiar to the iconElementLeft prop except that this element is displayed on the right of the app bar.
-	     */
-	    iconElementRight: _react2.default.PropTypes.element,
-
-	    /**
-	     * Override the inline-styles of the element displayed on the right side of the app bar.
-	     */
-	    iconStyleRight: _react2.default.PropTypes.object,
-
-	    /**
-	     * Callback function for when the left icon is selected via a touch tap.
-	     */
-	    onLeftIconButtonTouchTap: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when the right icon is selected via a touch tap.
-	     */
-	    onRightIconButtonTouchTap: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function for when the title text is selected via a touch tap.
-	     */
-	    onTitleTouchTap: _react2.default.PropTypes.func,
-
-	    /**
-	     * Determines whether or not to display the Menu icon next to the title.
-	     * Setting this prop to false will hide the icon.
-	     */
-	    showMenuIconButton: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * The title to display on the app bar.
-	     */
-	    title: _react2.default.PropTypes.node,
-
-	    /**
-	     * Override the inline-styles of the app bar's title element.
-	     */
-	    titleStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The zDepth of the component.
-	     * The shadow of the app bar is also dependent on this property.
-	     */
-	    zDepth: _propTypes2.default.zDepth
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      showMenuIconButton: true,
-	      title: '',
-	      zDepth: 1
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(!this.props.iconElementLeft || !this.props.iconClassNameLeft, 'Properties iconElementLeft\n      and iconClassNameLeft cannot be simultaneously defined. Please use one or the other.') : undefined;
-
-	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(!this.props.iconElementRight || !this.props.iconClassNameRight, 'Properties iconElementRight\n      and iconClassNameRight cannot be simultaneously defined. Please use one or the other.') : undefined;
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  getStyles: function getStyles() {
-	    var muiTheme = this.state.muiTheme;
-	    var rawTheme = muiTheme.rawTheme;
-
-	    var themeVariables = muiTheme.appBar;
-	    var iconButtonSize = muiTheme.button.iconButtonSize;
-	    var flatButtonSize = 36;
-
-	    var styles = {
-	      root: {
-	        position: 'relative',
-	        zIndex: muiTheme.zIndex.appBar,
-	        width: '100%',
-	        display: 'flex',
-	        minHeight: themeVariables.height,
-	        backgroundColor: themeVariables.color,
-	        paddingLeft: rawTheme.spacing.desktopGutter,
-	        paddingRight: rawTheme.spacing.desktopGutter
-	      },
-	      title: {
-	        whiteSpace: 'nowrap',
-	        overflow: 'hidden',
-	        textOverflow: 'ellipsis',
-	        margin: 0,
-	        paddingTop: 0,
-	        letterSpacing: 0,
-	        fontSize: 24,
-	        fontWeight: _typography2.default.fontWeightNormal,
-	        color: themeVariables.textColor,
-	        lineHeight: themeVariables.height + 'px'
-	      },
-	      mainElement: {
-	        boxFlex: 1,
-	        flex: '1'
-	      },
-	      iconButton: {
-	        style: {
-	          marginTop: (themeVariables.height - iconButtonSize) / 2,
-	          marginRight: 8,
-	          marginLeft: -16
-	        },
-	        iconStyle: {
-	          fill: themeVariables.textColor,
-	          color: themeVariables.textColor
-	        }
-	      },
-	      flatButton: {
-	        color: themeVariables.textColor,
-	        marginTop: (iconButtonSize - flatButtonSize) / 2 + 2
-	      }
-	    };
-
-	    return styles;
-	  },
-	  _onLeftIconButtonTouchTap: function _onLeftIconButtonTouchTap(event) {
-	    if (this.props.onLeftIconButtonTouchTap) {
-	      this.props.onLeftIconButtonTouchTap(event);
-	    }
-	  },
-	  _onRightIconButtonTouchTap: function _onRightIconButtonTouchTap(event) {
-	    if (this.props.onRightIconButtonTouchTap) {
-	      this.props.onRightIconButtonTouchTap(event);
-	    }
-	  },
-	  _onTitleTouchTap: function _onTitleTouchTap(event) {
-	    if (this.props.onTitleTouchTap) {
-	      this.props.onTitleTouchTap(event);
-	    }
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var title = _props.title;
-	    var titleStyle = _props.titleStyle;
-	    var iconStyleRight = _props.iconStyleRight;
-	    var showMenuIconButton = _props.showMenuIconButton;
-	    var iconElementLeft = _props.iconElementLeft;
-	    var iconElementRight = _props.iconElementRight;
-	    var iconClassNameLeft = _props.iconClassNameLeft;
-	    var iconClassNameRight = _props.iconClassNameRight;
-	    var className = _props.className;
-	    var style = _props.style;
-	    var zDepth = _props.zDepth;
-	    var children = _props.children;
-
-	    var other = _objectWithoutProperties(_props, ['title', 'titleStyle', 'iconStyleRight', 'showMenuIconButton', 'iconElementLeft', 'iconElementRight', 'iconClassNameLeft', 'iconClassNameRight', 'className', 'style', 'zDepth', 'children']);
-
-	    var menuElementLeft = undefined;
-	    var menuElementRight = undefined;
-	    var styles = this.getStyles();
-	    var iconRightStyle = this.mergeStyles(styles.iconButton.style, {
-	      marginRight: -16,
-	      marginLeft: 'auto'
-	    }, iconStyleRight);
-	    var titleElement = undefined;
-
-	    if (title) {
-	      // If the title is a string, wrap in an h1 tag.
-	      // If not, just use it as a node.
-	      titleElement = typeof title === 'string' || title instanceof String ? _react2.default.createElement(
-	        'h1',
-	        {
-	          onTouchTap: this._onTitleTouchTap,
-	          style: this.prepareStyles(styles.title, styles.mainElement, titleStyle)
-	        },
-	        title
-	      ) : _react2.default.createElement(
-	        'div',
-	        {
-	          onTouchTap: this._onTitleTouchTap,
-	          style: this.prepareStyles(styles.title, styles.mainElement, titleStyle)
-	        },
-	        title
-	      );
-	    }
-
-	    if (showMenuIconButton) {
-	      if (iconElementLeft) {
-	        switch (iconElementLeft.type.displayName) {
-	          case 'IconButton':
-	            iconElementLeft = _react2.default.cloneElement(iconElementLeft, {
-	              iconStyle: this.mergeStyles(styles.iconButton.iconStyle, iconElementLeft.props.iconStyle)
-	            });
-	            break;
-	        }
-
-	        menuElementLeft = _react2.default.createElement(
-	          'div',
-	          { style: this.prepareStyles(styles.iconButton.style) },
-	          iconElementLeft
-	        );
-	      } else {
-	        var child = iconClassNameLeft ? '' : _react2.default.createElement(_menu2.default, { style: this.mergeStyles(styles.iconButton.iconStyle) });
-	        menuElementLeft = _react2.default.createElement(
-	          _iconButton2.default,
-	          {
-	            style: this.mergeStyles(styles.iconButton.style),
-	            iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
-	            iconClassName: iconClassNameLeft,
-	            onTouchTap: this._onLeftIconButtonTouchTap
-	          },
-	          child
-	        );
-	      }
-	    }
-
-	    if (iconElementRight) {
-	      switch (iconElementRight.type.displayName) {
-	        case 'IconMenu':
-	        case 'IconButton':
-	          iconElementRight = _react2.default.cloneElement(iconElementRight, {
-	            iconStyle: this.mergeStyles(styles.iconButton.iconStyle, iconElementRight.props.iconStyle)
-	          });
-	          break;
-
-	        case 'FlatButton':
-	          iconElementRight = _react2.default.cloneElement(iconElementRight, {
-	            style: this.mergeStyles(styles.flatButton, iconElementRight.props.style)
-	          });
-	          break;
-	      }
-
-	      menuElementRight = _react2.default.createElement(
-	        'div',
-	        { style: this.prepareStyles(iconRightStyle) },
-	        iconElementRight
-	      );
-	    } else if (iconClassNameRight) {
-	      menuElementRight = _react2.default.createElement(_iconButton2.default, {
-	        style: iconRightStyle,
-	        iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
-	        iconClassName: iconClassNameRight,
-	        onTouchTap: this._onRightIconButtonTouchTap
-	      });
-	    }
-
-	    return _react2.default.createElement(
-	      _paper2.default,
-	      _extends({}, other, {
-	        rounded: false,
-	        className: className,
-	        style: this.mergeStyles(styles.root, style),
-	        zDepth: zDepth
-	      }),
-	      menuElementLeft,
-	      titleElement,
-	      menuElementRight,
-	      children
-	    );
-	  }
-	});
-
-	exports.default = AppBar;
-	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 327 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactAddonsPureRenderMixin = __webpack_require__(252);
-
-	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
-
-	var _svgIcon = __webpack_require__(322);
-
-	var _svgIcon2 = _interopRequireDefault(_svgIcon);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var NavigationMenu = _react2.default.createClass({
-	  displayName: 'NavigationMenu',
-
-	  mixins: [_reactAddonsPureRenderMixin2.default],
-
-	  render: function render() {
-	    return _react2.default.createElement(
-	      _svgIcon2.default,
-	      this.props,
-	      _react2.default.createElement('path', { d: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z' })
-	    );
-	  }
-	});
-
-	exports.default = NavigationMenu;
-	module.exports = exports['default'];
-
-/***/ },
-/* 328 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _MessageWrapperComponent = __webpack_require__(159);
-
-	var _MessageWrapperComponent2 = _interopRequireDefault(_MessageWrapperComponent);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var ContentWrapper = function (_React$Component) {
-	  _inherits(ContentWrapper, _React$Component);
-
-	  function ContentWrapper(props) {
-	    _classCallCheck(this, ContentWrapper);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ContentWrapper).call(this, props));
-
-	    _this.displayName = 'ContentWrapper';
-	    return _this;
-	  }
-
-	  _createClass(ContentWrapper, [{
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      var renderContent = function renderContent() {
-	        var Component = _this2.props.contentComponent;
-	        return _react2.default.createElement(Component, {
-	          className: _this2.props.className
-	        });
-	      };
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        renderContent()
-	      );
-	    }
-	  }]);
-
-	  return ContentWrapper;
-	}(_react2.default.Component);
-
-	exports.default = ContentWrapper;
-
-/***/ },
-/* 329 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _textField = __webpack_require__(330);
-
-	var _textField2 = _interopRequireDefault(_textField);
-
-	var _toggle = __webpack_require__(290);
-
-	var _toggle2 = _interopRequireDefault(_toggle);
-
-	var _flatButton = __webpack_require__(337);
-
-	var _flatButton2 = _interopRequireDefault(_flatButton);
-
-	var _dialog = __webpack_require__(339);
-
-	var _dialog2 = _interopRequireDefault(_dialog);
-
-	var _socket = __webpack_require__(160);
-
-	var _socket2 = _interopRequireDefault(_socket);
-
-	var _jquery = __webpack_require__(341);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _lodash = __webpack_require__(308);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com/');
-
-	var styles = {
-	  block: {
-	    maxWidth: '250px'
-	  }
-	};
-
-	var channelTypeMessage = {
-	  public: "Anyone on your team can join",
-	  private: "Restricted to invited members"
-	};
-
-	var CreateChannelFormDialog = function (_React$Component) {
-	  _inherits(CreateChannelFormDialog, _React$Component);
-
-	  function CreateChannelFormDialog(props) {
-	    _classCallCheck(this, CreateChannelFormDialog);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CreateChannelFormDialog).call(this, props));
-
-	    _this.displayName = 'CreateChannelFormDialog';
-	    _this._initializeStates = _this._initializeStates.bind(_this);
-	    _this._initializeStates();
-	    _this._toggleChannelType = _this._toggleChannelType.bind(_this);
-	    _this._createChannel = _this._createChannel.bind(_this);
-	    _this._closeForm = _this._closeForm.bind(_this);
-	    _this._handleChannelNameChange = _this._handleChannelNameChange.bind(_this);
-	    _this._validateChannelName = _this._validateChannelName.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(CreateChannelFormDialog, [{
-	    key: '_initializeStates',
-	    value: function _initializeStates() {
-	      this.state = {
-	        channelType: "public",
-	        channelName: "",
-	        channelNameValidationMessage: ""
-	      };
-	    }
-	  }, {
-	    key: '_toggleChannelType',
-	    value: function _toggleChannelType() {
-	      var channelType = this.state.channelType;
-	      this.setState({ channelType: channelType === "public" ? "private" : "public" });
-	      (0, _jquery2.default)('.private-desc').toggle();
-	    }
-	  }, {
-	    key: '_createChannel',
-	    value: function _createChannel() {
-	      SOCKET.emit('joinRoom', (0, _jquery2.default)('#channelName').val());
-	      this._initializeStates();
-	      this._closeForm();
-	    }
-	  }, {
-	    key: '_closeForm',
-	    value: function _closeForm() {
-	      this._initializeStates();
-	      this.props.handleClose();
-	    }
-	  }, {
-	    key: '_handleChannelNameChange',
-	    value: function _handleChannelNameChange(e) {
-	      var inputedName = e.target.value;
-	      this.setState({ channelName: inputedName, channelNameValidationMessage: '' });
-	      this._validateChannelName(inputedName);
-	    }
-	  }, {
-	    key: '_validateChannelName',
-	    value: function _validateChannelName(name) {
-	      var messageArray = [];
-	      var mustBeFlag = true;
-	      if (name.length > 20) {
-	        messageArray.push(' 21 characters or less');
-	      }
-	      if (_lodash2.default.toLower(name) !== name) {
-	        messageArray.push(messageArray.length == 1 ? ', lower case' : ' lower case');
-	      }
-	      if (_lodash2.default.split(name, ' ', 2).length == 2 || _lodash2.default.trim(name) !== name) {
-	        if (messageArray.length == 0) {
-	          mustBeFlag = false;
-	        }
-	        messageArray.push((mustBeFlag ? ' and' : '') + ' cannot contain spaces or periods');
-	      }
-	      if (messageArray.length != 0) {
-	        var message = '';
-	        var _iteratorNormalCompletion = true;
-	        var _didIteratorError = false;
-	        var _iteratorError = undefined;
-
-	        try {
-	          for (var _iterator = messageArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	            var text = _step.value;
-
-	            message += text;
-	          }
-	        } catch (err) {
-	          _didIteratorError = true;
-	          _iteratorError = err;
-	        } finally {
-	          try {
-	            if (!_iteratorNormalCompletion && _iterator.return) {
-	              _iterator.return();
-	            }
-	          } finally {
-	            if (_didIteratorError) {
-	              throw _iteratorError;
-	            }
-	          }
-	        }
-
-	        this.setState({ channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.' });
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var actions = [_react2.default.createElement(_flatButton2.default, {
-	        label: 'Cancel',
-	        secondary: true,
-	        onTouchTap: this._closeForm
-	      }), _react2.default.createElement(_flatButton2.default, {
-	        label: 'Create channel',
-	        primary: true,
-	        keyboardFocused: true,
-	        onTouchTap: this._createChannel
-	      })];
-	      return _react2.default.createElement(
-	        _dialog2.default,
-	        _extends({}, this.props, {
-	          actions: actions,
-	          title: "Create new " + this.state.channelType + " channel"
-	        }),
-	        _react2.default.createElement(
-	          'div',
-	          { style: styles.block },
-	          _react2.default.createElement(_toggle2.default, {
-	            label: channelTypeMessage[this.state.channelType],
-	            defaultToggled: true,
-	            labelPosition: 'right',
-	            style: styles.toggle,
-	            onToggle: this._toggleChannelType,
-	            id: 'channelType'
-	          })
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'private-desc' },
-	          'A private channel is only visible to its members, and only members of a private channel can read or search its contents.'
-	        ),
-	        _react2.default.createElement(_textField2.default, {
-	          hintText: '# Enter name here',
-	          floatingLabelText: 'Channel name',
-	          errorText: this.state.channelNameValidationMessage,
-	          fullWidth: true,
-	          id: 'channelName',
-	          onChange: this._handleChannelNameChange,
-	          value: this.state.channelName
-	        }),
-	        _react2.default.createElement(_textField2.default, {
-	          hintText: 'Search by name',
-	          floatingLabelText: 'Invite others to join (optional)',
-	          fullWidth: true
-	        }),
-	        _react2.default.createElement(_textField2.default, {
-	          hintText: 'Briefly describe the purpose of this channel',
-	          floatingLabelText: 'Purpose(optional)',
-	          multiLine: true,
-	          fullWidth: true
-	        })
-	      );
-	    }
-	  }]);
-
-	  return CreateChannelFormDialog;
-	}(_react2.default.Component);
-
-	exports.default = CreateChannelFormDialog;
-
-/***/ },
-/* 330 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _TextField = __webpack_require__(331);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _TextField2.default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 331 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _TextField = __webpack_require__(332);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _TextField2.default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 332 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _colorManipulator = __webpack_require__(274);
-
-	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _uniqueId = __webpack_require__(292);
-
-	var _uniqueId2 = _interopRequireDefault(_uniqueId);
-
-	var _enhancedTextarea = __webpack_require__(333);
-
-	var _enhancedTextarea2 = _interopRequireDefault(_enhancedTextarea);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _contextPure = __webpack_require__(318);
-
-	var _contextPure2 = _interopRequireDefault(_contextPure);
-
-	var _TextFieldHint = __webpack_require__(334);
-
-	var _TextFieldHint2 = _interopRequireDefault(_TextFieldHint);
-
-	var _TextFieldLabel = __webpack_require__(335);
-
-	var _TextFieldLabel2 = _interopRequireDefault(_TextFieldLabel);
-
-	var _TextFieldUnderline = __webpack_require__(336);
-
-	var _TextFieldUnderline2 = _interopRequireDefault(_TextFieldUnderline);
-
-	var _warning = __webpack_require__(243);
-
-	var _warning2 = _interopRequireDefault(_warning);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	/**
-	 * Check if a value is valid to be displayed inside an input.
-	 *
-	 * @param The value to check.
-	 * @returns True if the string provided is valid, false otherwise.
-	 */
-	function isValid(value) {
-	  return Boolean(value || value === 0);
-	}
-
-	var TextField = _react2.default.createClass({
-	  displayName: 'TextField',
-
-	  propTypes: {
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * The css class name of the root element.
-	     */
-	    className: _react2.default.PropTypes.string,
-
-	    /**
-	     * The text string to use for the default value.
-	     */
-	    defaultValue: _react2.default.PropTypes.any,
-
-	    /**
-	     * Disables the text field if set to true.
-	     */
-	    disabled: _react2.default.PropTypes.bool,
-
-	    /**
-	     * The style object to use to override error styles.
-	     */
-	    errorStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The error content to display.
-	     */
-	    errorText: _react2.default.PropTypes.node,
-
-	    /**
-	     * The style object to use to override floating label styles.
-	     */
-	    floatingLabelStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The content to use for the floating label element.
-	     */
-	    floatingLabelText: _react2.default.PropTypes.node,
-
-	    /**
-	     * If true, the field receives the property width 100%.
-	     */
-	    fullWidth: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the TextField's hint text element.
-	     */
-	    hintStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The hint content to display.
-	     */
-	    hintText: _react2.default.PropTypes.node,
-
-	    /**
-	     * The id prop for the text field.
-	     */
-	    id: _react2.default.PropTypes.string,
-
-	    /**
-	     * Override the inline-styles of the TextField's input element.
-	     */
-	    inputStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * If true, a textarea element will be rendered.
-	     * The textarea also grows and shrinks according to the number of lines.
-	     */
-	    multiLine: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Callback function that is fired when the textfield loses focus.
-	     */
-	    onBlur: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function that is fired when the textfield's value changes.
-	     */
-	    onChange: _react2.default.PropTypes.func,
-
-	    /**
-	     * The function to call when the user presses the Enter key.
-	     */
-	    onEnterKeyDown: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function that is fired when the textfield gains focus.
-	     */
-	    onFocus: _react2.default.PropTypes.func,
-
-	    /**
-	     * Callback function fired when key is pressed down.
-	     */
-	    onKeyDown: _react2.default.PropTypes.func,
-
-	    /**
-	     * Number of rows to display when multiLine option is set to true.
-	     */
-	    rows: _react2.default.PropTypes.number,
-
-	    /**
-	     * Maximum number of rows to display when
-	     * multiLine option is set to true.
-	     */
-	    rowsMax: _react2.default.PropTypes.number,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * Specifies the type of input to display
-	     * such as "password" or "text".
-	     */
-	    type: _react2.default.PropTypes.string,
-
-	    /**
-	     * Override the inline-styles of the
-	     * TextField's underline element when disabled.
-	     */
-	    underlineDisabledStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Override the inline-styles of the TextField's
-	     * underline element when focussed.
-	     */
-	    underlineFocusStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * If true, shows the underline for the text field.
-	     */
-	    underlineShow: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the TextField's underline element.
-	     */
-	    underlineStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The value of the text field.
-	     */
-	    value: _react2.default.PropTypes.any
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_contextPure2.default, _stylePropable2.default],
-
-	  statics: {
-	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
-	      var textFieldTheme = muiTheme.textField;
-
-	      return {
-	        floatingLabelColor: textFieldTheme.floatingLabelColor,
-	        focusColor: textFieldTheme.focusColor,
-	        textColor: textFieldTheme.textColor,
-	        disabledTextColor: textFieldTheme.disabledTextColor,
-	        backgroundColor: textFieldTheme.backgroundColor,
-	        hintColor: textFieldTheme.hintColor,
-	        errorColor: textFieldTheme.errorColor
-	      };
-	    },
-	    getChildrenClasses: function getChildrenClasses() {
-	      return [_enhancedTextarea2.default];
-	    }
-	  },
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      disabled: false,
-	      multiLine: false,
-	      fullWidth: false,
-	      type: 'text',
-	      underlineShow: true,
-	      rows: 1
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    var props = this.props.children ? this.props.children.props : this.props;
-
-	    return {
-	      isFocused: false,
-	      errorText: this.props.errorText,
-	      hasValue: isValid(props.value) || isValid(props.defaultValue) || props.valueLink && isValid(props.valueLink.value),
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this._uniqueId = _uniqueId2.default.generate();
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newState = {};
-	    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-
-	    newState.errorText = nextProps.errorText;
-	    if (nextProps.children && nextProps.children.props) {
-	      nextProps = nextProps.children.props;
-	    }
-
-	    var hasValueLinkProp = nextProps.hasOwnProperty('valueLink');
-	    var hasValueProp = nextProps.hasOwnProperty('value');
-	    var hasNewDefaultValue = nextProps.defaultValue !== this.props.defaultValue;
-
-	    if (hasValueLinkProp) {
-	      newState.hasValue = isValid(nextProps.valueLink.value);
-	    } else if (hasValueProp) {
-	      newState.hasValue = isValid(nextProps.value);
-	    } else if (hasNewDefaultValue) {
-	      newState.hasValue = isValid(nextProps.defaultValue);
-	    }
-
-	    if (newState) this.setState(newState);
-	  },
-	  getStyles: function getStyles() {
-	    var props = this.props;
-
-	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
-
-	    var floatingLabelColor = _constructor$getRelev.floatingLabelColor;
-	    var focusColor = _constructor$getRelev.focusColor;
-	    var textColor = _constructor$getRelev.textColor;
-	    var disabledTextColor = _constructor$getRelev.disabledTextColor;
-	    var backgroundColor = _constructor$getRelev.backgroundColor;
-	    var hintColor = _constructor$getRelev.hintColor;
-	    var errorColor = _constructor$getRelev.errorColor;
-
-	    var styles = {
-	      root: {
-	        fontSize: 16,
-	        lineHeight: '24px',
-	        width: props.fullWidth ? '100%' : 256,
-	        height: (props.rows - 1) * 24 + (props.floatingLabelText ? 72 : 48),
-	        display: 'inline-block',
-	        position: 'relative',
-	        backgroundColor: backgroundColor,
-	        fontFamily: this.state.muiTheme.rawTheme.fontFamily,
-	        transition: _transitions2.default.easeOut('200ms', 'height')
-	      },
-	      error: {
-	        position: 'relative',
-	        bottom: 2,
-	        fontSize: 12,
-	        lineHeight: '12px',
-	        color: errorColor,
-	        transition: _transitions2.default.easeOut()
-	      },
-	      floatingLabel: {
-	        color: hintColor
-	      },
-	      input: {
-	        tapHighlightColor: 'rgba(0,0,0,0)',
-	        padding: 0,
-	        position: 'relative',
-	        width: '100%',
-	        height: '100%',
-	        border: 'none',
-	        outline: 'none',
-	        backgroundColor: 'transparent',
-	        color: props.disabled ? disabledTextColor : textColor,
-	        font: 'inherit'
-	      }
-	    };
-
-	    styles.error = this.mergeStyles(styles.error, props.errorStyle);
-
-	    styles.textarea = this.mergeStyles(styles.input, {
-	      marginTop: props.floatingLabelText ? 36 : 12,
-	      marginBottom: props.floatingLabelText ? -36 : -12,
-	      boxSizing: 'border-box',
-	      font: 'inherit'
-	    });
-
-	    if (this.state.isFocused) {
-	      styles.floatingLabel.color = focusColor;
-	    }
-
-	    if (this.state.hasValue) {
-	      styles.floatingLabel.color = _colorManipulator2.default.fade(props.disabled ? disabledTextColor : floatingLabelColor, 0.5);
-	    }
-
-	    if (props.floatingLabelText) {
-	      styles.input.boxSizing = 'border-box';
-
-	      if (!props.multiLine) {
-	        styles.input.marginTop = 14;
-	      }
-
-	      if (this.state.errorText) {
-	        styles.error.bottom = !props.multiLine ? styles.error.fontSize + 3 : 3;
-	      }
-	    }
-
-	    if (this.state.errorText) {
-	      if (this.state.isFocused) {
-	        styles.floatingLabel.color = styles.error.color;
-	      }
-	    }
-
-	    return styles;
-	  },
-	  blur: function blur() {
-	    if (this.isMounted()) this._getInputNode().blur();
-	  },
-	  clearValue: function clearValue() {
-	    this.setValue('');
-	  },
-	  focus: function focus() {
-	    if (this.isMounted()) this._getInputNode().focus();
-	  },
-	  getValue: function getValue() {
-	    return this.isMounted() ? this._getInputNode().value : undefined;
-	  },
-	  setErrorText: function setErrorText(newErrorText) {
-	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'setErrorText() method is deprecated. Use the errorText property instead.') : undefined;
-
-	    if (this.isMounted()) {
-	      this.setState({ errorText: newErrorText });
-	    }
-	  },
-	  setValue: function setValue(newValue) {
-	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'setValue() method is deprecated. Use the defaultValue property instead.\n      Or use the TextField as a controlled component with the value property.') : undefined;
-
-	    if (this.isMounted()) {
-	      if (this.props.multiLine) {
-	        this.refs.input.setValue(newValue);
-	      } else {
-	        this._getInputNode().value = newValue;
-	      }
-
-	      this.setState({ hasValue: isValid(newValue) });
-	    }
-	  },
-	  _getInputNode: function _getInputNode() {
-	    return this.props.children || this.props.multiLine ? this.refs.input.getInputNode() : _reactDom2.default.findDOMNode(this.refs.input);
-	  },
-	  _handleInputBlur: function _handleInputBlur(e) {
-	    this.setState({ isFocused: false });
-	    if (this.props.onBlur) this.props.onBlur(e);
-	  },
-	  _handleInputChange: function _handleInputChange(e) {
-	    this.setState({ hasValue: isValid(e.target.value) });
-	    if (this.props.onChange) this.props.onChange(e);
-	  },
-	  _handleInputFocus: function _handleInputFocus(e) {
-	    if (this.props.disabled) return;
-	    this.setState({ isFocused: true });
-	    if (this.props.onFocus) this.props.onFocus(e);
-	  },
-	  _handleInputKeyDown: function _handleInputKeyDown(e) {
-	    if (e.keyCode === 13 && this.props.onEnterKeyDown) this.props.onEnterKeyDown(e);
-	    if (this.props.onKeyDown) this.props.onKeyDown(e);
-	  },
-	  _handleTextAreaHeightChange: function _handleTextAreaHeightChange(e, height) {
-	    var newHeight = height + 24;
-	    if (this.props.floatingLabelText) newHeight += 24;
-	    _reactDom2.default.findDOMNode(this).style.height = newHeight + 'px';
-	  },
-	  _isControlled: function _isControlled() {
-	    return this.props.hasOwnProperty('value') || this.props.hasOwnProperty('valueLink');
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var className = _props.className;
-	    var disabled = _props.disabled;
-	    var errorStyle = _props.errorStyle;
-	    var errorText = _props.errorText;
-	    var floatingLabelText = _props.floatingLabelText;
-	    var fullWidth = _props.fullWidth;
-	    var hintText = _props.hintText;
-	    var hintStyle = _props.hintStyle;
-	    var id = _props.id;
-	    var multiLine = _props.multiLine;
-	    var onBlur = _props.onBlur;
-	    var onChange = _props.onChange;
-	    var onFocus = _props.onFocus;
-	    var style = _props.style;
-	    var type = _props.type;
-	    var underlineDisabledStyle = _props.underlineDisabledStyle;
-	    var underlineFocusStyle = _props.underlineFocusStyle;
-	    var underlineShow = _props.underlineShow;
-	    var underlineStyle = _props.underlineStyle;
-	    var rows = _props.rows;
-	    var rowsMax = _props.rowsMax;
-
-	    var other = _objectWithoutProperties(_props, ['className', 'disabled', 'errorStyle', 'errorText', 'floatingLabelText', 'fullWidth', 'hintText', 'hintStyle', 'id', 'multiLine', 'onBlur', 'onChange', 'onFocus', 'style', 'type', 'underlineDisabledStyle', 'underlineFocusStyle', 'underlineShow', 'underlineStyle', 'rows', 'rowsMax']);
-
-	    var styles = this.getStyles();
-
-	    var inputId = id || this._uniqueId;
-
-	    var errorTextElement = this.state.errorText ? _react2.default.createElement(
-	      'div',
-	      { style: this.prepareStyles(styles.error) },
-	      this.state.errorText
-	    ) : null;
-
-	    var floatingLabelTextElement = floatingLabelText ? _react2.default.createElement(
-	      _TextFieldLabel2.default,
-	      {
-	        muiTheme: this.state.muiTheme,
-	        style: this.mergeStyles(styles.floatingLabel, this.props.floatingLabelStyle),
-	        htmlFor: inputId,
-	        shrink: this.state.hasValue || this.state.isFocused,
-	        disabled: disabled,
-	        onTouchTap: this.focus
-	      },
-	      floatingLabelText
-	    ) : null;
-
-	    var inputProps = undefined;
-	    var inputElement = undefined;
-
-	    inputProps = {
-	      id: inputId,
-	      ref: 'input',
-	      onBlur: this._handleInputBlur,
-	      onFocus: this._handleInputFocus,
-	      disabled: this.props.disabled,
-	      onKeyDown: this._handleInputKeyDown
-	    };
-	    var inputStyle = this.mergeStyles(styles.input, this.props.inputStyle);
-
-	    if (!this.props.hasOwnProperty('valueLink')) {
-	      inputProps.onChange = this._handleInputChange;
-	    }
-
-	    if (this.props.children) {
-	      inputElement = _react2.default.cloneElement(this.props.children, _extends({}, inputProps, this.props.children.props, {
-	        style: this.mergeStyles(inputStyle, this.props.children.props.style)
-	      }));
-	    } else {
-	      inputElement = multiLine ? _react2.default.createElement(_enhancedTextarea2.default, _extends({}, other, inputProps, {
-	        style: inputStyle,
-	        rows: rows,
-	        rowsMax: rowsMax,
-	        onHeightChange: this._handleTextAreaHeightChange,
-	        textareaStyle: styles.textarea
-	      })) : _react2.default.createElement('input', _extends({}, other, inputProps, {
-	        style: this.prepareStyles(inputStyle),
-	        type: type
-	      }));
-	    }
-
-	    return _react2.default.createElement(
-	      'div',
-	      { className: className, style: this.prepareStyles(styles.root, this.props.style) },
-	      floatingLabelTextElement,
-	      hintText ? _react2.default.createElement(_TextFieldHint2.default, {
-	        muiTheme: this.state.muiTheme,
-	        show: !(this.state.hasValue || floatingLabelText && !this.state.isFocused),
-	        style: hintStyle,
-	        text: hintText
-	      }) : null,
-	      inputElement,
-	      underlineShow ? _react2.default.createElement(_TextFieldUnderline2.default, {
-	        disabled: disabled,
-	        disabledStyle: underlineDisabledStyle,
-	        error: this.state.errorText ? true : false,
-	        errorStyle: errorStyle,
-	        focus: this.state.isFocused,
-	        focusStyle: underlineFocusStyle,
-	        muiTheme: this.state.muiTheme,
-	        style: underlineStyle
-	      }) : null,
-	      errorTextElement
-	    );
-	  }
-	});
-
-	exports.default = TextField;
-	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 333 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var rowsHeight = 24;
-
-	var styles = {
-	  textarea: {
-	    width: '100%',
-	    resize: 'none',
-	    font: 'inherit',
-	    padding: 0
-	  },
-	  shadow: {
-	    width: '100%',
-	    resize: 'none',
-	    // Overflow also needed to here to remove the extra row
-	    // added to textareas in Firefox.
-	    overflow: 'hidden',
-	    // Visibility needed to hide the extra text area on ipads
-	    visibility: 'hidden',
-	    font: 'inherit',
-	    padding: 0,
-	    position: 'absolute'
-	  }
-	};
-
-	var EnhancedTextarea = _react2.default.createClass({
-	  displayName: 'EnhancedTextarea',
-
-	  propTypes: {
-	    defaultValue: _react2.default.PropTypes.any,
-	    disabled: _react2.default.PropTypes.bool,
-	    onChange: _react2.default.PropTypes.func,
-	    onHeightChange: _react2.default.PropTypes.func,
-	    rows: _react2.default.PropTypes.number,
-	    rowsMax: _react2.default.PropTypes.number,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-	    textareaStyle: _react2.default.PropTypes.object,
-	    value: _react2.default.PropTypes.string,
-	    valueLink: _react2.default.PropTypes.object
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default],
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      rows: 1
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      height: this.props.rows * rowsHeight,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this._syncHeightWithShadow();
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    if (nextProps.value !== this.props.value) {
-	      this._syncHeightWithShadow(nextProps.value);
-	    }
-	    var newState = {};
-	    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	  },
-	  getInputNode: function getInputNode() {
-	    return _reactDom2.default.findDOMNode(this.refs.input);
-	  },
-	  setValue: function setValue(value) {
-	    this.getInputNode().value = value;
-	    this._syncHeightWithShadow(value);
-	  },
-	  _syncHeightWithShadow: function _syncHeightWithShadow(newValue, e) {
-	    var shadow = _reactDom2.default.findDOMNode(this.refs.shadow);
-
-	    if (newValue !== undefined) {
-	      shadow.value = newValue;
-	    }
-
-	    var newHeight = shadow.scrollHeight;
-
-	    if (this.props.rowsMax >= this.props.rows) {
-	      newHeight = Math.min(this.props.rowsMax * rowsHeight, newHeight);
-	    }
-
-	    newHeight = Math.max(newHeight, rowsHeight);
-
-	    if (this.state.height !== newHeight) {
-	      this.setState({
-	        height: newHeight
-	      });
-
-	      if (this.props.onHeightChange) {
-	        this.props.onHeightChange(e, newHeight);
-	      }
-	    }
-	  },
-	  _handleChange: function _handleChange(e) {
-	    this._syncHeightWithShadow(e.target.value);
-
-	    if (this.props.hasOwnProperty('valueLink')) {
-	      this.props.valueLink.requestChange(e.target.value);
-	    }
-
-	    if (this.props.onChange) {
-	      this.props.onChange(e);
-	    }
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var onChange = _props.onChange;
-	    var onHeightChange = _props.onHeightChange;
-	    var rows = _props.rows;
-	    var style = _props.style;
-	    var textareaStyle = _props.textareaStyle;
-	    var valueLink = _props.valueLink;
-
-	    var other = _objectWithoutProperties(_props, ['onChange', 'onHeightChange', 'rows', 'style', 'textareaStyle', 'valueLink']);
-
-	    var textareaStyles = this.mergeStyles(styles.textarea, textareaStyle, {
-	      height: this.state.height
-	    });
-
-	    var shadowStyles = styles.shadow;
-
-	    if (this.props.hasOwnProperty('valueLink')) {
-	      other.value = this.props.valueLink.value;
-	    }
-
-	    if (this.props.disabled) {
-	      style.cursor = 'default';
-	    }
-
-	    return _react2.default.createElement(
-	      'div',
-	      { style: this.prepareStyles(this.props.style) },
-	      _react2.default.createElement('textarea', {
-	        ref: 'shadow',
-	        style: this.prepareStyles(shadowStyles),
-	        tabIndex: '-1',
-	        rows: this.props.rows,
-	        defaultValue: this.props.defaultValue,
-	        readOnly: true,
-	        value: this.props.value,
-	        valueLink: this.props.valueLink
-	      }),
-	      _react2.default.createElement('textarea', _extends({}, other, {
-	        ref: 'input',
-	        rows: this.props.rows,
-	        style: this.prepareStyles(textareaStyles),
-	        onChange: this._handleChange
-	      }))
-	    );
-	  }
-	});
-
-	exports.default = EnhancedTextarea;
-	module.exports = exports['default'];
-
-/***/ },
-/* 334 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _styles = __webpack_require__(223);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var propTypes = {
-	  /**
-	   * The material-ui theme applied to this component.
-	   */
-	  muiTheme: _react2.default.PropTypes.object.isRequired,
-
-	  /**
-	   * True if the hint text should be visible.
-	   */
-	  show: _react2.default.PropTypes.bool,
-
-	  /**
-	   * Override the inline-styles of the root element.
-	   */
-	  style: _react2.default.PropTypes.object,
-
-	  /**
-	   * The hint text displayed.
-	   */
-	  text: _react2.default.PropTypes.node
-	};
-
-	var defaultProps = {
-	  show: true
-	};
-
-	var TextFieldHint = function TextFieldHint(props) {
-	  var muiTheme = props.muiTheme;
-	  var show = props.show;
-	  var style = props.style;
-	  var text = props.text;
-	  var hintColor = muiTheme.textField.hintColor;
-
-	  var styles = {
-	    root: {
-	      position: 'absolute',
-	      opacity: show ? 1 : 0,
-	      color: hintColor,
-	      transition: _transitions2.default.easeOut(),
-	      bottom: 12
-	    }
-	  };
-
-	  return _react2.default.createElement(
-	    'div',
-	    { style: (0, _styles.prepareStyles)(muiTheme, (0, _styles.mergeStyles)(styles.root, style)) },
-	    text
-	  );
-	};
-
-	TextFieldHint.propTypes = propTypes;
-	TextFieldHint.defaultProps = defaultProps;
-
-	exports.default = TextFieldHint;
-	module.exports = exports['default'];
-
-/***/ },
-/* 335 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _styles = __webpack_require__(223);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var propTypes = {
-	  /**
-	   * The material-ui theme applied to this component.
-	   */
-	  muiTheme: _react2.default.PropTypes.object.isRequired,
-
-	  /**
-	   * The css class name of the root element.
-	   */
-	  className: _react2.default.PropTypes.string,
-
-	  /**
-	   * The label contents.
-	   */
-	  children: _react2.default.PropTypes.node,
-
-	  /**
-	   * Disables the label if set to true.
-	   */
-	  disabled: _react2.default.PropTypes.bool,
-
-	  /**
-	   * True if the floating label should shrink.
-	   */
-	  shrink: _react2.default.PropTypes.bool,
-
-	  /**
-	   * The id of the target element that this label should refer to.
-	   */
-	  htmlFor: _react2.default.PropTypes.string,
-
-	  /**
-	   * Callback function for when the label is selected via a touch tap.
-	   */
-	  onTouchTap: _react2.default.PropTypes.func,
-
-	  /**
-	   * Override the inline-styles of the root element.
-	   */
-	  style: _react2.default.PropTypes.object
-	};
-
-	var defaultProps = {
-	  disabled: false,
-	  shrink: false
-	};
-
-	var TextFieldLabel = function TextFieldLabel(props) {
-	  var muiTheme = props.muiTheme;
-	  var className = props.className;
-	  var children = props.children;
-	  var disabled = props.disabled;
-	  var shrink = props.shrink;
-	  var htmlFor = props.htmlFor;
-	  var style = props.style;
-	  var onTouchTap = props.onTouchTap;
-
-	  var styles = {
-	    root: {
-	      position: 'absolute',
-	      lineHeight: '22px',
-	      top: 38,
-	      transition: _transitions2.default.easeOut(),
-	      zIndex: 1, // Needed to display label above Chrome's autocomplete field background
-	      cursor: disabled ? 'default' : 'text',
-	      transform: shrink ? 'perspective(1px) scale(0.75) translate3d(2px, -28px, 0)' : 'scale(1) translate3d(0, 0, 0)',
-	      transformOrigin: 'left top',
-	      pointerEvents: shrink ? 'none' : 'auto',
-	      userSelect: 'none'
-	    }
-	  };
-
-	  return _react2.default.createElement(
-	    'label',
-	    {
-	      className: className,
-	      style: (0, _styles.prepareStyles)(muiTheme, (0, _styles.mergeStyles)(styles.root, style)),
-	      htmlFor: htmlFor,
-	      onTouchTap: onTouchTap
-	    },
-	    children
-	  );
-	};
-
-	TextFieldLabel.propTypes = propTypes;
-	TextFieldLabel.defaultProps = defaultProps;
-
-	exports.default = TextFieldLabel;
-	module.exports = exports['default'];
-
-/***/ },
-/* 336 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _styles = __webpack_require__(223);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var propTypes = {
-	  /**
-	   * True if the parent `TextField` is disabled.
-	   */
-	  disabled: _react2.default.PropTypes.bool,
-
-	  /**
-	   * Override the inline-styles of the underline when parent `TextField` is disabled.
-	   */
-	  disabledStyle: _react2.default.PropTypes.object,
-
-	  /**
-	   * True if the parent `TextField` has an error.
-	   */
-	  error: _react2.default.PropTypes.bool,
-
-	  /**
-	   * Override the inline-styles of the underline when parent `TextField` has an error.
-	   */
-	  errorStyle: _react2.default.PropTypes.object,
-
-	  /**
-	   * True if the parent `TextField` is focused.
-	   */
-	  focus: _react2.default.PropTypes.bool,
-
-	  /**
-	   * Override the inline-styles of the underline when parent `TextField` is focused.
-	   */
-	  focusStyle: _react2.default.PropTypes.object,
-
-	  /**
-	   * The material-ui theme applied to this component.
-	   */
-	  muiTheme: _react2.default.PropTypes.object.isRequired,
-
-	  /**
-	   * Override the inline-styles of the root element.
-	   */
-	  style: _react2.default.PropTypes.object
-	};
-
-	var defaultProps = {
-	  disabled: false,
-	  disabledStyle: {},
-	  error: false,
-	  errorStyle: {},
-	  focus: false,
-	  focusStyle: {},
-	  style: {}
-	};
-
-	var TextFieldUnderline = function TextFieldUnderline(props) {
-	  var disabled = props.disabled;
-	  var disabledStyle = props.disabledStyle;
-	  var error = props.error;
-	  var errorStyle = props.errorStyle;
-	  var focus = props.focus;
-	  var focusStyle = props.focusStyle;
-	  var muiTheme = props.muiTheme;
-	  var style = props.style;
-	  var errorStyleColor = errorStyle.color;
-	  var _muiTheme$textField = muiTheme.textField;
-	  var borderColor = _muiTheme$textField.borderColor;
-	  var disabledTextColor = _muiTheme$textField.disabledTextColor;
-	  var errorColor = _muiTheme$textField.errorColor;
-	  var focusColor = _muiTheme$textField.focusColor;
-
-	  var styles = {
-	    root: {
-	      border: 'none',
-	      borderBottom: 'solid 1px',
-	      borderColor: borderColor,
-	      bottom: 8,
-	      boxSizing: 'content-box',
-	      margin: 0,
-	      position: 'absolute',
-	      width: '100%'
-	    },
-	    disabled: {
-	      borderBottom: 'dotted 2px',
-	      borderColor: disabledTextColor
-	    },
-	    focus: {
-	      borderBottom: 'solid 2px',
-	      borderColor: focusColor,
-	      transform: 'scaleX(0)',
-	      transition: _transitions2.default.easeOut()
-	    },
-	    error: {
-	      borderColor: errorStyleColor ? errorStyleColor : errorColor,
-	      transform: 'scaleX(1)'
-	    }
-	  };
-
-	  var underline = (0, _styles.mergeStyles)(styles.root, style);
-	  var focusedUnderline = (0, _styles.mergeStyles)(underline, styles.focus, focusStyle);
-
-	  if (disabled) underline = (0, _styles.mergeStyles)(underline, styles.disabled, disabledStyle);
-	  if (focus) focusedUnderline = (0, _styles.mergeStyles)(focusedUnderline, { transform: 'scaleX(1)' });
-	  if (error) focusedUnderline = (0, _styles.mergeStyles)(focusedUnderline, styles.error);
-
-	  return _react2.default.createElement(
-	    'div',
-	    null,
-	    _react2.default.createElement('hr', { style: (0, _styles.prepareStyles)(muiTheme, underline) }),
-	    _react2.default.createElement('hr', { style: (0, _styles.prepareStyles)(muiTheme, focusedUnderline) })
-	  );
-	};
-
-	TextFieldUnderline.propTypes = propTypes;
-	TextFieldUnderline.defaultProps = defaultProps;
-
-	exports.default = TextFieldUnderline;
-	module.exports = exports['default'];
-
-/***/ },
-/* 337 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _contextPure = __webpack_require__(318);
-
-	var _contextPure2 = _interopRequireDefault(_contextPure);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _children = __webpack_require__(314);
-
-	var _children2 = _interopRequireDefault(_children);
-
-	var _colorManipulator = __webpack_require__(274);
-
-	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
-
-	var _styles = __webpack_require__(223);
-
-	var _typography = __webpack_require__(305);
-
-	var _typography2 = _interopRequireDefault(_typography);
-
-	var _enhancedButton = __webpack_require__(313);
-
-	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
-
-	var _flatButtonLabel = __webpack_require__(338);
-
-	var _flatButtonLabel2 = _interopRequireDefault(_flatButtonLabel);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	function validateLabel(props, propName, componentName) {
-	  if (!props.children && !props.label) {
-	    return new Error('Required prop label or children was not ' + 'specified in ' + componentName + '.');
-	  }
-	}
-
-	var FlatButton = _react2.default.createClass({
-	  displayName: 'FlatButton',
-
-	  propTypes: {
-	    /**
-	     * Color of button when mouse is not hovering over it.
-	     */
-	    backgroundColor: _react2.default.PropTypes.string,
-
-	    /**
-	     * This is what will be displayed inside the button.
-	     * If a label is specified, the text within the label prop will
-	     * be displayed. Otherwise, the component will expect children
-	     * which will then be displayed. (In our example,
-	     * we are nesting an `<input type="file" />` and a `span`
-	     * that acts as our label to be displayed.) This only
-	     * applies to flat and raised buttons.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * Disables the button if set to true.
-	     */
-	    disabled: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Color of button when mouse hovers over.
-	     */
-	    hoverColor: _react2.default.PropTypes.string,
-
-	    /**
-	     * URL to link to when button clicked if `linkButton` is set to true.
-	     */
-	    href: _react2.default.PropTypes.string,
-
-	    /**
-	     * Use this property to display an icon.
-	     */
-	    icon: _react2.default.PropTypes.node,
-
-	    /**
-	     * Label for the button.
-	     */
-	    label: validateLabel,
-
-	    /**
-	     * Place label before or after the passed children.
-	     */
-	    labelPosition: _react2.default.PropTypes.oneOf(['before', 'after']),
-
-	    /**
-	     * Override the inline-styles of the button's label element.
-	     */
-	    labelStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Enables use of `href` property to provide a URL to link to if set to true.
-	     */
-	    linkButton: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Called when element is focused by the keyboard.
-	     */
-	    onKeyboardFocus: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when the mouse enters the element.
-	     */
-	    onMouseEnter: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when the mouse leaves the element.
-	     */
-	    onMouseLeave: _react2.default.PropTypes.func,
-
-	    /**
-	     * Called when a touch event is started inside the element.
-	     */
-	    onTouchStart: _react2.default.PropTypes.func,
-
-	    /**
-	     * If true, colors button according to
-	     * primaryTextColor from the Theme.
-	     */
-	    primary: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Color for the ripple after button is clicked.
-	     */
-	    rippleColor: _react2.default.PropTypes.string,
-
-	    /**
-	     * If true, colors button according to secondaryTextColor from the theme.
-	     * The primary prop has precendent if set to true.
-	     */
-	    secondary: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_contextPure2.default],
-
-	  statics: {
-	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
-	      var buttonTheme = muiTheme.button;
-	      var flatButtonTheme = muiTheme.flatButton;
-
-	      return {
-	        buttonColor: flatButtonTheme.color,
-	        buttonFilterColor: flatButtonTheme.buttonFilterColor,
-	        buttonHeight: buttonTheme.height,
-	        buttonMinWidth: buttonTheme.minWidth,
-	        disabledTextColor: flatButtonTheme.disabledTextColor,
-	        primaryTextColor: flatButtonTheme.primaryTextColor,
-	        secondaryTextColor: flatButtonTheme.secondaryTextColor,
-	        textColor: flatButtonTheme.textColor,
-	        textTransform: flatButtonTheme.textTransform ? flatButtonTheme.textTransform : buttonTheme.textTransform ? buttonTheme.textTransform : 'uppercase'
-	      };
-	    },
-	    getChildrenClasses: function getChildrenClasses() {
-	      return [_enhancedButton2.default, _flatButtonLabel2.default];
-	    }
-	  },
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      disabled: false,
-	      labelStyle: {},
-	      labelPosition: 'after',
-	      onKeyboardFocus: function onKeyboardFocus() {},
-	      onMouseEnter: function onMouseEnter() {},
-	      onMouseLeave: function onMouseLeave() {},
-	      onTouchStart: function onTouchStart() {},
-	      primary: false,
-	      secondary: false
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      hovered: false,
-	      isKeyboardFocused: false,
-	      touch: false,
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
-	    this.setState({ isKeyboardFocused: isKeyboardFocused });
-	    this.props.onKeyboardFocus(e, isKeyboardFocused);
-	  },
-	  _handleMouseEnter: function _handleMouseEnter(e) {
-	    //Cancel hover styles for touch devices
-	    if (!this.state.touch) this.setState({ hovered: true });
-	    this.props.onMouseEnter(e);
-	  },
-	  _handleMouseLeave: function _handleMouseLeave(e) {
-	    this.setState({ hovered: false });
-	    this.props.onMouseLeave(e);
-	  },
-	  _handleTouchStart: function _handleTouchStart(e) {
-	    this.setState({ touch: true });
-	    this.props.onTouchStart(e);
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var children = _props.children;
-	    var disabled = _props.disabled;
-	    var hoverColor = _props.hoverColor;
-	    var backgroundColor = _props.backgroundColor;
-	    var icon = _props.icon;
-	    var label = _props.label;
-	    var labelStyle = _props.labelStyle;
-	    var labelPosition = _props.labelPosition;
-	    var primary = _props.primary;
-	    var rippleColor = _props.rippleColor;
-	    var secondary = _props.secondary;
-	    var style = _props.style;
-
-	    var other = _objectWithoutProperties(_props, ['children', 'disabled', 'hoverColor', 'backgroundColor', 'icon', 'label', 'labelStyle', 'labelPosition', 'primary', 'rippleColor', 'secondary', 'style']);
-
-	    var _constructor$getRelev = this.constructor.getRelevantContextKeys(this.state.muiTheme);
-
-	    var buttonColor = _constructor$getRelev.buttonColor;
-	    var buttonHeight = _constructor$getRelev.buttonHeight;
-	    var buttonMinWidth = _constructor$getRelev.buttonMinWidth;
-	    var disabledTextColor = _constructor$getRelev.disabledTextColor;
-	    var buttonFilterColor = _constructor$getRelev.buttonFilterColor;
-	    var primaryTextColor = _constructor$getRelev.primaryTextColor;
-	    var secondaryTextColor = _constructor$getRelev.secondaryTextColor;
-	    var textColor = _constructor$getRelev.textColor;
-	    var textTransform = _constructor$getRelev.textTransform;
-
-	    var defaultTextColor = disabled ? disabledTextColor : primary ? primaryTextColor : secondary ? secondaryTextColor : textColor;
-
-	    var defaultHoverColor = _colorManipulator2.default.fade(buttonFilterColor, 0.2);
-	    var defaultRippleColor = buttonFilterColor;
-	    var buttonHoverColor = hoverColor || defaultHoverColor;
-	    var buttonRippleColor = rippleColor || defaultRippleColor;
-	    var buttonBackgroundColor = backgroundColor || buttonColor;
-	    var hovered = (this.state.hovered || this.state.isKeyboardFocused) && !disabled;
-
-	    var mergedRootStyles = (0, _styles.mergeStyles)({
-	      color: defaultTextColor,
-	      transition: _transitions2.default.easeOut(),
-	      fontSize: _typography2.default.fontStyleButtonFontSize,
-	      letterSpacing: 0,
-	      textTransform: textTransform,
-	      fontWeight: _typography2.default.fontWeightMedium,
-	      borderRadius: 2,
-	      userSelect: 'none',
-	      position: 'relative',
-	      overflow: 'hidden',
-	      backgroundColor: hovered ? buttonHoverColor : buttonBackgroundColor,
-	      lineHeight: buttonHeight + 'px',
-	      minWidth: buttonMinWidth,
-	      padding: 0,
-	      margin: 0
-	    }, style);
-
-	    var iconCloned = undefined;
-	    var labelStyleIcon = {};
-
-	    if (icon) {
-	      iconCloned = _react2.default.cloneElement(icon, {
-	        color: mergedRootStyles.color,
-	        style: {
-	          verticalAlign: 'middle',
-	          marginLeft: labelPosition === 'before' ? 0 : 12,
-	          marginRight: labelPosition === 'before' ? 12 : 0
-	        }
-	      });
-
-	      if (labelPosition === 'before') {
-	        labelStyleIcon.paddingRight = 8;
-	      } else {
-	        labelStyleIcon.paddingLeft = 8;
-	      }
-	    }
-
-	    var labelElement = label ? _react2.default.createElement(_flatButtonLabel2.default, { label: label, style: (0, _styles.mergeStyles)(labelStyleIcon, labelStyle) }) : undefined;
-
-	    // Place label before or after children.
-	    var childrenFragment = labelPosition === 'before' ? {
-	      labelElement: labelElement,
-	      iconCloned: iconCloned,
-	      children: children
-	    } : {
-	      children: children,
-	      iconCloned: iconCloned,
-	      labelElement: labelElement
-	    };
-	    var enhancedButtonChildren = _children2.default.create(childrenFragment);
-
-	    return _react2.default.createElement(
-	      _enhancedButton2.default,
-	      _extends({}, other, {
-	        disabled: disabled,
-	        focusRippleColor: buttonRippleColor,
-	        focusRippleOpacity: 0.3,
-	        onKeyboardFocus: this._handleKeyboardFocus,
-	        onMouseLeave: this._handleMouseLeave,
-	        onMouseEnter: this._handleMouseEnter,
-	        onTouchStart: this._handleTouchStart,
-	        style: mergedRootStyles,
-	        touchRippleColor: buttonRippleColor,
-	        touchRippleOpacity: 0.3
-	      }),
-	      enhancedButtonChildren
-	    );
-	  }
-	});
-
-	exports.default = FlatButton;
-	module.exports = exports['default'];
-
-/***/ },
-/* 338 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _contextPure = __webpack_require__(318);
-
-	var _contextPure2 = _interopRequireDefault(_contextPure);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var FlatButtonLabel = _react2.default.createClass({
-	  displayName: 'FlatButtonLabel',
-
-	  propTypes: {
-	    label: _react2.default.PropTypes.node,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_contextPure2.default, _stylePropable2.default],
-
-	  statics: {
-	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
-	      return {
-	        spacingDesktopGutterLess: muiTheme.rawTheme.spacing.desktopGutterLess
-	      };
-	    }
-	  },
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-
-	  render: function render() {
-	    var _props = this.props;
-	    var label = _props.label;
-	    var style = _props.style;
-
-	    var contextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
-
-	    var mergedRootStyles = this.mergeStyles({
-	      position: 'relative',
-	      paddingLeft: contextKeys.spacingDesktopGutterLess,
-	      paddingRight: contextKeys.spacingDesktopGutterLess
-	    }, style);
-
-	    return _react2.default.createElement(
-	      'span',
-	      { style: this.prepareStyles(mergedRootStyles) },
-	      label
-	    );
-	  }
-
-	});
-
-	exports.default = FlatButtonLabel;
-	module.exports = exports['default'];
-
-/***/ },
-/* 339 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _windowListenable = __webpack_require__(247);
-
-	var _windowListenable2 = _interopRequireDefault(_windowListenable);
-
-	var _keyCode = __webpack_require__(221);
-
-	var _keyCode2 = _interopRequireDefault(_keyCode);
-
-	var _transitions = __webpack_require__(246);
-
-	var _transitions2 = _interopRequireDefault(_transitions);
-
-	var _stylePropable = __webpack_require__(222);
-
-	var _stylePropable2 = _interopRequireDefault(_stylePropable);
-
-	var _flatButton = __webpack_require__(337);
-
-	var _flatButton2 = _interopRequireDefault(_flatButton);
-
-	var _overlay = __webpack_require__(249);
-
-	var _overlay2 = _interopRequireDefault(_overlay);
-
-	var _renderToLayer = __webpack_require__(340);
-
-	var _renderToLayer2 = _interopRequireDefault(_renderToLayer);
-
-	var _paper = __webpack_require__(251);
-
-	var _paper2 = _interopRequireDefault(_paper);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _warning = __webpack_require__(243);
-
-	var _warning2 = _interopRequireDefault(_warning);
-
-	var _deprecatedPropType = __webpack_require__(306);
-
-	var _deprecatedPropType2 = _interopRequireDefault(_deprecatedPropType);
-
-	var _reactAddonsTransitionGroup = __webpack_require__(297);
-
-	var _reactAddonsTransitionGroup2 = _interopRequireDefault(_reactAddonsTransitionGroup);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	var TransitionItem = _react2.default.createClass({
-	  displayName: 'TransitionItem',
-
-	  propTypes: {
-	    children: _react2.default.PropTypes.node,
-	    style: _react2.default.PropTypes.object
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_stylePropable2.default],
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      style: {},
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  componentWillEnter: function componentWillEnter(callback) {
-	    this.componentWillAppear(callback);
-	  },
-	  componentWillAppear: function componentWillAppear(callback) {
-	    var spacing = this.state.muiTheme.rawTheme.spacing;
-
-	    this.setState({
-	      style: {
-	        opacity: 1,
-	        transform: 'translate3d(0, ' + spacing.desktopKeylineIncrement + 'px, 0)'
-	      }
-	    });
-
-	    setTimeout(callback, 450); // matches transition duration
-	  },
-	  componentWillLeave: function componentWillLeave(callback) {
-	    var _this = this;
-
-	    this.setState({
-	      style: {
-	        opacity: 0,
-	        transform: 'translate3d(0, 0, 0)'
-	      }
-	    });
-
-	    setTimeout(function () {
-	      if (_this.isMounted()) callback();
-	    }, 450); // matches transition duration
-	  },
-	  render: function render() {
-	    var _props = this.props;
-	    var style = _props.style;
-	    var children = _props.children;
-
-	    var other = _objectWithoutProperties(_props, ['style', 'children']);
-
-	    return _react2.default.createElement(
-	      'div',
-	      _extends({}, other, { style: this.prepareStyles(this.state.style, style) }),
-	      children
-	    );
-	  }
-	});
-
-	var DialogInline = _react2.default.createClass({
-	  displayName: 'DialogInline',
-
-	  propTypes: {
-	    actionFocus: _react2.default.PropTypes.string,
-	    actions: _react2.default.PropTypes.node,
-	    actionsContainerClassName: _react2.default.PropTypes.string,
-	    actionsContainerStyle: _react2.default.PropTypes.object,
-	    autoDetectWindowHeight: _react2.default.PropTypes.bool,
-	    autoScrollBodyContent: _react2.default.PropTypes.bool,
-	    bodyClassName: _react2.default.PropTypes.string,
-	    bodyStyle: _react2.default.PropTypes.object,
-	    children: _react2.default.PropTypes.node,
-	    className: _react2.default.PropTypes.string,
-	    contentClassName: _react2.default.PropTypes.string,
-	    contentStyle: _react2.default.PropTypes.object,
-	    modal: _react2.default.PropTypes.bool,
-	    onRequestClose: _react2.default.PropTypes.func,
-	    open: _react2.default.PropTypes.bool.isRequired,
-	    overlayClassName: _react2.default.PropTypes.string,
-	    overlayStyle: _react2.default.PropTypes.object,
-	    repositionOnUpdate: _react2.default.PropTypes.bool,
-	    style: _react2.default.PropTypes.object,
-	    title: _react2.default.PropTypes.node,
-	    titleClassName: _react2.default.PropTypes.string,
-	    titleStyle: _react2.default.PropTypes.object,
-	    width: _react2.default.PropTypes.any
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  mixins: [_windowListenable2.default, _stylePropable2.default],
-
-	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this._positionDialog();
-	  },
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({ muiTheme: newMuiTheme });
-	  },
-	  componentDidUpdate: function componentDidUpdate() {
-	    this._positionDialog();
-	  },
-
-	  windowListeners: {
-	    keyup: '_handleWindowKeyUp',
-	    resize: '_handleResize'
-	  },
-
-	  getStyles: function getStyles() {
-	    var _props2 = this.props;
-	    var autoScrollBodyContent = _props2.autoScrollBodyContent;
-	    var open = _props2.open;
-	    var width = _props2.width;
-
-	    var muiTheme = this.state.muiTheme;
-	    var rawTheme = muiTheme.rawTheme;
-	    var spacing = rawTheme.spacing;
-	    var gutter = spacing.desktopGutter;
-
-	    return {
-	      root: {
-	        position: 'fixed',
-	        boxSizing: 'border-box',
-	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
-	        zIndex: muiTheme.zIndex.dialog,
-	        top: 0,
-	        left: open ? 0 : -10000,
-	        width: '100%',
-	        height: '100%',
-	        transition: open ? _transitions2.default.easeOut('0ms', 'left', '0ms') : _transitions2.default.easeOut('0ms', 'left', '450ms')
-	      },
-	      content: {
-	        boxSizing: 'border-box',
-	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
-	        transition: _transitions2.default.easeOut(),
-	        position: 'relative',
-	        width: width || '75%',
-	        maxWidth: spacing.desktopKeylineIncrement * 12,
-	        margin: '0 auto',
-	        zIndex: muiTheme.zIndex.dialog
-	      },
-	      body: {
-	        padding: spacing.desktopGutter,
-	        overflowY: autoScrollBodyContent ? 'auto' : 'hidden',
-	        overflowX: 'hidden'
-	      },
-	      actionsContainer: {
-	        boxSizing: 'border-box',
-	        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
-	        padding: 8,
-	        marginBottom: 8,
-	        width: '100%',
-	        textAlign: 'right'
-	      },
-	      paper: {
-	        background: rawTheme.palette.canvasColor
-	      },
-	      overlay: {
-	        zIndex: muiTheme.zIndex.dialogOverlay
-	      },
-	      title: {
-	        margin: 0,
-	        padding: gutter + 'px ' + gutter + 'px 0 ' + gutter + 'px',
-	        color: rawTheme.palette.textColor,
-	        fontSize: 24,
-	        lineHeight: '32px',
-	        fontWeight: 400
-	      }
-	    };
-	  },
-	  _getAction: function _getAction(actionJSON) {
-	    var _this2 = this;
-
-	    process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'using actionsJSON is deprecated on Dialog, please provide an array of\n buttons, or any other components instead. For more information please refer to documentations.') : undefined;
-	    var props = {
-	      secondary: true,
-	      onClick: actionJSON.onClick,
-	      onTouchTap: function onTouchTap() {
-	        if (actionJSON.onTouchTap) {
-	          actionJSON.onTouchTap.call(undefined);
-	        }
-	        if (!(actionJSON.onClick || actionJSON.onTouchTap)) {
-	          _this2._requestClose(true);
-	        }
-	      },
-	      label: actionJSON.text,
-	      style: {
-	        marginRight: 8
-	      }
-	    };
-
-	    if (actionJSON.ref) {
-	      props.ref = actionJSON.ref;
-	      props.keyboardFocused = actionJSON.ref === this.props.actionFocus;
-	    }
-	    if (actionJSON.id) {
-	      props.id = actionJSON.id;
-	    }
-
-	    return _react2.default.createElement(_flatButton2.default, props);
-	  },
-	  _getActionObjects: function _getActionObjects(actions) {
-	    var _this3 = this;
-
-	    var actionObjects = [];
-
-	    // ------- Replace this selction with:
-	    //
-	    // React.Children.forEach(actions, action => {
-	    //   if (React.isValidElement(action)) {
-	    //     actionObjects.push(action);
-	    //   }
-	    // });
-	    //
-	    // Also the return element will not need a call to React.Children.toArray
-	    //
-	    // for the 0.15.0 release
-
-	    if (actions) {
-
-	      if (_react2.default.isValidElement(actions)) {
-	        actionObjects.push(actions);
-	      } else {
-	        actions.forEach(function (action) {
-	          if (action) {
-	            if (!_react2.default.isValidElement(action)) {
-	              action = _this3._getAction(action);
-	            }
-	            actionObjects.push(action);
-	          }
-	        });
-	      }
-	    }
-
-	    // ------- End of section
-
-	    return actionObjects;
-	  },
-	  _getActionsContainer: function _getActionsContainer(actions, styles, className) {
-	    var actionObjects = this._getActionObjects(actions);
-
-	    return actionObjects.length > 0 && _react2.default.createElement(
-	      'div',
-	      { className: className, style: this.prepareStyles(styles) },
-	      _react2.default.Children.toArray(actionObjects)
-	    );
-	  },
-	  _positionDialog: function _positionDialog() {
-	    var _props3 = this.props;
-	    var actions = _props3.actions;
-	    var autoDetectWindowHeight = _props3.autoDetectWindowHeight;
-	    var autoScrollBodyContent = _props3.autoScrollBodyContent;
-	    var bodyStyle = _props3.bodyStyle;
-	    var open = _props3.open;
-	    var repositionOnUpdate = _props3.repositionOnUpdate;
-	    var title = _props3.title;
-
-	    if (!open) {
-	      return;
-	    }
-
-	    var clientHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-	    var container = _reactDom2.default.findDOMNode(this);
-	    var dialogWindow = _reactDom2.default.findDOMNode(this.refs.dialogWindow);
-	    var dialogContent = _reactDom2.default.findDOMNode(this.refs.dialogContent);
-	    var minPaddingTop = 16;
-
-	    //Reset the height in case the window was resized.
-	    dialogWindow.style.height = '';
-	    dialogContent.style.height = '';
-
-	    var dialogWindowHeight = dialogWindow.offsetHeight;
-	    var paddingTop = (clientHeight - dialogWindowHeight) / 2 - 64;
-	    if (paddingTop < minPaddingTop) paddingTop = minPaddingTop;
-
-	    //Vertically center the dialog window, but make sure it doesn't
-	    //transition to that position.
-	    if (repositionOnUpdate || !container.style.paddingTop) {
-	      container.style.paddingTop = paddingTop + 'px';
-	    }
-
-	    // Force a height if the dialog is taller than clientHeight
-	    if (autoDetectWindowHeight || autoScrollBodyContent) {
-	      var styles = this.getStyles();
-	      styles.body = this.mergeStyles(styles.body, bodyStyle);
-	      var maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + 64);
-
-	      if (title) maxDialogContentHeight -= dialogContent.previousSibling.offsetHeight;
-
-	      var hasActions = this._getActionObjects(actions).length > 0;
-	      if (hasActions) maxDialogContentHeight -= dialogContent.nextSibling.offsetHeight;
-
-	      dialogContent.style.maxHeight = maxDialogContentHeight + 'px';
-	    }
-	  },
-	  _requestClose: function _requestClose(buttonClicked) {
-
-	    if (!buttonClicked && this.props.modal) {
-	      return;
-	    }
-
-	    if (this.props.onRequestClose) {
-	      this.props.onRequestClose(!!buttonClicked);
-	    }
-	  },
-	  _handleOverlayTouchTap: function _handleOverlayTouchTap() {
-	    this._requestClose(false);
-	  },
-	  _handleWindowKeyUp: function _handleWindowKeyUp(event) {
-	    if (event.keyCode === _keyCode2.default.ESC) {
-	      this._requestClose(false);
-	    }
-	  },
-	  _handleResize: function _handleResize() {
-	    if (this.props.open) {
-	      this._positionDialog();
-	    }
-	  },
-	  render: function render() {
-	    var _props4 = this.props;
-	    var actions = _props4.actions;
-	    var actionsContainerClassName = _props4.actionsContainerClassName;
-	    var actionsContainerStyle = _props4.actionsContainerStyle;
-	    var bodyClassName = _props4.bodyClassName;
-	    var bodyStyle = _props4.bodyStyle;
-	    var children = _props4.children;
-	    var className = _props4.className;
-	    var contentClassName = _props4.contentClassName;
-	    var contentStyle = _props4.contentStyle;
-	    var overlayClassName = _props4.overlayClassName;
-	    var overlayStyle = _props4.overlayStyle;
-	    var open = _props4.open;
-	    var titleClassName = _props4.titleClassName;
-	    var titleStyle = _props4.titleStyle;
-	    var title = _props4.title;
-	    var style = _props4.style;
-
-	    var styles = this.getStyles();
-
-	    styles.root = this.mergeStyles(styles.root, style);
-	    styles.content = this.mergeStyles(styles.content, contentStyle);
-	    styles.body = this.mergeStyles(styles.body, bodyStyle);
-	    styles.actionsContainer = this.mergeStyles(styles.actionsContainer, actionsContainerStyle);
-	    styles.overlay = this.mergeStyles(styles.overlay, overlayStyle);
-	    styles.title = this.mergeStyles(styles.title, titleStyle);
-
-	    var actionsContainer = this._getActionsContainer(actions, styles.actionsContainer, actionsContainerClassName);
-
-	    var titleElement = typeof title === 'string' ? _react2.default.createElement(
-	      'h3',
-	      { className: titleClassName, style: this.prepareStyles(styles.title) },
-	      title
-	    ) : title;
-
-	    return _react2.default.createElement(
-	      'div',
-	      { className: className, style: this.prepareStyles(styles.root) },
-	      _react2.default.createElement(
-	        _reactAddonsTransitionGroup2.default,
-	        {
-	          component: 'div', ref: 'dialogWindow',
-	          transitionAppear: true, transitionAppearTimeout: 450,
-	          transitionEnter: true, transitionEnterTimeout: 450
-	        },
-	        open && _react2.default.createElement(
-	          TransitionItem,
-	          {
-	            className: contentClassName,
-	            style: styles.content
-	          },
-	          _react2.default.createElement(
-	            _paper2.default,
-	            {
-	              style: styles.paper,
-	              zDepth: 4
-	            },
-	            titleElement,
-	            _react2.default.createElement(
-	              'div',
-	              {
-	                ref: 'dialogContent',
-	                className: bodyClassName,
-	                style: this.prepareStyles(styles.body)
-	              },
-	              children
-	            ),
-	            actionsContainer
-	          )
-	        )
-	      ),
-	      _react2.default.createElement(_overlay2.default, {
-	        show: open,
-	        className: overlayClassName,
-	        style: styles.overlay,
-	        onTouchTap: this._handleOverlayTouchTap
-	      })
-	    );
-	  }
-	});
-
-	var Dialog = _react2.default.createClass({
-	  displayName: 'Dialog',
-
-	  propTypes: {
-	    /**
-	     * The `ref` of the action to focus on when the `Dialog` is displayed.
-	     */
-	    actionFocus: (0, _deprecatedPropType2.default)(_react2.default.PropTypes.string, 'Instead, use a custom `actions` property.'),
-
-	    /**
-	     * This prop can be either a JSON object containing the actions to render (This is **DEPRECATED**),
-	     * a react elements, or an array of react elements.
-	     */
-	    actions: _react2.default.PropTypes.node,
-
-	    /**
-	     * The `className` to add to the actions container's root element.
-	     */
-	    actionsContainerClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the actions container's root element.
-	     */
-	    actionsContainerStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * If set to true, the height of the `Dialog` will be auto detected. A max height
-	     * will be enforced so that the content does not extend beyond the viewport.
-	     */
-	    autoDetectWindowHeight: _react2.default.PropTypes.bool,
-
-	    /**
-	     * If set to true, the body content of the `Dialog` will be scrollable.
-	     */
-	    autoScrollBodyContent: _react2.default.PropTypes.bool,
-
-	    /**
-	     * The `className` to add to the content's root element under the title.
-	     */
-	    bodyClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the content's root element under the title.
-	     */
-	    bodyStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * The contents of the `Dialog`.
-	     */
-	    children: _react2.default.PropTypes.node,
-
-	    /**
-	     * The css class name of the root element.
-	     */
-	    className: _react2.default.PropTypes.string,
-
-	    /**
-	     * The `className` to add to the content container.
-	     */
-	    contentClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the content container.
-	     */
-	    contentStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Force the user to use one of the actions in the `Dialog`.
-	     * Clicking outside the `Dialog` will not trigger the `onRequestClose`.
-	     */
-	    modal: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Fired when the `Dialog` is requested to be closed by a click outside the `Dialog` or on the buttons.
-	     *
-	     * @param {bool} buttonClicked Determines whether a button click triggered this request.
-	     */
-	    onRequestClose: _react2.default.PropTypes.func,
-
-	    /**
-	     * Controls whether the Dialog is opened or not.
-	     */
-	    open: _react2.default.PropTypes.bool.isRequired,
-
-	    /**
-	     * The `className` to add to the `Overlay` component that is rendered behind the `Dialog`.
-	     */
-	    overlayClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the `Overlay` component that is rendered behind the `Dialog`.
-	     */
-	    overlayStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Determines whether the `Dialog` should be repositioned when it's contents are updated.
-	     */
-	    repositionOnUpdate: _react2.default.PropTypes.bool,
-
-	    /**
-	     * Override the inline-styles of the root element.
-	     */
-	    style: _react2.default.PropTypes.object,
-
-	    /**
-	     * The title to display on the `Dialog`. Could be number, string, element or an array containing these types.
-	     */
-	    title: _react2.default.PropTypes.node,
-
-	    /**
-	     * The `className` to add to the title's root container element.
-	     */
-	    titleClassName: _react2.default.PropTypes.string,
-
-	    /**
-	     * Overrides the inline-styles of the title's root container element.
-	     */
-	    titleStyle: _react2.default.PropTypes.object,
-
-	    /**
-	     * Changes the width of the `Dialog`.
-	     */
-	    width: (0, _deprecatedPropType2.default)(_react2.default.PropTypes.any, 'Use the contentStyle.')
-	  },
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      autoDetectWindowHeight: true,
-	      autoScrollBodyContent: false,
-	      modal: false,
-	      repositionOnUpdate: true
-	    };
-	  },
-	  renderLayer: function renderLayer() {
-	    return _react2.default.createElement(DialogInline, this.props);
-	  },
-	  render: function render() {
-	    return _react2.default.createElement(_renderToLayer2.default, { render: this.renderLayer, open: true, useLayerForClickAway: false });
-	  }
-	});
-
-	exports.default = Dialog;
-	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 340 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(1);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _dom = __webpack_require__(287);
-
-	var _dom2 = _interopRequireDefault(_dom);
-
-	var _getMuiTheme = __webpack_require__(256);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// heavily inspired by https://github.com/Khan/react-components/blob/master/js/layered-component-mixin.jsx
-	var RenderToLayer = _react2.default.createClass({
-	  displayName: 'RenderToLayer',
-
-	  propTypes: {
-	    componentClickAway: _react2.default.PropTypes.func,
-	    open: _react2.default.PropTypes.bool.isRequired,
-	    render: _react2.default.PropTypes.func.isRequired,
-	    useLayerForClickAway: _react2.default.PropTypes.bool
-	  },
-
-	  contextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  //for passing default theme context to children
-	  childContextTypes: {
-	    muiTheme: _react2.default.PropTypes.object
-	  },
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      useLayerForClickAway: true
-	    };
-	  },
-	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
-	    };
-	  },
-	  getChildContext: function getChildContext() {
-	    return {
-	      muiTheme: this.state.muiTheme
-	    };
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this._renderLayer();
-	  },
-
-	  //to update theme inside state whenever a new theme is passed down
-	  //from the parent / owner using context
-	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-	    this.setState({
-	      muiTheme: newMuiTheme
-	    });
-	  },
-	  componentDidUpdate: function componentDidUpdate() {
-	    this._renderLayer();
-	  },
-	  componentWillUnmount: function componentWillUnmount() {
-	    this._unrenderLayer();
-	  },
-	  onClickAway: function onClickAway(event) {
-	    if (event.defaultPrevented) {
-	      return;
-	    }
-
-	    if (!this.props.componentClickAway) {
-	      return;
-	    }
-
-	    if (!this.props.open) {
-	      return;
-	    }
-
-	    var el = this._layer;
-	    if (event.target !== el && event.target === window || document.documentElement.contains(event.target) && !_dom2.default.isDescendant(el, event.target)) {
-	      this.props.componentClickAway(event);
-	    }
-	  },
-	  getLayer: function getLayer() {
-	    return this._layer;
-	  },
-
-	  _unrenderLayer: function _unrenderLayer() {
-	    if (!this._layer) {
-	      return;
-	    }
-
-	    if (this.props.useLayerForClickAway) {
-	      this._layer.style.position = 'relative';
-	      this._layer.removeEventListener('touchstart', this.onClickAway);
-	      this._layer.removeEventListener('click', this.onClickAway);
-	    } else {
-	      window.removeEventListener('touchstart', this.onClickAway);
-	      window.removeEventListener('click', this.onClickAway);
-	    }
-
-	    _reactDom2.default.unmountComponentAtNode(this._layer);
-	    document.body.removeChild(this._layer);
-	    this._layer = null;
-	  },
-
-	  _renderLayer: function _renderLayer() {
-	    var _this = this;
-
-	    var _props = this.props;
-	    var open = _props.open;
-	    var render = _props.render;
-
-	    if (open) {
-	      if (!this._layer) {
-	        this._layer = document.createElement('div');
-	        document.body.appendChild(this._layer);
-
-	        if (this.props.useLayerForClickAway) {
-	          this._layer.addEventListener('touchstart', this.onClickAway);
-	          this._layer.addEventListener('click', this.onClickAway);
-	          this._layer.style.position = 'fixed';
-	          this._layer.style.top = 0;
-	          this._layer.style.bottom = 0;
-	          this._layer.style.left = 0;
-	          this._layer.style.right = 0;
-	          this._layer.style.zIndex = this.state.muiTheme.zIndex.layer;
-	        } else {
-	          setTimeout(function () {
-	            window.addEventListener('touchstart', _this.onClickAway);
-	            window.addEventListener('click', _this.onClickAway);
-	          }, 0);
-	        }
-	      }
-
-	      // By calling this method in componentDidMount() and
-	      // componentDidUpdate(), you're effectively creating a "wormhole" that
-	      // funnels React's hierarchical updates through to a DOM node on an
-	      // entirely different part of the page.
-
-	      var layerElement = render();
-
-	      if (layerElement === null) {
-	        this.layerElement = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, null, this._layer);
-	      } else {
-	        this.layerElement = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, layerElement, this._layer);
-	      }
-	    } else {
-	      this._unrenderLayer();
-	    }
-	  },
-	  render: function render() {
-	    return null;
-	  }
-	});
-
-	exports.default = RenderToLayer;
-	module.exports = exports['default'];
-
-/***/ },
-/* 341 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * jQuery JavaScript Library v2.2.1
-	 * http://jquery.com/
-	 *
-	 * Includes Sizzle.js
-	 * http://sizzlejs.com/
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license
-	 * http://jquery.org/license
-	 *
-	 * Date: 2016-02-22T19:11Z
-	 */
-
-	(function( global, factory ) {
-
-		if ( typeof module === "object" && typeof module.exports === "object" ) {
-			// For CommonJS and CommonJS-like environments where a proper `window`
-			// is present, execute the factory and get jQuery.
-			// For environments that do not have a `window` with a `document`
-			// (such as Node.js), expose a factory as module.exports.
-			// This accentuates the need for the creation of a real `window`.
-			// e.g. var jQuery = require("jquery")(window);
-			// See ticket #14549 for more info.
-			module.exports = global.document ?
-				factory( global, true ) :
-				function( w ) {
-					if ( !w.document ) {
-						throw new Error( "jQuery requires a window with a document" );
-					}
-					return factory( w );
-				};
-		} else {
-			factory( global );
-		}
-
-	// Pass this if window is not defined yet
-	}(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
-
-	// Support: Firefox 18+
-	// Can't be in strict mode, several libs including ASP.NET trace
-	// the stack via arguments.caller.callee and Firefox dies if
-	// you try to trace through "use strict" call chains. (#13335)
-	//"use strict";
-	var arr = [];
-
-	var document = window.document;
-
-	var slice = arr.slice;
-
-	var concat = arr.concat;
-
-	var push = arr.push;
-
-	var indexOf = arr.indexOf;
-
-	var class2type = {};
-
-	var toString = class2type.toString;
-
-	var hasOwn = class2type.hasOwnProperty;
-
-	var support = {};
-
-
-
-	var
-		version = "2.2.1",
-
-		// Define a local copy of jQuery
-		jQuery = function( selector, context ) {
-
-			// The jQuery object is actually just the init constructor 'enhanced'
-			// Need init if jQuery is called (just allow error to be thrown if not included)
-			return new jQuery.fn.init( selector, context );
-		},
-
-		// Support: Android<4.1
-		// Make sure we trim BOM and NBSP
-		rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
-
-		// Matches dashed string for camelizing
-		rmsPrefix = /^-ms-/,
-		rdashAlpha = /-([\da-z])/gi,
-
-		// Used by jQuery.camelCase as callback to replace()
-		fcamelCase = function( all, letter ) {
-			return letter.toUpperCase();
-		};
-
-	jQuery.fn = jQuery.prototype = {
-
-		// The current version of jQuery being used
-		jquery: version,
-
-		constructor: jQuery,
-
-		// Start with an empty selector
-		selector: "",
-
-		// The default length of a jQuery object is 0
-		length: 0,
-
-		toArray: function() {
-			return slice.call( this );
-		},
-
-		// Get the Nth element in the matched element set OR
-		// Get the whole matched element set as a clean array
-		get: function( num ) {
-			return num != null ?
-
-				// Return just the one element from the set
-				( num < 0 ? this[ num + this.length ] : this[ num ] ) :
-
-				// Return all the elements in a clean array
-				slice.call( this );
-		},
-
-		// Take an array of elements and push it onto the stack
-		// (returning the new matched element set)
-		pushStack: function( elems ) {
-
-			// Build a new jQuery matched element set
-			var ret = jQuery.merge( this.constructor(), elems );
-
-			// Add the old object onto the stack (as a reference)
-			ret.prevObject = this;
-			ret.context = this.context;
-
-			// Return the newly-formed element set
-			return ret;
-		},
-
-		// Execute a callback for every element in the matched set.
-		each: function( callback ) {
-			return jQuery.each( this, callback );
-		},
-
-		map: function( callback ) {
-			return this.pushStack( jQuery.map( this, function( elem, i ) {
-				return callback.call( elem, i, elem );
-			} ) );
-		},
-
-		slice: function() {
-			return this.pushStack( slice.apply( this, arguments ) );
-		},
-
-		first: function() {
-			return this.eq( 0 );
-		},
-
-		last: function() {
-			return this.eq( -1 );
-		},
-
-		eq: function( i ) {
-			var len = this.length,
-				j = +i + ( i < 0 ? len : 0 );
-			return this.pushStack( j >= 0 && j < len ? [ this[ j ] ] : [] );
-		},
-
-		end: function() {
-			return this.prevObject || this.constructor();
-		},
-
-		// For internal use only.
-		// Behaves like an Array's method, not like a jQuery method.
-		push: push,
-		sort: arr.sort,
-		splice: arr.splice
-	};
-
-	jQuery.extend = jQuery.fn.extend = function() {
-		var options, name, src, copy, copyIsArray, clone,
-			target = arguments[ 0 ] || {},
-			i = 1,
-			length = arguments.length,
-			deep = false;
-
-		// Handle a deep copy situation
-		if ( typeof target === "boolean" ) {
-			deep = target;
-
-			// Skip the boolean and the target
-			target = arguments[ i ] || {};
-			i++;
-		}
-
-		// Handle case when target is a string or something (possible in deep copy)
-		if ( typeof target !== "object" && !jQuery.isFunction( target ) ) {
-			target = {};
-		}
-
-		// Extend jQuery itself if only one argument is passed
-		if ( i === length ) {
-			target = this;
-			i--;
-		}
-
-		for ( ; i < length; i++ ) {
-
-			// Only deal with non-null/undefined values
-			if ( ( options = arguments[ i ] ) != null ) {
-
-				// Extend the base object
-				for ( name in options ) {
-					src = target[ name ];
-					copy = options[ name ];
-
-					// Prevent never-ending loop
-					if ( target === copy ) {
-						continue;
-					}
-
-					// Recurse if we're merging plain objects or arrays
-					if ( deep && copy && ( jQuery.isPlainObject( copy ) ||
-						( copyIsArray = jQuery.isArray( copy ) ) ) ) {
-
-						if ( copyIsArray ) {
-							copyIsArray = false;
-							clone = src && jQuery.isArray( src ) ? src : [];
-
-						} else {
-							clone = src && jQuery.isPlainObject( src ) ? src : {};
-						}
-
-						// Never move original objects, clone them
-						target[ name ] = jQuery.extend( deep, clone, copy );
-
-					// Don't bring in undefined values
-					} else if ( copy !== undefined ) {
-						target[ name ] = copy;
-					}
-				}
-			}
-		}
-
-		// Return the modified object
-		return target;
-	};
-
-	jQuery.extend( {
-
-		// Unique for each copy of jQuery on the page
-		expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
-
-		// Assume jQuery is ready without the ready module
-		isReady: true,
-
-		error: function( msg ) {
-			throw new Error( msg );
-		},
-
-		noop: function() {},
-
-		isFunction: function( obj ) {
-			return jQuery.type( obj ) === "function";
-		},
-
-		isArray: Array.isArray,
-
-		isWindow: function( obj ) {
-			return obj != null && obj === obj.window;
-		},
-
-		isNumeric: function( obj ) {
-
-			// parseFloat NaNs numeric-cast false positives (null|true|false|"")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-			// subtraction forces infinities to NaN
-			// adding 1 corrects loss of precision from parseFloat (#15100)
-			var realStringObj = obj && obj.toString();
-			return !jQuery.isArray( obj ) && ( realStringObj - parseFloat( realStringObj ) + 1 ) >= 0;
-		},
-
-		isPlainObject: function( obj ) {
-
-			// Not plain objects:
-			// - Any object or value whose internal [[Class]] property is not "[object Object]"
-			// - DOM nodes
-			// - window
-			if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
-				return false;
-			}
-
-			if ( obj.constructor &&
-					!hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
-				return false;
-			}
-
-			// If the function hasn't returned already, we're confident that
-			// |obj| is a plain object, created by {} or constructed with new Object
-			return true;
-		},
-
-		isEmptyObject: function( obj ) {
-			var name;
-			for ( name in obj ) {
-				return false;
-			}
-			return true;
-		},
-
-		type: function( obj ) {
-			if ( obj == null ) {
-				return obj + "";
-			}
-
-			// Support: Android<4.0, iOS<6 (functionish RegExp)
-			return typeof obj === "object" || typeof obj === "function" ?
-				class2type[ toString.call( obj ) ] || "object" :
-				typeof obj;
-		},
-
-		// Evaluates a script in a global context
-		globalEval: function( code ) {
-			var script,
-				indirect = eval;
-
-			code = jQuery.trim( code );
-
-			if ( code ) {
-
-				// If the code includes a valid, prologue position
-				// strict mode pragma, execute code by injecting a
-				// script tag into the document.
-				if ( code.indexOf( "use strict" ) === 1 ) {
-					script = document.createElement( "script" );
-					script.text = code;
-					document.head.appendChild( script ).parentNode.removeChild( script );
-				} else {
-
-					// Otherwise, avoid the DOM node creation, insertion
-					// and removal by using an indirect global eval
-
-					indirect( code );
-				}
-			}
-		},
-
-		// Convert dashed to camelCase; used by the css and data modules
-		// Support: IE9-11+
-		// Microsoft forgot to hump their vendor prefix (#9572)
-		camelCase: function( string ) {
-			return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
-		},
-
-		nodeName: function( elem, name ) {
-			return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
-		},
-
-		each: function( obj, callback ) {
-			var length, i = 0;
-
-			if ( isArrayLike( obj ) ) {
-				length = obj.length;
-				for ( ; i < length; i++ ) {
-					if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
-						break;
-					}
-				}
-			} else {
-				for ( i in obj ) {
-					if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
-						break;
-					}
-				}
-			}
-
-			return obj;
-		},
-
-		// Support: Android<4.1
-		trim: function( text ) {
-			return text == null ?
-				"" :
-				( text + "" ).replace( rtrim, "" );
-		},
-
-		// results is for internal usage only
-		makeArray: function( arr, results ) {
-			var ret = results || [];
-
-			if ( arr != null ) {
-				if ( isArrayLike( Object( arr ) ) ) {
-					jQuery.merge( ret,
-						typeof arr === "string" ?
-						[ arr ] : arr
-					);
-				} else {
-					push.call( ret, arr );
-				}
-			}
-
-			return ret;
-		},
-
-		inArray: function( elem, arr, i ) {
-			return arr == null ? -1 : indexOf.call( arr, elem, i );
-		},
-
-		merge: function( first, second ) {
-			var len = +second.length,
-				j = 0,
-				i = first.length;
-
-			for ( ; j < len; j++ ) {
-				first[ i++ ] = second[ j ];
-			}
-
-			first.length = i;
-
-			return first;
-		},
-
-		grep: function( elems, callback, invert ) {
-			var callbackInverse,
-				matches = [],
-				i = 0,
-				length = elems.length,
-				callbackExpect = !invert;
-
-			// Go through the array, only saving the items
-			// that pass the validator function
-			for ( ; i < length; i++ ) {
-				callbackInverse = !callback( elems[ i ], i );
-				if ( callbackInverse !== callbackExpect ) {
-					matches.push( elems[ i ] );
-				}
-			}
-
-			return matches;
-		},
-
-		// arg is for internal usage only
-		map: function( elems, callback, arg ) {
-			var length, value,
-				i = 0,
-				ret = [];
-
-			// Go through the array, translating each of the items to their new values
-			if ( isArrayLike( elems ) ) {
-				length = elems.length;
-				for ( ; i < length; i++ ) {
-					value = callback( elems[ i ], i, arg );
-
-					if ( value != null ) {
-						ret.push( value );
-					}
-				}
-
-			// Go through every key on the object,
-			} else {
-				for ( i in elems ) {
-					value = callback( elems[ i ], i, arg );
-
-					if ( value != null ) {
-						ret.push( value );
-					}
-				}
-			}
-
-			// Flatten any nested arrays
-			return concat.apply( [], ret );
-		},
-
-		// A global GUID counter for objects
-		guid: 1,
-
-		// Bind a function to a context, optionally partially applying any
-		// arguments.
-		proxy: function( fn, context ) {
-			var tmp, args, proxy;
-
-			if ( typeof context === "string" ) {
-				tmp = fn[ context ];
-				context = fn;
-				fn = tmp;
-			}
-
-			// Quick check to determine if target is callable, in the spec
-			// this throws a TypeError, but we will just return undefined.
-			if ( !jQuery.isFunction( fn ) ) {
-				return undefined;
-			}
-
-			// Simulated bind
-			args = slice.call( arguments, 2 );
-			proxy = function() {
-				return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
-			};
-
-			// Set the guid of unique handler to the same of original handler, so it can be removed
-			proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
-			return proxy;
-		},
-
-		now: Date.now,
-
-		// jQuery.support is not used in Core but other projects attach their
-		// properties to it so it needs to exist.
-		support: support
-	} );
-
-	// JSHint would error on this code due to the Symbol not being defined in ES5.
-	// Defining this global in .jshintrc would create a danger of using the global
-	// unguarded in another place, it seems safer to just disable JSHint for these
-	// three lines.
-	/* jshint ignore: start */
-	if ( typeof Symbol === "function" ) {
-		jQuery.fn[ Symbol.iterator ] = arr[ Symbol.iterator ];
-	}
-	/* jshint ignore: end */
-
-	// Populate the class2type map
-	jQuery.each( "Boolean Number String Function Array Date RegExp Object Error Symbol".split( " " ),
-	function( i, name ) {
-		class2type[ "[object " + name + "]" ] = name.toLowerCase();
-	} );
-
-	function isArrayLike( obj ) {
-
-		// Support: iOS 8.2 (not reproducible in simulator)
-		// `in` check used to prevent JIT error (gh-2145)
-		// hasOwn isn't used here due to false negatives
-		// regarding Nodelist length in IE
-		var length = !!obj && "length" in obj && obj.length,
-			type = jQuery.type( obj );
-
-		if ( type === "function" || jQuery.isWindow( obj ) ) {
-			return false;
-		}
-
-		return type === "array" || length === 0 ||
-			typeof length === "number" && length > 0 && ( length - 1 ) in obj;
-	}
-	var Sizzle =
-	/*!
-	 * Sizzle CSS Selector Engine v2.2.1
-	 * http://sizzlejs.com/
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license
-	 * http://jquery.org/license
-	 *
-	 * Date: 2015-10-17
-	 */
-	(function( window ) {
-
-	var i,
-		support,
-		Expr,
-		getText,
-		isXML,
-		tokenize,
-		compile,
-		select,
-		outermostContext,
-		sortInput,
-		hasDuplicate,
-
-		// Local document vars
-		setDocument,
-		document,
-		docElem,
-		documentIsHTML,
-		rbuggyQSA,
-		rbuggyMatches,
-		matches,
-		contains,
-
-		// Instance-specific data
-		expando = "sizzle" + 1 * new Date(),
-		preferredDoc = window.document,
-		dirruns = 0,
-		done = 0,
-		classCache = createCache(),
-		tokenCache = createCache(),
-		compilerCache = createCache(),
-		sortOrder = function( a, b ) {
-			if ( a === b ) {
-				hasDuplicate = true;
-			}
-			return 0;
-		},
-
-		// General-purpose constants
-		MAX_NEGATIVE = 1 << 31,
-
-		// Instance methods
-		hasOwn = ({}).hasOwnProperty,
-		arr = [],
-		pop = arr.pop,
-		push_native = arr.push,
-		push = arr.push,
-		slice = arr.slice,
-		// Use a stripped-down indexOf as it's faster than native
-		// http://jsperf.com/thor-indexof-vs-for/5
-		indexOf = function( list, elem ) {
-			var i = 0,
-				len = list.length;
-			for ( ; i < len; i++ ) {
-				if ( list[i] === elem ) {
-					return i;
-				}
-			}
-			return -1;
-		},
-
-		booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
-
-		// Regular expressions
-
-		// http://www.w3.org/TR/css3-selectors/#whitespace
-		whitespace = "[\\x20\\t\\r\\n\\f]",
-
-		// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-		identifier = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
-
-		// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
-		attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
-			// Operator (capture 2)
-			"*([*^$|!~]?=)" + whitespace +
-			// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
-			"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace +
-			"*\\]",
-
-		pseudos = ":(" + identifier + ")(?:\\((" +
-			// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
-			// 1. quoted (capture 3; capture 4 or capture 5)
-			"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
-			// 2. simple (capture 6)
-			"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
-			// 3. anything else (capture 2)
-			".*" +
-			")\\)|)",
-
-		// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
-		rwhitespace = new RegExp( whitespace + "+", "g" ),
-		rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
-
-		rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-		rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
-
-		rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
-
-		rpseudo = new RegExp( pseudos ),
-		ridentifier = new RegExp( "^" + identifier + "$" ),
-
-		matchExpr = {
-			"ID": new RegExp( "^#(" + identifier + ")" ),
-			"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
-			"TAG": new RegExp( "^(" + identifier + "|[*])" ),
-			"ATTR": new RegExp( "^" + attributes ),
-			"PSEUDO": new RegExp( "^" + pseudos ),
-			"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
-				"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
-				"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
-			"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
-			// For use in libraries implementing .is()
-			// We use this for POS matching in `select`
-			"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
-				whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
-		},
-
-		rinputs = /^(?:input|select|textarea|button)$/i,
-		rheader = /^h\d$/i,
-
-		rnative = /^[^{]+\{\s*\[native \w/,
-
-		// Easily-parseable/retrievable ID or TAG or CLASS selectors
-		rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-
-		rsibling = /[+~]/,
-		rescape = /'|\\/g,
-
-		// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
-		runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
-		funescape = function( _, escaped, escapedWhitespace ) {
-			var high = "0x" + escaped - 0x10000;
-			// NaN means non-codepoint
-			// Support: Firefox<24
-			// Workaround erroneous numeric interpretation of +"0x"
-			return high !== high || escapedWhitespace ?
-				escaped :
-				high < 0 ?
-					// BMP codepoint
-					String.fromCharCode( high + 0x10000 ) :
-					// Supplemental Plane codepoint (surrogate pair)
-					String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-		},
-
-		// Used for iframes
-		// See setDocument()
-		// Removing the function wrapper causes a "Permission Denied"
-		// error in IE
-		unloadHandler = function() {
-			setDocument();
-		};
-
-	// Optimize for push.apply( _, NodeList )
-	try {
-		push.apply(
-			(arr = slice.call( preferredDoc.childNodes )),
-			preferredDoc.childNodes
-		);
-		// Support: Android<4.0
-		// Detect silently failing push.apply
-		arr[ preferredDoc.childNodes.length ].nodeType;
-	} catch ( e ) {
-		push = { apply: arr.length ?
-
-			// Leverage slice if possible
-			function( target, els ) {
-				push_native.apply( target, slice.call(els) );
-			} :
-
-			// Support: IE<9
-			// Otherwise append directly
-			function( target, els ) {
-				var j = target.length,
-					i = 0;
-				// Can't trust NodeList.length
-				while ( (target[j++] = els[i++]) ) {}
-				target.length = j - 1;
-			}
-		};
-	}
-
-	function Sizzle( selector, context, results, seed ) {
-		var m, i, elem, nid, nidselect, match, groups, newSelector,
-			newContext = context && context.ownerDocument,
-
-			// nodeType defaults to 9, since context defaults to document
-			nodeType = context ? context.nodeType : 9;
-
-		results = results || [];
-
-		// Return early from calls with invalid selector or context
-		if ( typeof selector !== "string" || !selector ||
-			nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
-
-			return results;
-		}
-
-		// Try to shortcut find operations (as opposed to filters) in HTML documents
-		if ( !seed ) {
-
-			if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
-				setDocument( context );
-			}
-			context = context || document;
-
-			if ( documentIsHTML ) {
-
-				// If the selector is sufficiently simple, try using a "get*By*" DOM method
-				// (excepting DocumentFragment context, where the methods don't exist)
-				if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
-
-					// ID selector
-					if ( (m = match[1]) ) {
-
-						// Document context
-						if ( nodeType === 9 ) {
-							if ( (elem = context.getElementById( m )) ) {
-
-								// Support: IE, Opera, Webkit
-								// TODO: identify versions
-								// getElementById can match elements by name instead of ID
-								if ( elem.id === m ) {
-									results.push( elem );
-									return results;
-								}
-							} else {
-								return results;
-							}
-
-						// Element context
-						} else {
-
-							// Support: IE, Opera, Webkit
-							// TODO: identify versions
-							// getElementById can match elements by name instead of ID
-							if ( newContext && (elem = newContext.getElementById( m )) &&
-								contains( context, elem ) &&
-								elem.id === m ) {
-
-								results.push( elem );
-								return results;
-							}
-						}
-
-					// Type selector
-					} else if ( match[2] ) {
-						push.apply( results, context.getElementsByTagName( selector ) );
-						return results;
-
-					// Class selector
-					} else if ( (m = match[3]) && support.getElementsByClassName &&
-						context.getElementsByClassName ) {
-
-						push.apply( results, context.getElementsByClassName( m ) );
-						return results;
-					}
-				}
-
-				// Take advantage of querySelectorAll
-				if ( support.qsa &&
-					!compilerCache[ selector + " " ] &&
-					(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
-
-					if ( nodeType !== 1 ) {
-						newContext = context;
-						newSelector = selector;
-
-					// qSA looks outside Element context, which is not what we want
-					// Thanks to Andrew Dupont for this workaround technique
-					// Support: IE <=8
-					// Exclude object elements
-					} else if ( context.nodeName.toLowerCase() !== "object" ) {
-
-						// Capture the context ID, setting it first if necessary
-						if ( (nid = context.getAttribute( "id" )) ) {
-							nid = nid.replace( rescape, "\\$&" );
-						} else {
-							context.setAttribute( "id", (nid = expando) );
-						}
-
-						// Prefix every selector in the list
-						groups = tokenize( selector );
-						i = groups.length;
-						nidselect = ridentifier.test( nid ) ? "#" + nid : "[id='" + nid + "']";
-						while ( i-- ) {
-							groups[i] = nidselect + " " + toSelector( groups[i] );
-						}
-						newSelector = groups.join( "," );
-
-						// Expand context for sibling selectors
-						newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
-							context;
-					}
-
-					if ( newSelector ) {
-						try {
-							push.apply( results,
-								newContext.querySelectorAll( newSelector )
-							);
-							return results;
-						} catch ( qsaError ) {
-						} finally {
-							if ( nid === expando ) {
-								context.removeAttribute( "id" );
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// All others
-		return select( selector.replace( rtrim, "$1" ), context, results, seed );
-	}
-
-	/**
-	 * Create key-value caches of limited size
-	 * @returns {function(string, object)} Returns the Object data after storing it on itself with
-	 *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
-	 *	deleting the oldest entry
-	 */
-	function createCache() {
-		var keys = [];
-
-		function cache( key, value ) {
-			// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
-			if ( keys.push( key + " " ) > Expr.cacheLength ) {
-				// Only keep the most recent entries
-				delete cache[ keys.shift() ];
-			}
-			return (cache[ key + " " ] = value);
-		}
-		return cache;
-	}
-
-	/**
-	 * Mark a function for special use by Sizzle
-	 * @param {Function} fn The function to mark
-	 */
-	function markFunction( fn ) {
-		fn[ expando ] = true;
-		return fn;
-	}
-
-	/**
-	 * Support testing using an element
-	 * @param {Function} fn Passed the created div and expects a boolean result
-	 */
-	function assert( fn ) {
-		var div = document.createElement("div");
-
-		try {
-			return !!fn( div );
-		} catch (e) {
-			return false;
-		} finally {
-			// Remove from its parent by default
-			if ( div.parentNode ) {
-				div.parentNode.removeChild( div );
-			}
-			// release memory in IE
-			div = null;
-		}
-	}
-
-	/**
-	 * Adds the same handler for all of the specified attrs
-	 * @param {String} attrs Pipe-separated list of attributes
-	 * @param {Function} handler The method that will be applied
-	 */
-	function addHandle( attrs, handler ) {
-		var arr = attrs.split("|"),
-			i = arr.length;
-
-		while ( i-- ) {
-			Expr.attrHandle[ arr[i] ] = handler;
-		}
-	}
-
-	/**
-	 * Checks document order of two siblings
-	 * @param {Element} a
-	 * @param {Element} b
-	 * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
-	 */
-	function siblingCheck( a, b ) {
-		var cur = b && a,
-			diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
-				( ~b.sourceIndex || MAX_NEGATIVE ) -
-				( ~a.sourceIndex || MAX_NEGATIVE );
-
-		// Use IE sourceIndex if available on both nodes
-		if ( diff ) {
-			return diff;
-		}
-
-		// Check if b follows a
-		if ( cur ) {
-			while ( (cur = cur.nextSibling) ) {
-				if ( cur === b ) {
-					return -1;
-				}
-			}
-		}
-
-		return a ? 1 : -1;
-	}
-
-	/**
-	 * Returns a function to use in pseudos for input types
-	 * @param {String} type
-	 */
-	function createInputPseudo( type ) {
-		return function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return name === "input" && elem.type === type;
-		};
-	}
-
-	/**
-	 * Returns a function to use in pseudos for buttons
-	 * @param {String} type
-	 */
-	function createButtonPseudo( type ) {
-		return function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return (name === "input" || name === "button") && elem.type === type;
-		};
-	}
-
-	/**
-	 * Returns a function to use in pseudos for positionals
-	 * @param {Function} fn
-	 */
-	function createPositionalPseudo( fn ) {
-		return markFunction(function( argument ) {
-			argument = +argument;
-			return markFunction(function( seed, matches ) {
-				var j,
-					matchIndexes = fn( [], seed.length, argument ),
-					i = matchIndexes.length;
-
-				// Match elements found at the specified indexes
-				while ( i-- ) {
-					if ( seed[ (j = matchIndexes[i]) ] ) {
-						seed[j] = !(matches[j] = seed[j]);
-					}
-				}
-			});
-		});
-	}
-
-	/**
-	 * Checks a node for validity as a Sizzle context
-	 * @param {Element|Object=} context
-	 * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
-	 */
-	function testContext( context ) {
-		return context && typeof context.getElementsByTagName !== "undefined" && context;
-	}
-
-	// Expose support vars for convenience
-	support = Sizzle.support = {};
-
-	/**
-	 * Detects XML nodes
-	 * @param {Element|Object} elem An element or a document
-	 * @returns {Boolean} True iff elem is a non-HTML XML node
-	 */
-	isXML = Sizzle.isXML = function( elem ) {
-		// documentElement is verified for cases where it doesn't yet exist
-		// (such as loading iframes in IE - #4833)
-		var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-		return documentElement ? documentElement.nodeName !== "HTML" : false;
-	};
-
-	/**
-	 * Sets document-related variables once based on the current document
-	 * @param {Element|Object} [doc] An element or document object to use to set the document
-	 * @returns {Object} Returns the current document
-	 */
-	setDocument = Sizzle.setDocument = function( node ) {
-		var hasCompare, parent,
-			doc = node ? node.ownerDocument || node : preferredDoc;
-
-		// Return early if doc is invalid or already selected
-		if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
-			return document;
-		}
-
-		// Update global variables
-		document = doc;
-		docElem = document.documentElement;
-		documentIsHTML = !isXML( document );
-
-		// Support: IE 9-11, Edge
-		// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-		if ( (parent = document.defaultView) && parent.top !== parent ) {
-			// Support: IE 11
-			if ( parent.addEventListener ) {
-				parent.addEventListener( "unload", unloadHandler, false );
-
-			// Support: IE 9 - 10 only
-			} else if ( parent.attachEvent ) {
-				parent.attachEvent( "onunload", unloadHandler );
-			}
-		}
-
-		/* Attributes
-		---------------------------------------------------------------------- */
-
-		// Support: IE<8
-		// Verify that getAttribute really returns attributes and not properties
-		// (excepting IE8 booleans)
-		support.attributes = assert(function( div ) {
-			div.className = "i";
-			return !div.getAttribute("className");
-		});
-
-		/* getElement(s)By*
-		---------------------------------------------------------------------- */
-
-		// Check if getElementsByTagName("*") returns only elements
-		support.getElementsByTagName = assert(function( div ) {
-			div.appendChild( document.createComment("") );
-			return !div.getElementsByTagName("*").length;
-		});
-
-		// Support: IE<9
-		support.getElementsByClassName = rnative.test( document.getElementsByClassName );
-
-		// Support: IE<10
-		// Check if getElementById returns elements by name
-		// The broken getElementById methods don't pick up programatically-set names,
-		// so use a roundabout getElementsByName test
-		support.getById = assert(function( div ) {
-			docElem.appendChild( div ).id = expando;
-			return !document.getElementsByName || !document.getElementsByName( expando ).length;
-		});
-
-		// ID find and filter
-		if ( support.getById ) {
-			Expr.find["ID"] = function( id, context ) {
-				if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
-					var m = context.getElementById( id );
-					return m ? [ m ] : [];
-				}
-			};
-			Expr.filter["ID"] = function( id ) {
-				var attrId = id.replace( runescape, funescape );
-				return function( elem ) {
-					return elem.getAttribute("id") === attrId;
-				};
-			};
-		} else {
-			// Support: IE6/7
-			// getElementById is not reliable as a find shortcut
-			delete Expr.find["ID"];
-
-			Expr.filter["ID"] =  function( id ) {
-				var attrId = id.replace( runescape, funescape );
-				return function( elem ) {
-					var node = typeof elem.getAttributeNode !== "undefined" &&
-						elem.getAttributeNode("id");
-					return node && node.value === attrId;
-				};
-			};
-		}
-
-		// Tag
-		Expr.find["TAG"] = support.getElementsByTagName ?
-			function( tag, context ) {
-				if ( typeof context.getElementsByTagName !== "undefined" ) {
-					return context.getElementsByTagName( tag );
-
-				// DocumentFragment nodes don't have gEBTN
-				} else if ( support.qsa ) {
-					return context.querySelectorAll( tag );
-				}
-			} :
-
-			function( tag, context ) {
-				var elem,
-					tmp = [],
-					i = 0,
-					// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
-					results = context.getElementsByTagName( tag );
-
-				// Filter out possible comments
-				if ( tag === "*" ) {
-					while ( (elem = results[i++]) ) {
-						if ( elem.nodeType === 1 ) {
-							tmp.push( elem );
-						}
-					}
-
-					return tmp;
-				}
-				return results;
-			};
-
-		// Class
-		Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
-			if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
-				return context.getElementsByClassName( className );
-			}
-		};
-
-		/* QSA/matchesSelector
-		---------------------------------------------------------------------- */
-
-		// QSA and matchesSelector support
-
-		// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
-		rbuggyMatches = [];
-
-		// qSa(:focus) reports false when true (Chrome 21)
-		// We allow this because of a bug in IE8/9 that throws an error
-		// whenever `document.activeElement` is accessed on an iframe
-		// So, we allow :focus to pass through QSA all the time to avoid the IE error
-		// See http://bugs.jquery.com/ticket/13378
-		rbuggyQSA = [];
-
-		if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
-			// Build QSA regex
-			// Regex strategy adopted from Diego Perini
-			assert(function( div ) {
-				// Select is set to empty string on purpose
-				// This is to test IE's treatment of not explicitly
-				// setting a boolean content attribute,
-				// since its presence should be enough
-				// http://bugs.jquery.com/ticket/12359
-				docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
-					"<select id='" + expando + "-\r\\' msallowcapture=''>" +
-					"<option selected=''></option></select>";
-
-				// Support: IE8, Opera 11-12.16
-				// Nothing should be selected when empty strings follow ^= or $= or *=
-				// The test attribute must be unknown in Opera but "safe" for WinRT
-				// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
-				if ( div.querySelectorAll("[msallowcapture^='']").length ) {
-					rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
-				}
-
-				// Support: IE8
-				// Boolean attributes and "value" are not treated correctly
-				if ( !div.querySelectorAll("[selected]").length ) {
-					rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
-				}
-
-				// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
-				if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
-					rbuggyQSA.push("~=");
-				}
-
-				// Webkit/Opera - :checked should return selected option elements
-				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-				// IE8 throws error here and will not see later tests
-				if ( !div.querySelectorAll(":checked").length ) {
-					rbuggyQSA.push(":checked");
-				}
-
-				// Support: Safari 8+, iOS 8+
-				// https://bugs.webkit.org/show_bug.cgi?id=136851
-				// In-page `selector#id sibing-combinator selector` fails
-				if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
-					rbuggyQSA.push(".#.+[+~]");
-				}
-			});
-
-			assert(function( div ) {
-				// Support: Windows 8 Native Apps
-				// The type and name attributes are restricted during .innerHTML assignment
-				var input = document.createElement("input");
-				input.setAttribute( "type", "hidden" );
-				div.appendChild( input ).setAttribute( "name", "D" );
-
-				// Support: IE8
-				// Enforce case-sensitivity of name attribute
-				if ( div.querySelectorAll("[name=d]").length ) {
-					rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
-				}
-
-				// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
-				// IE8 throws error here and will not see later tests
-				if ( !div.querySelectorAll(":enabled").length ) {
-					rbuggyQSA.push( ":enabled", ":disabled" );
-				}
-
-				// Opera 10-11 does not throw on post-comma invalid pseudos
-				div.querySelectorAll("*,:x");
-				rbuggyQSA.push(",.*:");
-			});
-		}
-
-		if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
-			docElem.webkitMatchesSelector ||
-			docElem.mozMatchesSelector ||
-			docElem.oMatchesSelector ||
-			docElem.msMatchesSelector) )) ) {
-
-			assert(function( div ) {
-				// Check to see if it's possible to do matchesSelector
-				// on a disconnected node (IE 9)
-				support.disconnectedMatch = matches.call( div, "div" );
-
-				// This should fail with an exception
-				// Gecko does not error, returns false instead
-				matches.call( div, "[s!='']:x" );
-				rbuggyMatches.push( "!=", pseudos );
-			});
-		}
-
-		rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
-		rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
-
-		/* Contains
-		---------------------------------------------------------------------- */
-		hasCompare = rnative.test( docElem.compareDocumentPosition );
-
-		// Element contains another
-		// Purposefully self-exclusive
-		// As in, an element does not contain itself
-		contains = hasCompare || rnative.test( docElem.contains ) ?
-			function( a, b ) {
-				var adown = a.nodeType === 9 ? a.documentElement : a,
-					bup = b && b.parentNode;
-				return a === bup || !!( bup && bup.nodeType === 1 && (
-					adown.contains ?
-						adown.contains( bup ) :
-						a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
-				));
-			} :
-			function( a, b ) {
-				if ( b ) {
-					while ( (b = b.parentNode) ) {
-						if ( b === a ) {
-							return true;
-						}
-					}
-				}
-				return false;
-			};
-
-		/* Sorting
-		---------------------------------------------------------------------- */
-
-		// Document order sorting
-		sortOrder = hasCompare ?
-		function( a, b ) {
-
-			// Flag for duplicate removal
-			if ( a === b ) {
-				hasDuplicate = true;
-				return 0;
-			}
-
-			// Sort on method existence if only one input has compareDocumentPosition
-			var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
-			if ( compare ) {
-				return compare;
-			}
-
-			// Calculate position if both inputs belong to the same document
-			compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
-				a.compareDocumentPosition( b ) :
-
-				// Otherwise we know they are disconnected
-				1;
-
-			// Disconnected nodes
-			if ( compare & 1 ||
-				(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
-
-				// Choose the first element that is related to our preferred document
-				if ( a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
-					return -1;
-				}
-				if ( b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
-					return 1;
-				}
-
-				// Maintain original order
-				return sortInput ?
-					( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
-					0;
-			}
-
-			return compare & 4 ? -1 : 1;
-		} :
-		function( a, b ) {
-			// Exit early if the nodes are identical
-			if ( a === b ) {
-				hasDuplicate = true;
-				return 0;
-			}
-
-			var cur,
-				i = 0,
-				aup = a.parentNode,
-				bup = b.parentNode,
-				ap = [ a ],
-				bp = [ b ];
-
-			// Parentless nodes are either documents or disconnected
-			if ( !aup || !bup ) {
-				return a === document ? -1 :
-					b === document ? 1 :
-					aup ? -1 :
-					bup ? 1 :
-					sortInput ?
-					( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
-					0;
-
-			// If the nodes are siblings, we can do a quick check
-			} else if ( aup === bup ) {
-				return siblingCheck( a, b );
-			}
-
-			// Otherwise we need full lists of their ancestors for comparison
-			cur = a;
-			while ( (cur = cur.parentNode) ) {
-				ap.unshift( cur );
-			}
-			cur = b;
-			while ( (cur = cur.parentNode) ) {
-				bp.unshift( cur );
-			}
-
-			// Walk down the tree looking for a discrepancy
-			while ( ap[i] === bp[i] ) {
-				i++;
-			}
-
-			return i ?
-				// Do a sibling check if the nodes have a common ancestor
-				siblingCheck( ap[i], bp[i] ) :
-
-				// Otherwise nodes in our document sort first
-				ap[i] === preferredDoc ? -1 :
-				bp[i] === preferredDoc ? 1 :
-				0;
-		};
-
-		return document;
-	};
-
-	Sizzle.matches = function( expr, elements ) {
-		return Sizzle( expr, null, null, elements );
-	};
-
-	Sizzle.matchesSelector = function( elem, expr ) {
-		// Set document vars if needed
-		if ( ( elem.ownerDocument || elem ) !== document ) {
-			setDocument( elem );
-		}
-
-		// Make sure that attribute selectors are quoted
-		expr = expr.replace( rattributeQuotes, "='$1']" );
-
-		if ( support.matchesSelector && documentIsHTML &&
-			!compilerCache[ expr + " " ] &&
-			( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
-			( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
-
-			try {
-				var ret = matches.call( elem, expr );
-
-				// IE 9's matchesSelector returns false on disconnected nodes
-				if ( ret || support.disconnectedMatch ||
-						// As well, disconnected nodes are said to be in a document
-						// fragment in IE 9
-						elem.document && elem.document.nodeType !== 11 ) {
-					return ret;
-				}
-			} catch (e) {}
-		}
-
-		return Sizzle( expr, document, null, [ elem ] ).length > 0;
-	};
-
-	Sizzle.contains = function( context, elem ) {
-		// Set document vars if needed
-		if ( ( context.ownerDocument || context ) !== document ) {
-			setDocument( context );
-		}
-		return contains( context, elem );
-	};
-
-	Sizzle.attr = function( elem, name ) {
-		// Set document vars if needed
-		if ( ( elem.ownerDocument || elem ) !== document ) {
-			setDocument( elem );
-		}
-
-		var fn = Expr.attrHandle[ name.toLowerCase() ],
-			// Don't get fooled by Object.prototype properties (jQuery #13807)
-			val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
-				fn( elem, name, !documentIsHTML ) :
-				undefined;
-
-		return val !== undefined ?
-			val :
-			support.attributes || !documentIsHTML ?
-				elem.getAttribute( name ) :
-				(val = elem.getAttributeNode(name)) && val.specified ?
-					val.value :
-					null;
-	};
-
-	Sizzle.error = function( msg ) {
-		throw new Error( "Syntax error, unrecognized expression: " + msg );
-	};
-
-	/**
-	 * Document sorting and removing duplicates
-	 * @param {ArrayLike} results
-	 */
-	Sizzle.uniqueSort = function( results ) {
-		var elem,
-			duplicates = [],
-			j = 0,
-			i = 0;
-
-		// Unless we *know* we can detect duplicates, assume their presence
-		hasDuplicate = !support.detectDuplicates;
-		sortInput = !support.sortStable && results.slice( 0 );
-		results.sort( sortOrder );
-
-		if ( hasDuplicate ) {
-			while ( (elem = results[i++]) ) {
-				if ( elem === results[ i ] ) {
-					j = duplicates.push( i );
-				}
-			}
-			while ( j-- ) {
-				results.splice( duplicates[ j ], 1 );
-			}
-		}
-
-		// Clear input after sorting to release objects
-		// See https://github.com/jquery/sizzle/pull/225
-		sortInput = null;
-
-		return results;
-	};
-
-	/**
-	 * Utility function for retrieving the text value of an array of DOM nodes
-	 * @param {Array|Element} elem
-	 */
-	getText = Sizzle.getText = function( elem ) {
-		var node,
-			ret = "",
-			i = 0,
-			nodeType = elem.nodeType;
-
-		if ( !nodeType ) {
-			// If no nodeType, this is expected to be an array
-			while ( (node = elem[i++]) ) {
-				// Do not traverse comment nodes
-				ret += getText( node );
-			}
-		} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
-			// Use textContent for elements
-			// innerText usage removed for consistency of new lines (jQuery #11153)
-			if ( typeof elem.textContent === "string" ) {
-				return elem.textContent;
-			} else {
-				// Traverse its children
-				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-					ret += getText( elem );
-				}
-			}
-		} else if ( nodeType === 3 || nodeType === 4 ) {
-			return elem.nodeValue;
-		}
-		// Do not include comment or processing instruction nodes
-
-		return ret;
-	};
-
-	Expr = Sizzle.selectors = {
-
-		// Can be adjusted by the user
-		cacheLength: 50,
-
-		createPseudo: markFunction,
-
-		match: matchExpr,
-
-		attrHandle: {},
-
-		find: {},
-
-		relative: {
-			">": { dir: "parentNode", first: true },
-			" ": { dir: "parentNode" },
-			"+": { dir: "previousSibling", first: true },
-			"~": { dir: "previousSibling" }
-		},
-
-		preFilter: {
-			"ATTR": function( match ) {
-				match[1] = match[1].replace( runescape, funescape );
-
-				// Move the given value to match[3] whether quoted or unquoted
-				match[3] = ( match[3] || match[4] || match[5] || "" ).replace( runescape, funescape );
-
-				if ( match[2] === "~=" ) {
-					match[3] = " " + match[3] + " ";
-				}
-
-				return match.slice( 0, 4 );
-			},
-
-			"CHILD": function( match ) {
-				/* matches from matchExpr["CHILD"]
-					1 type (only|nth|...)
-					2 what (child|of-type)
-					3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
-					4 xn-component of xn+y argument ([+-]?\d*n|)
-					5 sign of xn-component
-					6 x of xn-component
-					7 sign of y-component
-					8 y of y-component
-				*/
-				match[1] = match[1].toLowerCase();
-
-				if ( match[1].slice( 0, 3 ) === "nth" ) {
-					// nth-* requires argument
-					if ( !match[3] ) {
-						Sizzle.error( match[0] );
-					}
-
-					// numeric x and y parameters for Expr.filter.CHILD
-					// remember that false/true cast respectively to 0/1
-					match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
-					match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
-
-				// other types prohibit arguments
-				} else if ( match[3] ) {
-					Sizzle.error( match[0] );
-				}
-
-				return match;
-			},
-
-			"PSEUDO": function( match ) {
-				var excess,
-					unquoted = !match[6] && match[2];
-
-				if ( matchExpr["CHILD"].test( match[0] ) ) {
-					return null;
-				}
-
-				// Accept quoted arguments as-is
-				if ( match[3] ) {
-					match[2] = match[4] || match[5] || "";
-
-				// Strip excess characters from unquoted arguments
-				} else if ( unquoted && rpseudo.test( unquoted ) &&
-					// Get excess from tokenize (recursively)
-					(excess = tokenize( unquoted, true )) &&
-					// advance to the next closing parenthesis
-					(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
-
-					// excess is a negative index
-					match[0] = match[0].slice( 0, excess );
-					match[2] = unquoted.slice( 0, excess );
-				}
-
-				// Return only captures needed by the pseudo filter method (type and argument)
-				return match.slice( 0, 3 );
-			}
-		},
-
-		filter: {
-
-			"TAG": function( nodeNameSelector ) {
-				var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
-				return nodeNameSelector === "*" ?
-					function() { return true; } :
-					function( elem ) {
-						return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
-					};
-			},
-
-			"CLASS": function( className ) {
-				var pattern = classCache[ className + " " ];
-
-				return pattern ||
-					(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
-					classCache( className, function( elem ) {
-						return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
-					});
-			},
-
-			"ATTR": function( name, operator, check ) {
-				return function( elem ) {
-					var result = Sizzle.attr( elem, name );
-
-					if ( result == null ) {
-						return operator === "!=";
-					}
-					if ( !operator ) {
-						return true;
-					}
-
-					result += "";
-
-					return operator === "=" ? result === check :
-						operator === "!=" ? result !== check :
-						operator === "^=" ? check && result.indexOf( check ) === 0 :
-						operator === "*=" ? check && result.indexOf( check ) > -1 :
-						operator === "$=" ? check && result.slice( -check.length ) === check :
-						operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
-						operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
-						false;
-				};
-			},
-
-			"CHILD": function( type, what, argument, first, last ) {
-				var simple = type.slice( 0, 3 ) !== "nth",
-					forward = type.slice( -4 ) !== "last",
-					ofType = what === "of-type";
-
-				return first === 1 && last === 0 ?
-
-					// Shortcut for :nth-*(n)
-					function( elem ) {
-						return !!elem.parentNode;
-					} :
-
-					function( elem, context, xml ) {
-						var cache, uniqueCache, outerCache, node, nodeIndex, start,
-							dir = simple !== forward ? "nextSibling" : "previousSibling",
-							parent = elem.parentNode,
-							name = ofType && elem.nodeName.toLowerCase(),
-							useCache = !xml && !ofType,
-							diff = false;
-
-						if ( parent ) {
-
-							// :(first|last|only)-(child|of-type)
-							if ( simple ) {
-								while ( dir ) {
-									node = elem;
-									while ( (node = node[ dir ]) ) {
-										if ( ofType ?
-											node.nodeName.toLowerCase() === name :
-											node.nodeType === 1 ) {
-
-											return false;
-										}
-									}
-									// Reverse direction for :only-* (if we haven't yet done so)
-									start = dir = type === "only" && !start && "nextSibling";
-								}
-								return true;
-							}
-
-							start = [ forward ? parent.firstChild : parent.lastChild ];
-
-							// non-xml :nth-child(...) stores cache data on `parent`
-							if ( forward && useCache ) {
-
-								// Seek `elem` from a previously-cached index
-
-								// ...in a gzip-friendly way
-								node = parent;
-								outerCache = node[ expando ] || (node[ expando ] = {});
-
-								// Support: IE <9 only
-								// Defend against cloned attroperties (jQuery gh-1709)
-								uniqueCache = outerCache[ node.uniqueID ] ||
-									(outerCache[ node.uniqueID ] = {});
-
-								cache = uniqueCache[ type ] || [];
-								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
-								diff = nodeIndex && cache[ 2 ];
-								node = nodeIndex && parent.childNodes[ nodeIndex ];
-
-								while ( (node = ++nodeIndex && node && node[ dir ] ||
-
-									// Fallback to seeking `elem` from the start
-									(diff = nodeIndex = 0) || start.pop()) ) {
-
-									// When found, cache indexes on `parent` and break
-									if ( node.nodeType === 1 && ++diff && node === elem ) {
-										uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
-										break;
-									}
-								}
-
-							} else {
-								// Use previously-cached element index if available
-								if ( useCache ) {
-									// ...in a gzip-friendly way
-									node = elem;
-									outerCache = node[ expando ] || (node[ expando ] = {});
-
-									// Support: IE <9 only
-									// Defend against cloned attroperties (jQuery gh-1709)
-									uniqueCache = outerCache[ node.uniqueID ] ||
-										(outerCache[ node.uniqueID ] = {});
-
-									cache = uniqueCache[ type ] || [];
-									nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
-									diff = nodeIndex;
-								}
-
-								// xml :nth-child(...)
-								// or :nth-last-child(...) or :nth(-last)?-of-type(...)
-								if ( diff === false ) {
-									// Use the same loop as above to seek `elem` from the start
-									while ( (node = ++nodeIndex && node && node[ dir ] ||
-										(diff = nodeIndex = 0) || start.pop()) ) {
-
-										if ( ( ofType ?
-											node.nodeName.toLowerCase() === name :
-											node.nodeType === 1 ) &&
-											++diff ) {
-
-											// Cache the index of each encountered element
-											if ( useCache ) {
-												outerCache = node[ expando ] || (node[ expando ] = {});
-
-												// Support: IE <9 only
-												// Defend against cloned attroperties (jQuery gh-1709)
-												uniqueCache = outerCache[ node.uniqueID ] ||
-													(outerCache[ node.uniqueID ] = {});
-
-												uniqueCache[ type ] = [ dirruns, diff ];
-											}
-
-											if ( node === elem ) {
-												break;
-											}
-										}
-									}
-								}
-							}
-
-							// Incorporate the offset, then check against cycle size
-							diff -= last;
-							return diff === first || ( diff % first === 0 && diff / first >= 0 );
-						}
-					};
-			},
-
-			"PSEUDO": function( pseudo, argument ) {
-				// pseudo-class names are case-insensitive
-				// http://www.w3.org/TR/selectors/#pseudo-classes
-				// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
-				// Remember that setFilters inherits from pseudos
-				var args,
-					fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
-						Sizzle.error( "unsupported pseudo: " + pseudo );
-
-				// The user may use createPseudo to indicate that
-				// arguments are needed to create the filter function
-				// just as Sizzle does
-				if ( fn[ expando ] ) {
-					return fn( argument );
-				}
-
-				// But maintain support for old signatures
-				if ( fn.length > 1 ) {
-					args = [ pseudo, pseudo, "", argument ];
-					return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
-						markFunction(function( seed, matches ) {
-							var idx,
-								matched = fn( seed, argument ),
-								i = matched.length;
-							while ( i-- ) {
-								idx = indexOf( seed, matched[i] );
-								seed[ idx ] = !( matches[ idx ] = matched[i] );
-							}
-						}) :
-						function( elem ) {
-							return fn( elem, 0, args );
-						};
-				}
-
-				return fn;
-			}
-		},
-
-		pseudos: {
-			// Potentially complex pseudos
-			"not": markFunction(function( selector ) {
-				// Trim the selector passed to compile
-				// to avoid treating leading and trailing
-				// spaces as combinators
-				var input = [],
-					results = [],
-					matcher = compile( selector.replace( rtrim, "$1" ) );
-
-				return matcher[ expando ] ?
-					markFunction(function( seed, matches, context, xml ) {
-						var elem,
-							unmatched = matcher( seed, null, xml, [] ),
-							i = seed.length;
-
-						// Match elements unmatched by `matcher`
-						while ( i-- ) {
-							if ( (elem = unmatched[i]) ) {
-								seed[i] = !(matches[i] = elem);
-							}
-						}
-					}) :
-					function( elem, context, xml ) {
-						input[0] = elem;
-						matcher( input, null, xml, results );
-						// Don't keep the element (issue #299)
-						input[0] = null;
-						return !results.pop();
-					};
-			}),
-
-			"has": markFunction(function( selector ) {
-				return function( elem ) {
-					return Sizzle( selector, elem ).length > 0;
-				};
-			}),
-
-			"contains": markFunction(function( text ) {
-				text = text.replace( runescape, funescape );
-				return function( elem ) {
-					return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
-				};
-			}),
-
-			// "Whether an element is represented by a :lang() selector
-			// is based solely on the element's language value
-			// being equal to the identifier C,
-			// or beginning with the identifier C immediately followed by "-".
-			// The matching of C against the element's language value is performed case-insensitively.
-			// The identifier C does not have to be a valid language name."
-			// http://www.w3.org/TR/selectors/#lang-pseudo
-			"lang": markFunction( function( lang ) {
-				// lang value must be a valid identifier
-				if ( !ridentifier.test(lang || "") ) {
-					Sizzle.error( "unsupported lang: " + lang );
-				}
-				lang = lang.replace( runescape, funescape ).toLowerCase();
-				return function( elem ) {
-					var elemLang;
-					do {
-						if ( (elemLang = documentIsHTML ?
-							elem.lang :
-							elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
-
-							elemLang = elemLang.toLowerCase();
-							return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
-						}
-					} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
-					return false;
-				};
-			}),
-
-			// Miscellaneous
-			"target": function( elem ) {
-				var hash = window.location && window.location.hash;
-				return hash && hash.slice( 1 ) === elem.id;
-			},
-
-			"root": function( elem ) {
-				return elem === docElem;
-			},
-
-			"focus": function( elem ) {
-				return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
-			},
-
-			// Boolean properties
-			"enabled": function( elem ) {
-				return elem.disabled === false;
-			},
-
-			"disabled": function( elem ) {
-				return elem.disabled === true;
-			},
-
-			"checked": function( elem ) {
-				// In CSS3, :checked should return both checked and selected elements
-				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-				var nodeName = elem.nodeName.toLowerCase();
-				return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
-			},
-
-			"selected": function( elem ) {
-				// Accessing this property makes selected-by-default
-				// options in Safari work properly
-				if ( elem.parentNode ) {
-					elem.parentNode.selectedIndex;
-				}
-
-				return elem.selected === true;
-			},
-
-			// Contents
-			"empty": function( elem ) {
-				// http://www.w3.org/TR/selectors/#empty-pseudo
-				// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
-				//   but not by others (comment: 8; processing instruction: 7; etc.)
-				// nodeType < 6 works because attributes (2) do not appear as children
-				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-					if ( elem.nodeType < 6 ) {
-						return false;
-					}
-				}
-				return true;
-			},
-
-			"parent": function( elem ) {
-				return !Expr.pseudos["empty"]( elem );
-			},
-
-			// Element/input types
-			"header": function( elem ) {
-				return rheader.test( elem.nodeName );
-			},
-
-			"input": function( elem ) {
-				return rinputs.test( elem.nodeName );
-			},
-
-			"button": function( elem ) {
-				var name = elem.nodeName.toLowerCase();
-				return name === "input" && elem.type === "button" || name === "button";
-			},
-
-			"text": function( elem ) {
-				var attr;
-				return elem.nodeName.toLowerCase() === "input" &&
-					elem.type === "text" &&
-
-					// Support: IE<8
-					// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-					( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
-			},
-
-			// Position-in-collection
-			"first": createPositionalPseudo(function() {
-				return [ 0 ];
-			}),
-
-			"last": createPositionalPseudo(function( matchIndexes, length ) {
-				return [ length - 1 ];
-			}),
-
-			"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
-				return [ argument < 0 ? argument + length : argument ];
-			}),
-
-			"even": createPositionalPseudo(function( matchIndexes, length ) {
-				var i = 0;
-				for ( ; i < length; i += 2 ) {
-					matchIndexes.push( i );
-				}
-				return matchIndexes;
-			}),
-
-			"odd": createPositionalPseudo(function( matchIndexes, length ) {
-				var i = 1;
-				for ( ; i < length; i += 2 ) {
-					matchIndexes.push( i );
-				}
-				return matchIndexes;
-			}),
-
-			"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-				var i = argument < 0 ? argument + length : argument;
-				for ( ; --i >= 0; ) {
-					matchIndexes.push( i );
-				}
-				return matchIndexes;
-			}),
-
-			"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-				var i = argument < 0 ? argument + length : argument;
-				for ( ; ++i < length; ) {
-					matchIndexes.push( i );
-				}
-				return matchIndexes;
-			})
-		}
-	};
-
-	Expr.pseudos["nth"] = Expr.pseudos["eq"];
-
-	// Add button/input type pseudos
-	for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
-		Expr.pseudos[ i ] = createInputPseudo( i );
-	}
-	for ( i in { submit: true, reset: true } ) {
-		Expr.pseudos[ i ] = createButtonPseudo( i );
-	}
-
-	// Easy API for creating new setFilters
-	function setFilters() {}
-	setFilters.prototype = Expr.filters = Expr.pseudos;
-	Expr.setFilters = new setFilters();
-
-	tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
-		var matched, match, tokens, type,
-			soFar, groups, preFilters,
-			cached = tokenCache[ selector + " " ];
-
-		if ( cached ) {
-			return parseOnly ? 0 : cached.slice( 0 );
-		}
-
-		soFar = selector;
-		groups = [];
-		preFilters = Expr.preFilter;
-
-		while ( soFar ) {
-
-			// Comma and first run
-			if ( !matched || (match = rcomma.exec( soFar )) ) {
-				if ( match ) {
-					// Don't consume trailing commas as valid
-					soFar = soFar.slice( match[0].length ) || soFar;
-				}
-				groups.push( (tokens = []) );
-			}
-
-			matched = false;
-
-			// Combinators
-			if ( (match = rcombinators.exec( soFar )) ) {
-				matched = match.shift();
-				tokens.push({
-					value: matched,
-					// Cast descendant combinators to space
-					type: match[0].replace( rtrim, " " )
-				});
-				soFar = soFar.slice( matched.length );
-			}
-
-			// Filters
-			for ( type in Expr.filter ) {
-				if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-					(match = preFilters[ type ]( match ))) ) {
-					matched = match.shift();
-					tokens.push({
-						value: matched,
-						type: type,
-						matches: match
-					});
-					soFar = soFar.slice( matched.length );
-				}
-			}
-
-			if ( !matched ) {
-				break;
-			}
-		}
-
-		// Return the length of the invalid excess
-		// if we're just parsing
-		// Otherwise, throw an error or return tokens
-		return parseOnly ?
-			soFar.length :
-			soFar ?
-				Sizzle.error( selector ) :
-				// Cache the tokens
-				tokenCache( selector, groups ).slice( 0 );
-	};
-
-	function toSelector( tokens ) {
-		var i = 0,
-			len = tokens.length,
-			selector = "";
-		for ( ; i < len; i++ ) {
-			selector += tokens[i].value;
-		}
-		return selector;
-	}
-
-	function addCombinator( matcher, combinator, base ) {
-		var dir = combinator.dir,
-			checkNonElements = base && dir === "parentNode",
-			doneName = done++;
-
-		return combinator.first ?
-			// Check against closest ancestor/preceding element
-			function( elem, context, xml ) {
-				while ( (elem = elem[ dir ]) ) {
-					if ( elem.nodeType === 1 || checkNonElements ) {
-						return matcher( elem, context, xml );
-					}
-				}
-			} :
-
-			// Check against all ancestor/preceding elements
-			function( elem, context, xml ) {
-				var oldCache, uniqueCache, outerCache,
-					newCache = [ dirruns, doneName ];
-
-				// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
-				if ( xml ) {
-					while ( (elem = elem[ dir ]) ) {
-						if ( elem.nodeType === 1 || checkNonElements ) {
-							if ( matcher( elem, context, xml ) ) {
-								return true;
-							}
-						}
-					}
-				} else {
-					while ( (elem = elem[ dir ]) ) {
-						if ( elem.nodeType === 1 || checkNonElements ) {
-							outerCache = elem[ expando ] || (elem[ expando ] = {});
-
-							// Support: IE <9 only
-							// Defend against cloned attroperties (jQuery gh-1709)
-							uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
-
-							if ( (oldCache = uniqueCache[ dir ]) &&
-								oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
-
-								// Assign to newCache so results back-propagate to previous elements
-								return (newCache[ 2 ] = oldCache[ 2 ]);
-							} else {
-								// Reuse newcache so results back-propagate to previous elements
-								uniqueCache[ dir ] = newCache;
-
-								// A match means we're done; a fail means we have to keep checking
-								if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
-									return true;
-								}
-							}
-						}
-					}
-				}
-			};
-	}
-
-	function elementMatcher( matchers ) {
-		return matchers.length > 1 ?
-			function( elem, context, xml ) {
-				var i = matchers.length;
-				while ( i-- ) {
-					if ( !matchers[i]( elem, context, xml ) ) {
-						return false;
-					}
-				}
-				return true;
-			} :
-			matchers[0];
-	}
-
-	function multipleContexts( selector, contexts, results ) {
-		var i = 0,
-			len = contexts.length;
-		for ( ; i < len; i++ ) {
-			Sizzle( selector, contexts[i], results );
-		}
-		return results;
-	}
-
-	function condense( unmatched, map, filter, context, xml ) {
-		var elem,
-			newUnmatched = [],
-			i = 0,
-			len = unmatched.length,
-			mapped = map != null;
-
-		for ( ; i < len; i++ ) {
-			if ( (elem = unmatched[i]) ) {
-				if ( !filter || filter( elem, context, xml ) ) {
-					newUnmatched.push( elem );
-					if ( mapped ) {
-						map.push( i );
-					}
-				}
-			}
-		}
-
-		return newUnmatched;
-	}
-
-	function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
-		if ( postFilter && !postFilter[ expando ] ) {
-			postFilter = setMatcher( postFilter );
-		}
-		if ( postFinder && !postFinder[ expando ] ) {
-			postFinder = setMatcher( postFinder, postSelector );
-		}
-		return markFunction(function( seed, results, context, xml ) {
-			var temp, i, elem,
-				preMap = [],
-				postMap = [],
-				preexisting = results.length,
-
-				// Get initial elements from seed or context
-				elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
-
-				// Prefilter to get matcher input, preserving a map for seed-results synchronization
-				matcherIn = preFilter && ( seed || !selector ) ?
-					condense( elems, preMap, preFilter, context, xml ) :
-					elems,
-
-				matcherOut = matcher ?
-					// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
-					postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
-
-						// ...intermediate processing is necessary
-						[] :
-
-						// ...otherwise use results directly
-						results :
-					matcherIn;
-
-			// Find primary matches
-			if ( matcher ) {
-				matcher( matcherIn, matcherOut, context, xml );
-			}
-
-			// Apply postFilter
-			if ( postFilter ) {
-				temp = condense( matcherOut, postMap );
-				postFilter( temp, [], context, xml );
-
-				// Un-match failing elements by moving them back to matcherIn
-				i = temp.length;
-				while ( i-- ) {
-					if ( (elem = temp[i]) ) {
-						matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
-					}
-				}
-			}
-
-			if ( seed ) {
-				if ( postFinder || preFilter ) {
-					if ( postFinder ) {
-						// Get the final matcherOut by condensing this intermediate into postFinder contexts
-						temp = [];
-						i = matcherOut.length;
-						while ( i-- ) {
-							if ( (elem = matcherOut[i]) ) {
-								// Restore matcherIn since elem is not yet a final match
-								temp.push( (matcherIn[i] = elem) );
-							}
-						}
-						postFinder( null, (matcherOut = []), temp, xml );
-					}
-
-					// Move matched elements from seed to results to keep them synchronized
-					i = matcherOut.length;
-					while ( i-- ) {
-						if ( (elem = matcherOut[i]) &&
-							(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
-
-							seed[temp] = !(results[temp] = elem);
-						}
-					}
-				}
-
-			// Add elements to results, through postFinder if defined
-			} else {
-				matcherOut = condense(
-					matcherOut === results ?
-						matcherOut.splice( preexisting, matcherOut.length ) :
-						matcherOut
-				);
-				if ( postFinder ) {
-					postFinder( null, results, matcherOut, xml );
-				} else {
-					push.apply( results, matcherOut );
-				}
-			}
-		});
-	}
-
-	function matcherFromTokens( tokens ) {
-		var checkContext, matcher, j,
-			len = tokens.length,
-			leadingRelative = Expr.relative[ tokens[0].type ],
-			implicitRelative = leadingRelative || Expr.relative[" "],
-			i = leadingRelative ? 1 : 0,
-
-			// The foundational matcher ensures that elements are reachable from top-level context(s)
-			matchContext = addCombinator( function( elem ) {
-				return elem === checkContext;
-			}, implicitRelative, true ),
-			matchAnyContext = addCombinator( function( elem ) {
-				return indexOf( checkContext, elem ) > -1;
-			}, implicitRelative, true ),
-			matchers = [ function( elem, context, xml ) {
-				var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
-					(checkContext = context).nodeType ?
-						matchContext( elem, context, xml ) :
-						matchAnyContext( elem, context, xml ) );
-				// Avoid hanging onto element (issue #299)
-				checkContext = null;
-				return ret;
-			} ];
-
-		for ( ; i < len; i++ ) {
-			if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
-				matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
-			} else {
-				matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
-
-				// Return special upon seeing a positional matcher
-				if ( matcher[ expando ] ) {
-					// Find the next relative operator (if any) for proper handling
-					j = ++i;
-					for ( ; j < len; j++ ) {
-						if ( Expr.relative[ tokens[j].type ] ) {
-							break;
-						}
-					}
-					return setMatcher(
-						i > 1 && elementMatcher( matchers ),
-						i > 1 && toSelector(
-							// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-							tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
-						).replace( rtrim, "$1" ),
-						matcher,
-						i < j && matcherFromTokens( tokens.slice( i, j ) ),
-						j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
-						j < len && toSelector( tokens )
-					);
-				}
-				matchers.push( matcher );
-			}
-		}
-
-		return elementMatcher( matchers );
-	}
-
-	function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
-		var bySet = setMatchers.length > 0,
-			byElement = elementMatchers.length > 0,
-			superMatcher = function( seed, context, xml, results, outermost ) {
-				var elem, j, matcher,
-					matchedCount = 0,
-					i = "0",
-					unmatched = seed && [],
-					setMatched = [],
-					contextBackup = outermostContext,
-					// We must always have either seed elements or outermost context
-					elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
-					// Use integer dirruns iff this is the outermost matcher
-					dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
-					len = elems.length;
-
-				if ( outermost ) {
-					outermostContext = context === document || context || outermost;
-				}
-
-				// Add elements passing elementMatchers directly to results
-				// Support: IE<9, Safari
-				// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
-				for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
-					if ( byElement && elem ) {
-						j = 0;
-						if ( !context && elem.ownerDocument !== document ) {
-							setDocument( elem );
-							xml = !documentIsHTML;
-						}
-						while ( (matcher = elementMatchers[j++]) ) {
-							if ( matcher( elem, context || document, xml) ) {
-								results.push( elem );
-								break;
-							}
-						}
-						if ( outermost ) {
-							dirruns = dirrunsUnique;
-						}
-					}
-
-					// Track unmatched elements for set filters
-					if ( bySet ) {
-						// They will have gone through all possible matchers
-						if ( (elem = !matcher && elem) ) {
-							matchedCount--;
-						}
-
-						// Lengthen the array for every element, matched or not
-						if ( seed ) {
-							unmatched.push( elem );
-						}
-					}
-				}
-
-				// `i` is now the count of elements visited above, and adding it to `matchedCount`
-				// makes the latter nonnegative.
-				matchedCount += i;
-
-				// Apply set filters to unmatched elements
-				// NOTE: This can be skipped if there are no unmatched elements (i.e., `matchedCount`
-				// equals `i`), unless we didn't visit _any_ elements in the above loop because we have
-				// no element matchers and no seed.
-				// Incrementing an initially-string "0" `i` allows `i` to remain a string only in that
-				// case, which will result in a "00" `matchedCount` that differs from `i` but is also
-				// numerically zero.
-				if ( bySet && i !== matchedCount ) {
-					j = 0;
-					while ( (matcher = setMatchers[j++]) ) {
-						matcher( unmatched, setMatched, context, xml );
-					}
-
-					if ( seed ) {
-						// Reintegrate element matches to eliminate the need for sorting
-						if ( matchedCount > 0 ) {
-							while ( i-- ) {
-								if ( !(unmatched[i] || setMatched[i]) ) {
-									setMatched[i] = pop.call( results );
-								}
-							}
-						}
-
-						// Discard index placeholder values to get only actual matches
-						setMatched = condense( setMatched );
-					}
-
-					// Add matches to results
-					push.apply( results, setMatched );
-
-					// Seedless set matches succeeding multiple successful matchers stipulate sorting
-					if ( outermost && !seed && setMatched.length > 0 &&
-						( matchedCount + setMatchers.length ) > 1 ) {
-
-						Sizzle.uniqueSort( results );
-					}
-				}
-
-				// Override manipulation of globals by nested matchers
-				if ( outermost ) {
-					dirruns = dirrunsUnique;
-					outermostContext = contextBackup;
-				}
-
-				return unmatched;
-			};
-
-		return bySet ?
-			markFunction( superMatcher ) :
-			superMatcher;
-	}
-
-	compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
-		var i,
-			setMatchers = [],
-			elementMatchers = [],
-			cached = compilerCache[ selector + " " ];
-
-		if ( !cached ) {
-			// Generate a function of recursive functions that can be used to check each element
-			if ( !match ) {
-				match = tokenize( selector );
-			}
-			i = match.length;
-			while ( i-- ) {
-				cached = matcherFromTokens( match[i] );
-				if ( cached[ expando ] ) {
-					setMatchers.push( cached );
-				} else {
-					elementMatchers.push( cached );
-				}
-			}
-
-			// Cache the compiled function
-			cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
-
-			// Save selector and tokenization
-			cached.selector = selector;
-		}
-		return cached;
-	};
-
-	/**
-	 * A low-level selection function that works with Sizzle's compiled
-	 *  selector functions
-	 * @param {String|Function} selector A selector or a pre-compiled
-	 *  selector function built with Sizzle.compile
-	 * @param {Element} context
-	 * @param {Array} [results]
-	 * @param {Array} [seed] A set of elements to match against
-	 */
-	select = Sizzle.select = function( selector, context, results, seed ) {
-		var i, tokens, token, type, find,
-			compiled = typeof selector === "function" && selector,
-			match = !seed && tokenize( (selector = compiled.selector || selector) );
-
-		results = results || [];
-
-		// Try to minimize operations if there is only one selector in the list and no seed
-		// (the latter of which guarantees us context)
-		if ( match.length === 1 ) {
-
-			// Reduce context if the leading compound selector is an ID
-			tokens = match[0] = match[0].slice( 0 );
-			if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-					support.getById && context.nodeType === 9 && documentIsHTML &&
-					Expr.relative[ tokens[1].type ] ) {
-
-				context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
-				if ( !context ) {
-					return results;
-
-				// Precompiled matchers will still verify ancestry, so step up a level
-				} else if ( compiled ) {
-					context = context.parentNode;
-				}
-
-				selector = selector.slice( tokens.shift().value.length );
-			}
-
-			// Fetch a seed set for right-to-left matching
-			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
-			while ( i-- ) {
-				token = tokens[i];
-
-				// Abort if we hit a combinator
-				if ( Expr.relative[ (type = token.type) ] ) {
-					break;
-				}
-				if ( (find = Expr.find[ type ]) ) {
-					// Search, expanding context for leading sibling combinators
-					if ( (seed = find(
-						token.matches[0].replace( runescape, funescape ),
-						rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
-					)) ) {
-
-						// If seed is empty or no tokens remain, we can return early
-						tokens.splice( i, 1 );
-						selector = seed.length && toSelector( tokens );
-						if ( !selector ) {
-							push.apply( results, seed );
-							return results;
-						}
-
-						break;
-					}
-				}
-			}
-		}
-
-		// Compile and execute a filtering function if one is not provided
-		// Provide `match` to avoid retokenization if we modified the selector above
-		( compiled || compile( selector, match ) )(
-			seed,
-			context,
-			!documentIsHTML,
-			results,
-			!context || rsibling.test( selector ) && testContext( context.parentNode ) || context
-		);
-		return results;
-	};
-
-	// One-time assignments
-
-	// Sort stability
-	support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
-
-	// Support: Chrome 14-35+
-	// Always assume duplicates if they aren't passed to the comparison function
-	support.detectDuplicates = !!hasDuplicate;
-
-	// Initialize against the default document
-	setDocument();
-
-	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
-	// Detached nodes confoundingly follow *each other*
-	support.sortDetached = assert(function( div1 ) {
-		// Should return 1, but returns 4 (following)
-		return div1.compareDocumentPosition( document.createElement("div") ) & 1;
-	});
-
-	// Support: IE<8
-	// Prevent attribute/property "interpolation"
-	// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-	if ( !assert(function( div ) {
-		div.innerHTML = "<a href='#'></a>";
-		return div.firstChild.getAttribute("href") === "#" ;
-	}) ) {
-		addHandle( "type|href|height|width", function( elem, name, isXML ) {
-			if ( !isXML ) {
-				return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
-			}
-		});
-	}
-
-	// Support: IE<9
-	// Use defaultValue in place of getAttribute("value")
-	if ( !support.attributes || !assert(function( div ) {
-		div.innerHTML = "<input/>";
-		div.firstChild.setAttribute( "value", "" );
-		return div.firstChild.getAttribute( "value" ) === "";
-	}) ) {
-		addHandle( "value", function( elem, name, isXML ) {
-			if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
-				return elem.defaultValue;
-			}
-		});
-	}
-
-	// Support: IE<9
-	// Use getAttributeNode to fetch booleans when getAttribute lies
-	if ( !assert(function( div ) {
-		return div.getAttribute("disabled") == null;
-	}) ) {
-		addHandle( booleans, function( elem, name, isXML ) {
-			var val;
-			if ( !isXML ) {
-				return elem[ name ] === true ? name.toLowerCase() :
-						(val = elem.getAttributeNode( name )) && val.specified ?
-						val.value :
-					null;
-			}
-		});
-	}
-
-	return Sizzle;
-
-	})( window );
-
-
-
-	jQuery.find = Sizzle;
-	jQuery.expr = Sizzle.selectors;
-	jQuery.expr[ ":" ] = jQuery.expr.pseudos;
-	jQuery.uniqueSort = jQuery.unique = Sizzle.uniqueSort;
-	jQuery.text = Sizzle.getText;
-	jQuery.isXMLDoc = Sizzle.isXML;
-	jQuery.contains = Sizzle.contains;
-
-
-
-	var dir = function( elem, dir, until ) {
-		var matched = [],
-			truncate = until !== undefined;
-
-		while ( ( elem = elem[ dir ] ) && elem.nodeType !== 9 ) {
-			if ( elem.nodeType === 1 ) {
-				if ( truncate && jQuery( elem ).is( until ) ) {
-					break;
-				}
-				matched.push( elem );
-			}
-		}
-		return matched;
-	};
-
-
-	var siblings = function( n, elem ) {
-		var matched = [];
-
-		for ( ; n; n = n.nextSibling ) {
-			if ( n.nodeType === 1 && n !== elem ) {
-				matched.push( n );
-			}
-		}
-
-		return matched;
-	};
-
-
-	var rneedsContext = jQuery.expr.match.needsContext;
-
-	var rsingleTag = ( /^<([\w-]+)\s*\/?>(?:<\/\1>|)$/ );
-
-
-
-	var risSimple = /^.[^:#\[\.,]*$/;
-
-	// Implement the identical functionality for filter and not
-	function winnow( elements, qualifier, not ) {
-		if ( jQuery.isFunction( qualifier ) ) {
-			return jQuery.grep( elements, function( elem, i ) {
-				/* jshint -W018 */
-				return !!qualifier.call( elem, i, elem ) !== not;
-			} );
-
-		}
-
-		if ( qualifier.nodeType ) {
-			return jQuery.grep( elements, function( elem ) {
-				return ( elem === qualifier ) !== not;
-			} );
-
-		}
-
-		if ( typeof qualifier === "string" ) {
-			if ( risSimple.test( qualifier ) ) {
-				return jQuery.filter( qualifier, elements, not );
-			}
-
-			qualifier = jQuery.filter( qualifier, elements );
-		}
-
-		return jQuery.grep( elements, function( elem ) {
-			return ( indexOf.call( qualifier, elem ) > -1 ) !== not;
-		} );
-	}
-
-	jQuery.filter = function( expr, elems, not ) {
-		var elem = elems[ 0 ];
-
-		if ( not ) {
-			expr = ":not(" + expr + ")";
-		}
-
-		return elems.length === 1 && elem.nodeType === 1 ?
-			jQuery.find.matchesSelector( elem, expr ) ? [ elem ] : [] :
-			jQuery.find.matches( expr, jQuery.grep( elems, function( elem ) {
-				return elem.nodeType === 1;
-			} ) );
-	};
-
-	jQuery.fn.extend( {
-		find: function( selector ) {
-			var i,
-				len = this.length,
-				ret = [],
-				self = this;
-
-			if ( typeof selector !== "string" ) {
-				return this.pushStack( jQuery( selector ).filter( function() {
-					for ( i = 0; i < len; i++ ) {
-						if ( jQuery.contains( self[ i ], this ) ) {
-							return true;
-						}
-					}
-				} ) );
-			}
-
-			for ( i = 0; i < len; i++ ) {
-				jQuery.find( selector, self[ i ], ret );
-			}
-
-			// Needed because $( selector, context ) becomes $( context ).find( selector )
-			ret = this.pushStack( len > 1 ? jQuery.unique( ret ) : ret );
-			ret.selector = this.selector ? this.selector + " " + selector : selector;
-			return ret;
-		},
-		filter: function( selector ) {
-			return this.pushStack( winnow( this, selector || [], false ) );
-		},
-		not: function( selector ) {
-			return this.pushStack( winnow( this, selector || [], true ) );
-		},
-		is: function( selector ) {
-			return !!winnow(
-				this,
-
-				// If this is a positional/relative selector, check membership in the returned set
-				// so $("p:first").is("p:last") won't return true for a doc with two "p".
-				typeof selector === "string" && rneedsContext.test( selector ) ?
-					jQuery( selector ) :
-					selector || [],
-				false
-			).length;
-		}
-	} );
-
-
-	// Initialize a jQuery object
-
-
-	// A central reference to the root jQuery(document)
-	var rootjQuery,
-
-		// A simple way to check for HTML strings
-		// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
-		// Strict HTML recognition (#11290: must start with <)
-		rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
-
-		init = jQuery.fn.init = function( selector, context, root ) {
-			var match, elem;
-
-			// HANDLE: $(""), $(null), $(undefined), $(false)
-			if ( !selector ) {
-				return this;
-			}
-
-			// Method init() accepts an alternate rootjQuery
-			// so migrate can support jQuery.sub (gh-2101)
-			root = root || rootjQuery;
-
-			// Handle HTML strings
-			if ( typeof selector === "string" ) {
-				if ( selector[ 0 ] === "<" &&
-					selector[ selector.length - 1 ] === ">" &&
-					selector.length >= 3 ) {
-
-					// Assume that strings that start and end with <> are HTML and skip the regex check
-					match = [ null, selector, null ];
-
-				} else {
-					match = rquickExpr.exec( selector );
-				}
-
-				// Match html or make sure no context is specified for #id
-				if ( match && ( match[ 1 ] || !context ) ) {
-
-					// HANDLE: $(html) -> $(array)
-					if ( match[ 1 ] ) {
-						context = context instanceof jQuery ? context[ 0 ] : context;
-
-						// Option to run scripts is true for back-compat
-						// Intentionally let the error be thrown if parseHTML is not present
-						jQuery.merge( this, jQuery.parseHTML(
-							match[ 1 ],
-							context && context.nodeType ? context.ownerDocument || context : document,
-							true
-						) );
-
-						// HANDLE: $(html, props)
-						if ( rsingleTag.test( match[ 1 ] ) && jQuery.isPlainObject( context ) ) {
-							for ( match in context ) {
-
-								// Properties of context are called as methods if possible
-								if ( jQuery.isFunction( this[ match ] ) ) {
-									this[ match ]( context[ match ] );
-
-								// ...and otherwise set as attributes
-								} else {
-									this.attr( match, context[ match ] );
-								}
-							}
-						}
-
-						return this;
-
-					// HANDLE: $(#id)
-					} else {
-						elem = document.getElementById( match[ 2 ] );
-
-						// Support: Blackberry 4.6
-						// gEBID returns nodes no longer in the document (#6963)
-						if ( elem && elem.parentNode ) {
-
-							// Inject the element directly into the jQuery object
-							this.length = 1;
-							this[ 0 ] = elem;
-						}
-
-						this.context = document;
-						this.selector = selector;
-						return this;
-					}
-
-				// HANDLE: $(expr, $(...))
-				} else if ( !context || context.jquery ) {
-					return ( context || root ).find( selector );
-
-				// HANDLE: $(expr, context)
-				// (which is just equivalent to: $(context).find(expr)
-				} else {
-					return this.constructor( context ).find( selector );
-				}
-
-			// HANDLE: $(DOMElement)
-			} else if ( selector.nodeType ) {
-				this.context = this[ 0 ] = selector;
-				this.length = 1;
-				return this;
-
-			// HANDLE: $(function)
-			// Shortcut for document ready
-			} else if ( jQuery.isFunction( selector ) ) {
-				return root.ready !== undefined ?
-					root.ready( selector ) :
-
-					// Execute immediately if ready is not present
-					selector( jQuery );
-			}
-
-			if ( selector.selector !== undefined ) {
-				this.selector = selector.selector;
-				this.context = selector.context;
-			}
-
-			return jQuery.makeArray( selector, this );
-		};
-
-	// Give the init function the jQuery prototype for later instantiation
-	init.prototype = jQuery.fn;
-
-	// Initialize central reference
-	rootjQuery = jQuery( document );
-
-
-	var rparentsprev = /^(?:parents|prev(?:Until|All))/,
-
-		// Methods guaranteed to produce a unique set when starting from a unique set
-		guaranteedUnique = {
-			children: true,
-			contents: true,
-			next: true,
-			prev: true
-		};
-
-	jQuery.fn.extend( {
-		has: function( target ) {
-			var targets = jQuery( target, this ),
-				l = targets.length;
-
-			return this.filter( function() {
-				var i = 0;
-				for ( ; i < l; i++ ) {
-					if ( jQuery.contains( this, targets[ i ] ) ) {
-						return true;
-					}
-				}
-			} );
-		},
-
-		closest: function( selectors, context ) {
-			var cur,
-				i = 0,
-				l = this.length,
-				matched = [],
-				pos = rneedsContext.test( selectors ) || typeof selectors !== "string" ?
-					jQuery( selectors, context || this.context ) :
-					0;
-
-			for ( ; i < l; i++ ) {
-				for ( cur = this[ i ]; cur && cur !== context; cur = cur.parentNode ) {
-
-					// Always skip document fragments
-					if ( cur.nodeType < 11 && ( pos ?
-						pos.index( cur ) > -1 :
-
-						// Don't pass non-elements to Sizzle
-						cur.nodeType === 1 &&
-							jQuery.find.matchesSelector( cur, selectors ) ) ) {
-
-						matched.push( cur );
-						break;
-					}
-				}
-			}
-
-			return this.pushStack( matched.length > 1 ? jQuery.uniqueSort( matched ) : matched );
-		},
-
-		// Determine the position of an element within the set
-		index: function( elem ) {
-
-			// No argument, return index in parent
-			if ( !elem ) {
-				return ( this[ 0 ] && this[ 0 ].parentNode ) ? this.first().prevAll().length : -1;
-			}
-
-			// Index in selector
-			if ( typeof elem === "string" ) {
-				return indexOf.call( jQuery( elem ), this[ 0 ] );
-			}
-
-			// Locate the position of the desired element
-			return indexOf.call( this,
-
-				// If it receives a jQuery object, the first element is used
-				elem.jquery ? elem[ 0 ] : elem
-			);
-		},
-
-		add: function( selector, context ) {
-			return this.pushStack(
-				jQuery.uniqueSort(
-					jQuery.merge( this.get(), jQuery( selector, context ) )
-				)
-			);
-		},
-
-		addBack: function( selector ) {
-			return this.add( selector == null ?
-				this.prevObject : this.prevObject.filter( selector )
-			);
-		}
-	} );
-
-	function sibling( cur, dir ) {
-		while ( ( cur = cur[ dir ] ) && cur.nodeType !== 1 ) {}
-		return cur;
-	}
-
-	jQuery.each( {
-		parent: function( elem ) {
-			var parent = elem.parentNode;
-			return parent && parent.nodeType !== 11 ? parent : null;
-		},
-		parents: function( elem ) {
-			return dir( elem, "parentNode" );
-		},
-		parentsUntil: function( elem, i, until ) {
-			return dir( elem, "parentNode", until );
-		},
-		next: function( elem ) {
-			return sibling( elem, "nextSibling" );
-		},
-		prev: function( elem ) {
-			return sibling( elem, "previousSibling" );
-		},
-		nextAll: function( elem ) {
-			return dir( elem, "nextSibling" );
-		},
-		prevAll: function( elem ) {
-			return dir( elem, "previousSibling" );
-		},
-		nextUntil: function( elem, i, until ) {
-			return dir( elem, "nextSibling", until );
-		},
-		prevUntil: function( elem, i, until ) {
-			return dir( elem, "previousSibling", until );
-		},
-		siblings: function( elem ) {
-			return siblings( ( elem.parentNode || {} ).firstChild, elem );
-		},
-		children: function( elem ) {
-			return siblings( elem.firstChild );
-		},
-		contents: function( elem ) {
-			return elem.contentDocument || jQuery.merge( [], elem.childNodes );
-		}
-	}, function( name, fn ) {
-		jQuery.fn[ name ] = function( until, selector ) {
-			var matched = jQuery.map( this, fn, until );
-
-			if ( name.slice( -5 ) !== "Until" ) {
-				selector = until;
-			}
-
-			if ( selector && typeof selector === "string" ) {
-				matched = jQuery.filter( selector, matched );
-			}
-
-			if ( this.length > 1 ) {
-
-				// Remove duplicates
-				if ( !guaranteedUnique[ name ] ) {
-					jQuery.uniqueSort( matched );
-				}
-
-				// Reverse order for parents* and prev-derivatives
-				if ( rparentsprev.test( name ) ) {
-					matched.reverse();
-				}
-			}
-
-			return this.pushStack( matched );
-		};
-	} );
-	var rnotwhite = ( /\S+/g );
-
-
-
-	// Convert String-formatted options into Object-formatted ones
-	function createOptions( options ) {
-		var object = {};
-		jQuery.each( options.match( rnotwhite ) || [], function( _, flag ) {
-			object[ flag ] = true;
-		} );
-		return object;
-	}
-
-	/*
-	 * Create a callback list using the following parameters:
-	 *
-	 *	options: an optional list of space-separated options that will change how
-	 *			the callback list behaves or a more traditional option object
-	 *
-	 * By default a callback list will act like an event callback list and can be
-	 * "fired" multiple times.
-	 *
-	 * Possible options:
-	 *
-	 *	once:			will ensure the callback list can only be fired once (like a Deferred)
-	 *
-	 *	memory:			will keep track of previous values and will call any callback added
-	 *					after the list has been fired right away with the latest "memorized"
-	 *					values (like a Deferred)
-	 *
-	 *	unique:			will ensure a callback can only be added once (no duplicate in the list)
-	 *
-	 *	stopOnFalse:	interrupt callings when a callback returns false
-	 *
-	 */
-	jQuery.Callbacks = function( options ) {
-
-		// Convert options from String-formatted to Object-formatted if needed
-		// (we check in cache first)
-		options = typeof options === "string" ?
-			createOptions( options ) :
-			jQuery.extend( {}, options );
-
-		var // Flag to know if list is currently firing
-			firing,
-
-			// Last fire value for non-forgettable lists
-			memory,
-
-			// Flag to know if list was already fired
-			fired,
-
-			// Flag to prevent firing
-			locked,
-
-			// Actual callback list
-			list = [],
-
-			// Queue of execution data for repeatable lists
-			queue = [],
-
-			// Index of currently firing callback (modified by add/remove as needed)
-			firingIndex = -1,
-
-			// Fire callbacks
-			fire = function() {
-
-				// Enforce single-firing
-				locked = options.once;
-
-				// Execute callbacks for all pending executions,
-				// respecting firingIndex overrides and runtime changes
-				fired = firing = true;
-				for ( ; queue.length; firingIndex = -1 ) {
-					memory = queue.shift();
-					while ( ++firingIndex < list.length ) {
-
-						// Run callback and check for early termination
-						if ( list[ firingIndex ].apply( memory[ 0 ], memory[ 1 ] ) === false &&
-							options.stopOnFalse ) {
-
-							// Jump to end and forget the data so .add doesn't re-fire
-							firingIndex = list.length;
-							memory = false;
-						}
-					}
-				}
-
-				// Forget the data if we're done with it
-				if ( !options.memory ) {
-					memory = false;
-				}
-
-				firing = false;
-
-				// Clean up if we're done firing for good
-				if ( locked ) {
-
-					// Keep an empty list if we have data for future add calls
-					if ( memory ) {
-						list = [];
-
-					// Otherwise, this object is spent
-					} else {
-						list = "";
-					}
-				}
-			},
-
-			// Actual Callbacks object
-			self = {
-
-				// Add a callback or a collection of callbacks to the list
-				add: function() {
-					if ( list ) {
-
-						// If we have memory from a past run, we should fire after adding
-						if ( memory && !firing ) {
-							firingIndex = list.length - 1;
-							queue.push( memory );
-						}
-
-						( function add( args ) {
-							jQuery.each( args, function( _, arg ) {
-								if ( jQuery.isFunction( arg ) ) {
-									if ( !options.unique || !self.has( arg ) ) {
-										list.push( arg );
-									}
-								} else if ( arg && arg.length && jQuery.type( arg ) !== "string" ) {
-
-									// Inspect recursively
-									add( arg );
-								}
-							} );
-						} )( arguments );
-
-						if ( memory && !firing ) {
-							fire();
-						}
-					}
-					return this;
-				},
-
-				// Remove a callback from the list
-				remove: function() {
-					jQuery.each( arguments, function( _, arg ) {
-						var index;
-						while ( ( index = jQuery.inArray( arg, list, index ) ) > -1 ) {
-							list.splice( index, 1 );
-
-							// Handle firing indexes
-							if ( index <= firingIndex ) {
-								firingIndex--;
-							}
-						}
-					} );
-					return this;
-				},
-
-				// Check if a given callback is in the list.
-				// If no argument is given, return whether or not list has callbacks attached.
-				has: function( fn ) {
-					return fn ?
-						jQuery.inArray( fn, list ) > -1 :
-						list.length > 0;
-				},
-
-				// Remove all callbacks from the list
-				empty: function() {
-					if ( list ) {
-						list = [];
-					}
-					return this;
-				},
-
-				// Disable .fire and .add
-				// Abort any current/pending executions
-				// Clear all callbacks and values
-				disable: function() {
-					locked = queue = [];
-					list = memory = "";
-					return this;
-				},
-				disabled: function() {
-					return !list;
-				},
-
-				// Disable .fire
-				// Also disable .add unless we have memory (since it would have no effect)
-				// Abort any pending executions
-				lock: function() {
-					locked = queue = [];
-					if ( !memory ) {
-						list = memory = "";
-					}
-					return this;
-				},
-				locked: function() {
-					return !!locked;
-				},
-
-				// Call all callbacks with the given context and arguments
-				fireWith: function( context, args ) {
-					if ( !locked ) {
-						args = args || [];
-						args = [ context, args.slice ? args.slice() : args ];
-						queue.push( args );
-						if ( !firing ) {
-							fire();
-						}
-					}
-					return this;
-				},
-
-				// Call all the callbacks with the given arguments
-				fire: function() {
-					self.fireWith( this, arguments );
-					return this;
-				},
-
-				// To know if the callbacks have already been called at least once
-				fired: function() {
-					return !!fired;
-				}
-			};
-
-		return self;
-	};
-
-
-	jQuery.extend( {
-
-		Deferred: function( func ) {
-			var tuples = [
-
-					// action, add listener, listener list, final state
-					[ "resolve", "done", jQuery.Callbacks( "once memory" ), "resolved" ],
-					[ "reject", "fail", jQuery.Callbacks( "once memory" ), "rejected" ],
-					[ "notify", "progress", jQuery.Callbacks( "memory" ) ]
-				],
-				state = "pending",
-				promise = {
-					state: function() {
-						return state;
-					},
-					always: function() {
-						deferred.done( arguments ).fail( arguments );
-						return this;
-					},
-					then: function( /* fnDone, fnFail, fnProgress */ ) {
-						var fns = arguments;
-						return jQuery.Deferred( function( newDefer ) {
-							jQuery.each( tuples, function( i, tuple ) {
-								var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
-
-								// deferred[ done | fail | progress ] for forwarding actions to newDefer
-								deferred[ tuple[ 1 ] ]( function() {
-									var returned = fn && fn.apply( this, arguments );
-									if ( returned && jQuery.isFunction( returned.promise ) ) {
-										returned.promise()
-											.progress( newDefer.notify )
-											.done( newDefer.resolve )
-											.fail( newDefer.reject );
-									} else {
-										newDefer[ tuple[ 0 ] + "With" ](
-											this === promise ? newDefer.promise() : this,
-											fn ? [ returned ] : arguments
-										);
-									}
-								} );
-							} );
-							fns = null;
-						} ).promise();
-					},
-
-					// Get a promise for this deferred
-					// If obj is provided, the promise aspect is added to the object
-					promise: function( obj ) {
-						return obj != null ? jQuery.extend( obj, promise ) : promise;
-					}
-				},
-				deferred = {};
-
-			// Keep pipe for back-compat
-			promise.pipe = promise.then;
-
-			// Add list-specific methods
-			jQuery.each( tuples, function( i, tuple ) {
-				var list = tuple[ 2 ],
-					stateString = tuple[ 3 ];
-
-				// promise[ done | fail | progress ] = list.add
-				promise[ tuple[ 1 ] ] = list.add;
-
-				// Handle state
-				if ( stateString ) {
-					list.add( function() {
-
-						// state = [ resolved | rejected ]
-						state = stateString;
-
-					// [ reject_list | resolve_list ].disable; progress_list.lock
-					}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
-				}
-
-				// deferred[ resolve | reject | notify ]
-				deferred[ tuple[ 0 ] ] = function() {
-					deferred[ tuple[ 0 ] + "With" ]( this === deferred ? promise : this, arguments );
-					return this;
-				};
-				deferred[ tuple[ 0 ] + "With" ] = list.fireWith;
-			} );
-
-			// Make the deferred a promise
-			promise.promise( deferred );
-
-			// Call given func if any
-			if ( func ) {
-				func.call( deferred, deferred );
-			}
-
-			// All done!
-			return deferred;
-		},
-
-		// Deferred helper
-		when: function( subordinate /* , ..., subordinateN */ ) {
-			var i = 0,
-				resolveValues = slice.call( arguments ),
-				length = resolveValues.length,
-
-				// the count of uncompleted subordinates
-				remaining = length !== 1 ||
-					( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
-
-				// the master Deferred.
-				// If resolveValues consist of only a single Deferred, just use that.
-				deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
-
-				// Update function for both resolve and progress values
-				updateFunc = function( i, contexts, values ) {
-					return function( value ) {
-						contexts[ i ] = this;
-						values[ i ] = arguments.length > 1 ? slice.call( arguments ) : value;
-						if ( values === progressValues ) {
-							deferred.notifyWith( contexts, values );
-						} else if ( !( --remaining ) ) {
-							deferred.resolveWith( contexts, values );
-						}
-					};
-				},
-
-				progressValues, progressContexts, resolveContexts;
-
-			// Add listeners to Deferred subordinates; treat others as resolved
-			if ( length > 1 ) {
-				progressValues = new Array( length );
-				progressContexts = new Array( length );
-				resolveContexts = new Array( length );
-				for ( ; i < length; i++ ) {
-					if ( resolveValues[ i ] && jQuery.isFunction( resolveValues[ i ].promise ) ) {
-						resolveValues[ i ].promise()
-							.progress( updateFunc( i, progressContexts, progressValues ) )
-							.done( updateFunc( i, resolveContexts, resolveValues ) )
-							.fail( deferred.reject );
-					} else {
-						--remaining;
-					}
-				}
-			}
-
-			// If we're not waiting on anything, resolve the master
-			if ( !remaining ) {
-				deferred.resolveWith( resolveContexts, resolveValues );
-			}
-
-			return deferred.promise();
-		}
-	} );
-
-
-	// The deferred used on DOM ready
-	var readyList;
-
-	jQuery.fn.ready = function( fn ) {
-
-		// Add the callback
-		jQuery.ready.promise().done( fn );
-
-		return this;
-	};
-
-	jQuery.extend( {
-
-		// Is the DOM ready to be used? Set to true once it occurs.
-		isReady: false,
-
-		// A counter to track how many items to wait for before
-		// the ready event fires. See #6781
-		readyWait: 1,
-
-		// Hold (or release) the ready event
-		holdReady: function( hold ) {
-			if ( hold ) {
-				jQuery.readyWait++;
-			} else {
-				jQuery.ready( true );
-			}
-		},
-
-		// Handle when the DOM is ready
-		ready: function( wait ) {
-
-			// Abort if there are pending holds or we're already ready
-			if ( wait === true ? --jQuery.readyWait : jQuery.isReady ) {
-				return;
-			}
-
-			// Remember that the DOM is ready
-			jQuery.isReady = true;
-
-			// If a normal DOM Ready event fired, decrement, and wait if need be
-			if ( wait !== true && --jQuery.readyWait > 0 ) {
-				return;
-			}
-
-			// If there are functions bound, to execute
-			readyList.resolveWith( document, [ jQuery ] );
-
-			// Trigger any bound ready events
-			if ( jQuery.fn.triggerHandler ) {
-				jQuery( document ).triggerHandler( "ready" );
-				jQuery( document ).off( "ready" );
-			}
-		}
-	} );
-
-	/**
-	 * The ready event handler and self cleanup method
-	 */
-	function completed() {
-		document.removeEventListener( "DOMContentLoaded", completed );
-		window.removeEventListener( "load", completed );
-		jQuery.ready();
-	}
-
-	jQuery.ready.promise = function( obj ) {
-		if ( !readyList ) {
-
-			readyList = jQuery.Deferred();
-
-			// Catch cases where $(document).ready() is called
-			// after the browser event has already occurred.
-			// Support: IE9-10 only
-			// Older IE sometimes signals "interactive" too soon
-			if ( document.readyState === "complete" ||
-				( document.readyState !== "loading" && !document.documentElement.doScroll ) ) {
-
-				// Handle it asynchronously to allow scripts the opportunity to delay ready
-				window.setTimeout( jQuery.ready );
-
-			} else {
-
-				// Use the handy event callback
-				document.addEventListener( "DOMContentLoaded", completed );
-
-				// A fallback to window.onload, that will always work
-				window.addEventListener( "load", completed );
-			}
-		}
-		return readyList.promise( obj );
-	};
-
-	// Kick off the DOM ready check even if the user does not
-	jQuery.ready.promise();
-
-
-
-
-	// Multifunctional method to get and set values of a collection
-	// The value/s can optionally be executed if it's a function
-	var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
-		var i = 0,
-			len = elems.length,
-			bulk = key == null;
-
-		// Sets many values
-		if ( jQuery.type( key ) === "object" ) {
-			chainable = true;
-			for ( i in key ) {
-				access( elems, fn, i, key[ i ], true, emptyGet, raw );
-			}
-
-		// Sets one value
-		} else if ( value !== undefined ) {
-			chainable = true;
-
-			if ( !jQuery.isFunction( value ) ) {
-				raw = true;
-			}
-
-			if ( bulk ) {
-
-				// Bulk operations run against the entire set
-				if ( raw ) {
-					fn.call( elems, value );
-					fn = null;
-
-				// ...except when executing function values
-				} else {
-					bulk = fn;
-					fn = function( elem, key, value ) {
-						return bulk.call( jQuery( elem ), value );
-					};
-				}
-			}
-
-			if ( fn ) {
-				for ( ; i < len; i++ ) {
-					fn(
-						elems[ i ], key, raw ?
-						value :
-						value.call( elems[ i ], i, fn( elems[ i ], key ) )
-					);
-				}
-			}
-		}
-
-		return chainable ?
-			elems :
-
-			// Gets
-			bulk ?
-				fn.call( elems ) :
-				len ? fn( elems[ 0 ], key ) : emptyGet;
-	};
-	var acceptData = function( owner ) {
-
-		// Accepts only:
-		//  - Node
-		//    - Node.ELEMENT_NODE
-		//    - Node.DOCUMENT_NODE
-		//  - Object
-		//    - Any
-		/* jshint -W018 */
-		return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
-	};
-
-
-
-
-	function Data() {
-		this.expando = jQuery.expando + Data.uid++;
-	}
-
-	Data.uid = 1;
-
-	Data.prototype = {
-
-		register: function( owner, initial ) {
-			var value = initial || {};
-
-			// If it is a node unlikely to be stringify-ed or looped over
-			// use plain assignment
-			if ( owner.nodeType ) {
-				owner[ this.expando ] = value;
-
-			// Otherwise secure it in a non-enumerable, non-writable property
-			// configurability must be true to allow the property to be
-			// deleted with the delete operator
-			} else {
-				Object.defineProperty( owner, this.expando, {
-					value: value,
-					writable: true,
-					configurable: true
-				} );
-			}
-			return owner[ this.expando ];
-		},
-		cache: function( owner ) {
-
-			// We can accept data for non-element nodes in modern browsers,
-			// but we should not, see #8335.
-			// Always return an empty object.
-			if ( !acceptData( owner ) ) {
-				return {};
-			}
-
-			// Check if the owner object already has a cache
-			var value = owner[ this.expando ];
-
-			// If not, create one
-			if ( !value ) {
-				value = {};
-
-				// We can accept data for non-element nodes in modern browsers,
-				// but we should not, see #8335.
-				// Always return an empty object.
-				if ( acceptData( owner ) ) {
-
-					// If it is a node unlikely to be stringify-ed or looped over
-					// use plain assignment
-					if ( owner.nodeType ) {
-						owner[ this.expando ] = value;
-
-					// Otherwise secure it in a non-enumerable property
-					// configurable must be true to allow the property to be
-					// deleted when data is removed
-					} else {
-						Object.defineProperty( owner, this.expando, {
-							value: value,
-							configurable: true
-						} );
-					}
-				}
-			}
-
-			return value;
-		},
-		set: function( owner, data, value ) {
-			var prop,
-				cache = this.cache( owner );
-
-			// Handle: [ owner, key, value ] args
-			if ( typeof data === "string" ) {
-				cache[ data ] = value;
-
-			// Handle: [ owner, { properties } ] args
-			} else {
-
-				// Copy the properties one-by-one to the cache object
-				for ( prop in data ) {
-					cache[ prop ] = data[ prop ];
-				}
-			}
-			return cache;
-		},
-		get: function( owner, key ) {
-			return key === undefined ?
-				this.cache( owner ) :
-				owner[ this.expando ] && owner[ this.expando ][ key ];
-		},
-		access: function( owner, key, value ) {
-			var stored;
-
-			// In cases where either:
-			//
-			//   1. No key was specified
-			//   2. A string key was specified, but no value provided
-			//
-			// Take the "read" path and allow the get method to determine
-			// which value to return, respectively either:
-			//
-			//   1. The entire cache object
-			//   2. The data stored at the key
-			//
-			if ( key === undefined ||
-					( ( key && typeof key === "string" ) && value === undefined ) ) {
-
-				stored = this.get( owner, key );
-
-				return stored !== undefined ?
-					stored : this.get( owner, jQuery.camelCase( key ) );
-			}
-
-			// When the key is not a string, or both a key and value
-			// are specified, set or extend (existing objects) with either:
-			//
-			//   1. An object of properties
-			//   2. A key and value
-			//
-			this.set( owner, key, value );
-
-			// Since the "set" path can have two possible entry points
-			// return the expected data based on which path was taken[*]
-			return value !== undefined ? value : key;
-		},
-		remove: function( owner, key ) {
-			var i, name, camel,
-				cache = owner[ this.expando ];
-
-			if ( cache === undefined ) {
-				return;
-			}
-
-			if ( key === undefined ) {
-				this.register( owner );
-
-			} else {
-
-				// Support array or space separated string of keys
-				if ( jQuery.isArray( key ) ) {
-
-					// If "name" is an array of keys...
-					// When data is initially created, via ("key", "val") signature,
-					// keys will be converted to camelCase.
-					// Since there is no way to tell _how_ a key was added, remove
-					// both plain key and camelCase key. #12786
-					// This will only penalize the array argument path.
-					name = key.concat( key.map( jQuery.camelCase ) );
-				} else {
-					camel = jQuery.camelCase( key );
-
-					// Try the string as a key before any manipulation
-					if ( key in cache ) {
-						name = [ key, camel ];
-					} else {
-
-						// If a key with the spaces exists, use it.
-						// Otherwise, create an array by matching non-whitespace
-						name = camel;
-						name = name in cache ?
-							[ name ] : ( name.match( rnotwhite ) || [] );
-					}
-				}
-
-				i = name.length;
-
-				while ( i-- ) {
-					delete cache[ name[ i ] ];
-				}
-			}
-
-			// Remove the expando if there's no more data
-			if ( key === undefined || jQuery.isEmptyObject( cache ) ) {
-
-				// Support: Chrome <= 35-45+
-				// Webkit & Blink performance suffers when deleting properties
-				// from DOM nodes, so set to undefined instead
-				// https://code.google.com/p/chromium/issues/detail?id=378607
-				if ( owner.nodeType ) {
-					owner[ this.expando ] = undefined;
-				} else {
-					delete owner[ this.expando ];
-				}
-			}
-		},
-		hasData: function( owner ) {
-			var cache = owner[ this.expando ];
-			return cache !== undefined && !jQuery.isEmptyObject( cache );
-		}
-	};
-	var dataPriv = new Data();
-
-	var dataUser = new Data();
-
-
-
-	//	Implementation Summary
-	//
-	//	1. Enforce API surface and semantic compatibility with 1.9.x branch
-	//	2. Improve the module's maintainability by reducing the storage
-	//		paths to a single mechanism.
-	//	3. Use the same single mechanism to support "private" and "user" data.
-	//	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
-	//	5. Avoid exposing implementation details on user objects (eg. expando properties)
-	//	6. Provide a clear path for implementation upgrade to WeakMap in 2014
-
-	var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
-		rmultiDash = /[A-Z]/g;
-
-	function dataAttr( elem, key, data ) {
-		var name;
-
-		// If nothing was found internally, try to fetch any
-		// data from the HTML5 data-* attribute
-		if ( data === undefined && elem.nodeType === 1 ) {
-			name = "data-" + key.replace( rmultiDash, "-$&" ).toLowerCase();
-			data = elem.getAttribute( name );
-
-			if ( typeof data === "string" ) {
-				try {
-					data = data === "true" ? true :
-						data === "false" ? false :
-						data === "null" ? null :
-
-						// Only convert to a number if it doesn't change the string
-						+data + "" === data ? +data :
-						rbrace.test( data ) ? jQuery.parseJSON( data ) :
-						data;
-				} catch ( e ) {}
-
-				// Make sure we set the data so it isn't changed later
-				dataUser.set( elem, key, data );
-			} else {
-				data = undefined;
-			}
-		}
-		return data;
-	}
-
-	jQuery.extend( {
-		hasData: function( elem ) {
-			return dataUser.hasData( elem ) || dataPriv.hasData( elem );
-		},
-
-		data: function( elem, name, data ) {
-			return dataUser.access( elem, name, data );
-		},
-
-		removeData: function( elem, name ) {
-			dataUser.remove( elem, name );
-		},
-
-		// TODO: Now that all calls to _data and _removeData have been replaced
-		// with direct calls to dataPriv methods, these can be deprecated.
-		_data: function( elem, name, data ) {
-			return dataPriv.access( elem, name, data );
-		},
-
-		_removeData: function( elem, name ) {
-			dataPriv.remove( elem, name );
-		}
-	} );
-
-	jQuery.fn.extend( {
-		data: function( key, value ) {
-			var i, name, data,
-				elem = this[ 0 ],
-				attrs = elem && elem.attributes;
-
-			// Gets all values
-			if ( key === undefined ) {
-				if ( this.length ) {
-					data = dataUser.get( elem );
-
-					if ( elem.nodeType === 1 && !dataPriv.get( elem, "hasDataAttrs" ) ) {
-						i = attrs.length;
-						while ( i-- ) {
-
-							// Support: IE11+
-							// The attrs elements can be null (#14894)
-							if ( attrs[ i ] ) {
-								name = attrs[ i ].name;
-								if ( name.indexOf( "data-" ) === 0 ) {
-									name = jQuery.camelCase( name.slice( 5 ) );
-									dataAttr( elem, name, data[ name ] );
-								}
-							}
-						}
-						dataPriv.set( elem, "hasDataAttrs", true );
-					}
-				}
-
-				return data;
-			}
-
-			// Sets multiple values
-			if ( typeof key === "object" ) {
-				return this.each( function() {
-					dataUser.set( this, key );
-				} );
-			}
-
-			return access( this, function( value ) {
-				var data, camelKey;
-
-				// The calling jQuery object (element matches) is not empty
-				// (and therefore has an element appears at this[ 0 ]) and the
-				// `value` parameter was not undefined. An empty jQuery object
-				// will result in `undefined` for elem = this[ 0 ] which will
-				// throw an exception if an attempt to read a data cache is made.
-				if ( elem && value === undefined ) {
-
-					// Attempt to get data from the cache
-					// with the key as-is
-					data = dataUser.get( elem, key ) ||
-
-						// Try to find dashed key if it exists (gh-2779)
-						// This is for 2.2.x only
-						dataUser.get( elem, key.replace( rmultiDash, "-$&" ).toLowerCase() );
-
-					if ( data !== undefined ) {
-						return data;
-					}
-
-					camelKey = jQuery.camelCase( key );
-
-					// Attempt to get data from the cache
-					// with the key camelized
-					data = dataUser.get( elem, camelKey );
-					if ( data !== undefined ) {
-						return data;
-					}
-
-					// Attempt to "discover" the data in
-					// HTML5 custom data-* attrs
-					data = dataAttr( elem, camelKey, undefined );
-					if ( data !== undefined ) {
-						return data;
-					}
-
-					// We tried really hard, but the data doesn't exist.
-					return;
-				}
-
-				// Set the data...
-				camelKey = jQuery.camelCase( key );
-				this.each( function() {
-
-					// First, attempt to store a copy or reference of any
-					// data that might've been store with a camelCased key.
-					var data = dataUser.get( this, camelKey );
-
-					// For HTML5 data-* attribute interop, we have to
-					// store property names with dashes in a camelCase form.
-					// This might not apply to all properties...*
-					dataUser.set( this, camelKey, value );
-
-					// *... In the case of properties that might _actually_
-					// have dashes, we need to also store a copy of that
-					// unchanged property.
-					if ( key.indexOf( "-" ) > -1 && data !== undefined ) {
-						dataUser.set( this, key, value );
-					}
-				} );
-			}, null, value, arguments.length > 1, null, true );
-		},
-
-		removeData: function( key ) {
-			return this.each( function() {
-				dataUser.remove( this, key );
-			} );
-		}
-	} );
-
-
-	jQuery.extend( {
-		queue: function( elem, type, data ) {
-			var queue;
-
-			if ( elem ) {
-				type = ( type || "fx" ) + "queue";
-				queue = dataPriv.get( elem, type );
-
-				// Speed up dequeue by getting out quickly if this is just a lookup
-				if ( data ) {
-					if ( !queue || jQuery.isArray( data ) ) {
-						queue = dataPriv.access( elem, type, jQuery.makeArray( data ) );
-					} else {
-						queue.push( data );
-					}
-				}
-				return queue || [];
-			}
-		},
-
-		dequeue: function( elem, type ) {
-			type = type || "fx";
-
-			var queue = jQuery.queue( elem, type ),
-				startLength = queue.length,
-				fn = queue.shift(),
-				hooks = jQuery._queueHooks( elem, type ),
-				next = function() {
-					jQuery.dequeue( elem, type );
-				};
-
-			// If the fx queue is dequeued, always remove the progress sentinel
-			if ( fn === "inprogress" ) {
-				fn = queue.shift();
-				startLength--;
-			}
-
-			if ( fn ) {
-
-				// Add a progress sentinel to prevent the fx queue from being
-				// automatically dequeued
-				if ( type === "fx" ) {
-					queue.unshift( "inprogress" );
-				}
-
-				// Clear up the last queue stop function
-				delete hooks.stop;
-				fn.call( elem, next, hooks );
-			}
-
-			if ( !startLength && hooks ) {
-				hooks.empty.fire();
-			}
-		},
-
-		// Not public - generate a queueHooks object, or return the current one
-		_queueHooks: function( elem, type ) {
-			var key = type + "queueHooks";
-			return dataPriv.get( elem, key ) || dataPriv.access( elem, key, {
-				empty: jQuery.Callbacks( "once memory" ).add( function() {
-					dataPriv.remove( elem, [ type + "queue", key ] );
-				} )
-			} );
-		}
-	} );
-
-	jQuery.fn.extend( {
-		queue: function( type, data ) {
-			var setter = 2;
-
-			if ( typeof type !== "string" ) {
-				data = type;
-				type = "fx";
-				setter--;
-			}
-
-			if ( arguments.length < setter ) {
-				return jQuery.queue( this[ 0 ], type );
-			}
-
-			return data === undefined ?
-				this :
-				this.each( function() {
-					var queue = jQuery.queue( this, type, data );
-
-					// Ensure a hooks for this queue
-					jQuery._queueHooks( this, type );
-
-					if ( type === "fx" && queue[ 0 ] !== "inprogress" ) {
-						jQuery.dequeue( this, type );
-					}
-				} );
-		},
-		dequeue: function( type ) {
-			return this.each( function() {
-				jQuery.dequeue( this, type );
-			} );
-		},
-		clearQueue: function( type ) {
-			return this.queue( type || "fx", [] );
-		},
-
-		// Get a promise resolved when queues of a certain type
-		// are emptied (fx is the type by default)
-		promise: function( type, obj ) {
-			var tmp,
-				count = 1,
-				defer = jQuery.Deferred(),
-				elements = this,
-				i = this.length,
-				resolve = function() {
-					if ( !( --count ) ) {
-						defer.resolveWith( elements, [ elements ] );
-					}
-				};
-
-			if ( typeof type !== "string" ) {
-				obj = type;
-				type = undefined;
-			}
-			type = type || "fx";
-
-			while ( i-- ) {
-				tmp = dataPriv.get( elements[ i ], type + "queueHooks" );
-				if ( tmp && tmp.empty ) {
-					count++;
-					tmp.empty.add( resolve );
-				}
-			}
-			resolve();
-			return defer.promise( obj );
-		}
-	} );
-	var pnum = ( /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/ ).source;
-
-	var rcssNum = new RegExp( "^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i" );
-
-
-	var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
-
-	var isHidden = function( elem, el ) {
-
-			// isHidden might be called from jQuery#filter function;
-			// in that case, element will be second argument
-			elem = el || elem;
-			return jQuery.css( elem, "display" ) === "none" ||
-				!jQuery.contains( elem.ownerDocument, elem );
-		};
-
-
-
-	function adjustCSS( elem, prop, valueParts, tween ) {
-		var adjusted,
-			scale = 1,
-			maxIterations = 20,
-			currentValue = tween ?
-				function() { return tween.cur(); } :
-				function() { return jQuery.css( elem, prop, "" ); },
-			initial = currentValue(),
-			unit = valueParts && valueParts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
-
-			// Starting value computation is required for potential unit mismatches
-			initialInUnit = ( jQuery.cssNumber[ prop ] || unit !== "px" && +initial ) &&
-				rcssNum.exec( jQuery.css( elem, prop ) );
-
-		if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
-
-			// Trust units reported by jQuery.css
-			unit = unit || initialInUnit[ 3 ];
-
-			// Make sure we update the tween properties later on
-			valueParts = valueParts || [];
-
-			// Iteratively approximate from a nonzero starting point
-			initialInUnit = +initial || 1;
-
-			do {
-
-				// If previous iteration zeroed out, double until we get *something*.
-				// Use string for doubling so we don't accidentally see scale as unchanged below
-				scale = scale || ".5";
-
-				// Adjust and apply
-				initialInUnit = initialInUnit / scale;
-				jQuery.style( elem, prop, initialInUnit + unit );
-
-			// Update scale, tolerating zero or NaN from tween.cur()
-			// Break the loop if scale is unchanged or perfect, or if we've just had enough.
-			} while (
-				scale !== ( scale = currentValue() / initial ) && scale !== 1 && --maxIterations
-			);
-		}
-
-		if ( valueParts ) {
-			initialInUnit = +initialInUnit || +initial || 0;
-
-			// Apply relative offset (+=/-=) if specified
-			adjusted = valueParts[ 1 ] ?
-				initialInUnit + ( valueParts[ 1 ] + 1 ) * valueParts[ 2 ] :
-				+valueParts[ 2 ];
-			if ( tween ) {
-				tween.unit = unit;
-				tween.start = initialInUnit;
-				tween.end = adjusted;
-			}
-		}
-		return adjusted;
-	}
-	var rcheckableType = ( /^(?:checkbox|radio)$/i );
-
-	var rtagName = ( /<([\w:-]+)/ );
-
-	var rscriptType = ( /^$|\/(?:java|ecma)script/i );
-
-
-
-	// We have to close these tags to support XHTML (#13200)
-	var wrapMap = {
-
-		// Support: IE9
-		option: [ 1, "<select multiple='multiple'>", "</select>" ],
-
-		// XHTML parsers do not magically insert elements in the
-		// same way that tag soup parsers do. So we cannot shorten
-		// this by omitting <tbody> or other required elements.
-		thead: [ 1, "<table>", "</table>" ],
-		col: [ 2, "<table><colgroup>", "</colgroup></table>" ],
-		tr: [ 2, "<table><tbody>", "</tbody></table>" ],
-		td: [ 3, "<table><tbody><tr>", "</tr></tbody></table>" ],
-
-		_default: [ 0, "", "" ]
-	};
-
-	// Support: IE9
-	wrapMap.optgroup = wrapMap.option;
-
-	wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
-	wrapMap.th = wrapMap.td;
-
-
-	function getAll( context, tag ) {
-
-		// Support: IE9-11+
-		// Use typeof to avoid zero-argument method invocation on host objects (#15151)
-		var ret = typeof context.getElementsByTagName !== "undefined" ?
-				context.getElementsByTagName( tag || "*" ) :
-				typeof context.querySelectorAll !== "undefined" ?
-					context.querySelectorAll( tag || "*" ) :
-				[];
-
-		return tag === undefined || tag && jQuery.nodeName( context, tag ) ?
-			jQuery.merge( [ context ], ret ) :
-			ret;
-	}
-
-
-	// Mark scripts as having already been evaluated
-	function setGlobalEval( elems, refElements ) {
-		var i = 0,
-			l = elems.length;
-
-		for ( ; i < l; i++ ) {
-			dataPriv.set(
-				elems[ i ],
-				"globalEval",
-				!refElements || dataPriv.get( refElements[ i ], "globalEval" )
-			);
-		}
-	}
-
-
-	var rhtml = /<|&#?\w+;/;
-
-	function buildFragment( elems, context, scripts, selection, ignored ) {
-		var elem, tmp, tag, wrap, contains, j,
-			fragment = context.createDocumentFragment(),
-			nodes = [],
-			i = 0,
-			l = elems.length;
-
-		for ( ; i < l; i++ ) {
-			elem = elems[ i ];
-
-			if ( elem || elem === 0 ) {
-
-				// Add nodes directly
-				if ( jQuery.type( elem ) === "object" ) {
-
-					// Support: Android<4.1, PhantomJS<2
-					// push.apply(_, arraylike) throws on ancient WebKit
-					jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
-
-				// Convert non-html into a text node
-				} else if ( !rhtml.test( elem ) ) {
-					nodes.push( context.createTextNode( elem ) );
-
-				// Convert html into DOM nodes
-				} else {
-					tmp = tmp || fragment.appendChild( context.createElement( "div" ) );
-
-					// Deserialize a standard representation
-					tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
-					wrap = wrapMap[ tag ] || wrapMap._default;
-					tmp.innerHTML = wrap[ 1 ] + jQuery.htmlPrefilter( elem ) + wrap[ 2 ];
-
-					// Descend through wrappers to the right content
-					j = wrap[ 0 ];
-					while ( j-- ) {
-						tmp = tmp.lastChild;
-					}
-
-					// Support: Android<4.1, PhantomJS<2
-					// push.apply(_, arraylike) throws on ancient WebKit
-					jQuery.merge( nodes, tmp.childNodes );
-
-					// Remember the top-level container
-					tmp = fragment.firstChild;
-
-					// Ensure the created nodes are orphaned (#12392)
-					tmp.textContent = "";
-				}
-			}
-		}
-
-		// Remove wrapper from fragment
-		fragment.textContent = "";
-
-		i = 0;
-		while ( ( elem = nodes[ i++ ] ) ) {
-
-			// Skip elements already in the context collection (trac-4087)
-			if ( selection && jQuery.inArray( elem, selection ) > -1 ) {
-				if ( ignored ) {
-					ignored.push( elem );
-				}
-				continue;
-			}
-
-			contains = jQuery.contains( elem.ownerDocument, elem );
-
-			// Append to fragment
-			tmp = getAll( fragment.appendChild( elem ), "script" );
-
-			// Preserve script evaluation history
-			if ( contains ) {
-				setGlobalEval( tmp );
-			}
-
-			// Capture executables
-			if ( scripts ) {
-				j = 0;
-				while ( ( elem = tmp[ j++ ] ) ) {
-					if ( rscriptType.test( elem.type || "" ) ) {
-						scripts.push( elem );
-					}
-				}
-			}
-		}
-
-		return fragment;
-	}
-
-
-	( function() {
-		var fragment = document.createDocumentFragment(),
-			div = fragment.appendChild( document.createElement( "div" ) ),
-			input = document.createElement( "input" );
-
-		// Support: Android 4.0-4.3, Safari<=5.1
-		// Check state lost if the name is set (#11217)
-		// Support: Windows Web Apps (WWA)
-		// `name` and `type` must use .setAttribute for WWA (#14901)
-		input.setAttribute( "type", "radio" );
-		input.setAttribute( "checked", "checked" );
-		input.setAttribute( "name", "t" );
-
-		div.appendChild( input );
-
-		// Support: Safari<=5.1, Android<4.2
-		// Older WebKit doesn't clone checked state correctly in fragments
-		support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
-
-		// Support: IE<=11+
-		// Make sure textarea (and checkbox) defaultValue is properly cloned
-		div.innerHTML = "<textarea>x</textarea>";
-		support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
-	} )();
-
-
-	var
-		rkeyEvent = /^key/,
-		rmouseEvent = /^(?:mouse|pointer|contextmenu|drag|drop)|click/,
-		rtypenamespace = /^([^.]*)(?:\.(.+)|)/;
-
-	function returnTrue() {
-		return true;
-	}
-
-	function returnFalse() {
-		return false;
-	}
-
-	// Support: IE9
-	// See #13393 for more info
-	function safeActiveElement() {
-		try {
-			return document.activeElement;
-		} catch ( err ) { }
-	}
-
-	function on( elem, types, selector, data, fn, one ) {
-		var origFn, type;
-
-		// Types can be a map of types/handlers
-		if ( typeof types === "object" ) {
-
-			// ( types-Object, selector, data )
-			if ( typeof selector !== "string" ) {
-
-				// ( types-Object, data )
-				data = data || selector;
-				selector = undefined;
-			}
-			for ( type in types ) {
-				on( elem, type, selector, data, types[ type ], one );
-			}
-			return elem;
-		}
-
-		if ( data == null && fn == null ) {
-
-			// ( types, fn )
-			fn = selector;
-			data = selector = undefined;
-		} else if ( fn == null ) {
-			if ( typeof selector === "string" ) {
-
-				// ( types, selector, fn )
-				fn = data;
-				data = undefined;
-			} else {
-
-				// ( types, data, fn )
-				fn = data;
-				data = selector;
-				selector = undefined;
-			}
-		}
-		if ( fn === false ) {
-			fn = returnFalse;
-		} else if ( !fn ) {
-			return elem;
-		}
-
-		if ( one === 1 ) {
-			origFn = fn;
-			fn = function( event ) {
-
-				// Can use an empty set, since event contains the info
-				jQuery().off( event );
-				return origFn.apply( this, arguments );
-			};
-
-			// Use same guid so caller can remove using origFn
-			fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
-		}
-		return elem.each( function() {
-			jQuery.event.add( this, types, fn, data, selector );
-		} );
-	}
-
-	/*
-	 * Helper functions for managing events -- not part of the public interface.
-	 * Props to Dean Edwards' addEvent library for many of the ideas.
-	 */
-	jQuery.event = {
-
-		global: {},
-
-		add: function( elem, types, handler, data, selector ) {
-
-			var handleObjIn, eventHandle, tmp,
-				events, t, handleObj,
-				special, handlers, type, namespaces, origType,
-				elemData = dataPriv.get( elem );
-
-			// Don't attach events to noData or text/comment nodes (but allow plain objects)
-			if ( !elemData ) {
-				return;
-			}
-
-			// Caller can pass in an object of custom data in lieu of the handler
-			if ( handler.handler ) {
-				handleObjIn = handler;
-				handler = handleObjIn.handler;
-				selector = handleObjIn.selector;
-			}
-
-			// Make sure that the handler has a unique ID, used to find/remove it later
-			if ( !handler.guid ) {
-				handler.guid = jQuery.guid++;
-			}
-
-			// Init the element's event structure and main handler, if this is the first
-			if ( !( events = elemData.events ) ) {
-				events = elemData.events = {};
-			}
-			if ( !( eventHandle = elemData.handle ) ) {
-				eventHandle = elemData.handle = function( e ) {
-
-					// Discard the second event of a jQuery.event.trigger() and
-					// when an event is called after a page has unloaded
-					return typeof jQuery !== "undefined" && jQuery.event.triggered !== e.type ?
-						jQuery.event.dispatch.apply( elem, arguments ) : undefined;
-				};
-			}
-
-			// Handle multiple events separated by a space
-			types = ( types || "" ).match( rnotwhite ) || [ "" ];
-			t = types.length;
-			while ( t-- ) {
-				tmp = rtypenamespace.exec( types[ t ] ) || [];
-				type = origType = tmp[ 1 ];
-				namespaces = ( tmp[ 2 ] || "" ).split( "." ).sort();
-
-				// There *must* be a type, no attaching namespace-only handlers
-				if ( !type ) {
-					continue;
-				}
-
-				// If event changes its type, use the special event handlers for the changed type
-				special = jQuery.event.special[ type ] || {};
-
-				// If selector defined, determine special event api type, otherwise given type
-				type = ( selector ? special.delegateType : special.bindType ) || type;
-
-				// Update special based on newly reset type
-				special = jQuery.event.special[ type ] || {};
-
-				// handleObj is passed to all event handlers
-				handleObj = jQuery.extend( {
-					type: type,
-					origType: origType,
-					data: data,
-					handler: handler,
-					guid: handler.guid,
-					selector: selector,
-					needsContext: selector && jQuery.expr.match.needsContext.test( selector ),
-					namespace: namespaces.join( "." )
-				}, handleObjIn );
-
-				// Init the event handler queue if we're the first
-				if ( !( handlers = events[ type ] ) ) {
-					handlers = events[ type ] = [];
-					handlers.delegateCount = 0;
-
-					// Only use addEventListener if the special events handler returns false
-					if ( !special.setup ||
-						special.setup.call( elem, data, namespaces, eventHandle ) === false ) {
-
-						if ( elem.addEventListener ) {
-							elem.addEventListener( type, eventHandle );
-						}
-					}
-				}
-
-				if ( special.add ) {
-					special.add.call( elem, handleObj );
-
-					if ( !handleObj.handler.guid ) {
-						handleObj.handler.guid = handler.guid;
-					}
-				}
-
-				// Add to the element's handler list, delegates in front
-				if ( selector ) {
-					handlers.splice( handlers.delegateCount++, 0, handleObj );
-				} else {
-					handlers.push( handleObj );
-				}
-
-				// Keep track of which events have ever been used, for event optimization
-				jQuery.event.global[ type ] = true;
-			}
-
-		},
-
-		// Detach an event or set of events from an element
-		remove: function( elem, types, handler, selector, mappedTypes ) {
-
-			var j, origCount, tmp,
-				events, t, handleObj,
-				special, handlers, type, namespaces, origType,
-				elemData = dataPriv.hasData( elem ) && dataPriv.get( elem );
-
-			if ( !elemData || !( events = elemData.events ) ) {
-				return;
-			}
-
-			// Once for each type.namespace in types; type may be omitted
-			types = ( types || "" ).match( rnotwhite ) || [ "" ];
-			t = types.length;
-			while ( t-- ) {
-				tmp = rtypenamespace.exec( types[ t ] ) || [];
-				type = origType = tmp[ 1 ];
-				namespaces = ( tmp[ 2 ] || "" ).split( "." ).sort();
-
-				// Unbind all events (on this namespace, if provided) for the element
-				if ( !type ) {
-					for ( type in events ) {
-						jQuery.event.remove( elem, type + types[ t ], handler, selector, true );
-					}
-					continue;
-				}
-
-				special = jQuery.event.special[ type ] || {};
-				type = ( selector ? special.delegateType : special.bindType ) || type;
-				handlers = events[ type ] || [];
-				tmp = tmp[ 2 ] &&
-					new RegExp( "(^|\\.)" + namespaces.join( "\\.(?:.*\\.|)" ) + "(\\.|$)" );
-
-				// Remove matching events
-				origCount = j = handlers.length;
-				while ( j-- ) {
-					handleObj = handlers[ j ];
-
-					if ( ( mappedTypes || origType === handleObj.origType ) &&
-						( !handler || handler.guid === handleObj.guid ) &&
-						( !tmp || tmp.test( handleObj.namespace ) ) &&
-						( !selector || selector === handleObj.selector ||
-							selector === "**" && handleObj.selector ) ) {
-						handlers.splice( j, 1 );
-
-						if ( handleObj.selector ) {
-							handlers.delegateCount--;
-						}
-						if ( special.remove ) {
-							special.remove.call( elem, handleObj );
-						}
-					}
-				}
-
-				// Remove generic event handler if we removed something and no more handlers exist
-				// (avoids potential for endless recursion during removal of special event handlers)
-				if ( origCount && !handlers.length ) {
-					if ( !special.teardown ||
-						special.teardown.call( elem, namespaces, elemData.handle ) === false ) {
-
-						jQuery.removeEvent( elem, type, elemData.handle );
-					}
-
-					delete events[ type ];
-				}
-			}
-
-			// Remove data and the expando if it's no longer used
-			if ( jQuery.isEmptyObject( events ) ) {
-				dataPriv.remove( elem, "handle events" );
-			}
-		},
-
-		dispatch: function( event ) {
-
-			// Make a writable jQuery.Event from the native event object
-			event = jQuery.event.fix( event );
-
-			var i, j, ret, matched, handleObj,
-				handlerQueue = [],
-				args = slice.call( arguments ),
-				handlers = ( dataPriv.get( this, "events" ) || {} )[ event.type ] || [],
-				special = jQuery.event.special[ event.type ] || {};
-
-			// Use the fix-ed jQuery.Event rather than the (read-only) native event
-			args[ 0 ] = event;
-			event.delegateTarget = this;
-
-			// Call the preDispatch hook for the mapped type, and let it bail if desired
-			if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
-				return;
-			}
-
-			// Determine handlers
-			handlerQueue = jQuery.event.handlers.call( this, event, handlers );
-
-			// Run delegates first; they may want to stop propagation beneath us
-			i = 0;
-			while ( ( matched = handlerQueue[ i++ ] ) && !event.isPropagationStopped() ) {
-				event.currentTarget = matched.elem;
-
-				j = 0;
-				while ( ( handleObj = matched.handlers[ j++ ] ) &&
-					!event.isImmediatePropagationStopped() ) {
-
-					// Triggered event must either 1) have no namespace, or 2) have namespace(s)
-					// a subset or equal to those in the bound event (both can have no namespace).
-					if ( !event.rnamespace || event.rnamespace.test( handleObj.namespace ) ) {
-
-						event.handleObj = handleObj;
-						event.data = handleObj.data;
-
-						ret = ( ( jQuery.event.special[ handleObj.origType ] || {} ).handle ||
-							handleObj.handler ).apply( matched.elem, args );
-
-						if ( ret !== undefined ) {
-							if ( ( event.result = ret ) === false ) {
-								event.preventDefault();
-								event.stopPropagation();
-							}
-						}
-					}
-				}
-			}
-
-			// Call the postDispatch hook for the mapped type
-			if ( special.postDispatch ) {
-				special.postDispatch.call( this, event );
-			}
-
-			return event.result;
-		},
-
-		handlers: function( event, handlers ) {
-			var i, matches, sel, handleObj,
-				handlerQueue = [],
-				delegateCount = handlers.delegateCount,
-				cur = event.target;
-
-			// Support (at least): Chrome, IE9
-			// Find delegate handlers
-			// Black-hole SVG <use> instance trees (#13180)
-			//
-			// Support: Firefox<=42+
-			// Avoid non-left-click in FF but don't block IE radio events (#3861, gh-2343)
-			if ( delegateCount && cur.nodeType &&
-				( event.type !== "click" || isNaN( event.button ) || event.button < 1 ) ) {
-
-				for ( ; cur !== this; cur = cur.parentNode || this ) {
-
-					// Don't check non-elements (#13208)
-					// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
-					if ( cur.nodeType === 1 && ( cur.disabled !== true || event.type !== "click" ) ) {
-						matches = [];
-						for ( i = 0; i < delegateCount; i++ ) {
-							handleObj = handlers[ i ];
-
-							// Don't conflict with Object.prototype properties (#13203)
-							sel = handleObj.selector + " ";
-
-							if ( matches[ sel ] === undefined ) {
-								matches[ sel ] = handleObj.needsContext ?
-									jQuery( sel, this ).index( cur ) > -1 :
-									jQuery.find( sel, this, null, [ cur ] ).length;
-							}
-							if ( matches[ sel ] ) {
-								matches.push( handleObj );
-							}
-						}
-						if ( matches.length ) {
-							handlerQueue.push( { elem: cur, handlers: matches } );
-						}
-					}
-				}
-			}
-
-			// Add the remaining (directly-bound) handlers
-			if ( delegateCount < handlers.length ) {
-				handlerQueue.push( { elem: this, handlers: handlers.slice( delegateCount ) } );
-			}
-
-			return handlerQueue;
-		},
-
-		// Includes some event props shared by KeyEvent and MouseEvent
-		props: ( "altKey bubbles cancelable ctrlKey currentTarget detail eventPhase " +
-			"metaKey relatedTarget shiftKey target timeStamp view which" ).split( " " ),
-
-		fixHooks: {},
-
-		keyHooks: {
-			props: "char charCode key keyCode".split( " " ),
-			filter: function( event, original ) {
-
-				// Add which for key events
-				if ( event.which == null ) {
-					event.which = original.charCode != null ? original.charCode : original.keyCode;
-				}
-
-				return event;
-			}
-		},
-
-		mouseHooks: {
-			props: ( "button buttons clientX clientY offsetX offsetY pageX pageY " +
-				"screenX screenY toElement" ).split( " " ),
-			filter: function( event, original ) {
-				var eventDoc, doc, body,
-					button = original.button;
-
-				// Calculate pageX/Y if missing and clientX/Y available
-				if ( event.pageX == null && original.clientX != null ) {
-					eventDoc = event.target.ownerDocument || document;
-					doc = eventDoc.documentElement;
-					body = eventDoc.body;
-
-					event.pageX = original.clientX +
-						( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) -
-						( doc && doc.clientLeft || body && body.clientLeft || 0 );
-					event.pageY = original.clientY +
-						( doc && doc.scrollTop  || body && body.scrollTop  || 0 ) -
-						( doc && doc.clientTop  || body && body.clientTop  || 0 );
-				}
-
-				// Add which for click: 1 === left; 2 === middle; 3 === right
-				// Note: button is not normalized, so don't use it
-				if ( !event.which && button !== undefined ) {
-					event.which = ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
-				}
-
-				return event;
-			}
-		},
-
-		fix: function( event ) {
-			if ( event[ jQuery.expando ] ) {
-				return event;
-			}
-
-			// Create a writable copy of the event object and normalize some properties
-			var i, prop, copy,
-				type = event.type,
-				originalEvent = event,
-				fixHook = this.fixHooks[ type ];
-
-			if ( !fixHook ) {
-				this.fixHooks[ type ] = fixHook =
-					rmouseEvent.test( type ) ? this.mouseHooks :
-					rkeyEvent.test( type ) ? this.keyHooks :
-					{};
-			}
-			copy = fixHook.props ? this.props.concat( fixHook.props ) : this.props;
-
-			event = new jQuery.Event( originalEvent );
-
-			i = copy.length;
-			while ( i-- ) {
-				prop = copy[ i ];
-				event[ prop ] = originalEvent[ prop ];
-			}
-
-			// Support: Cordova 2.5 (WebKit) (#13255)
-			// All events should have a target; Cordova deviceready doesn't
-			if ( !event.target ) {
-				event.target = document;
-			}
-
-			// Support: Safari 6.0+, Chrome<28
-			// Target should not be a text node (#504, #13143)
-			if ( event.target.nodeType === 3 ) {
-				event.target = event.target.parentNode;
-			}
-
-			return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
-		},
-
-		special: {
-			load: {
-
-				// Prevent triggered image.load events from bubbling to window.load
-				noBubble: true
-			},
-			focus: {
-
-				// Fire native event if possible so blur/focus sequence is correct
-				trigger: function() {
-					if ( this !== safeActiveElement() && this.focus ) {
-						this.focus();
-						return false;
-					}
-				},
-				delegateType: "focusin"
-			},
-			blur: {
-				trigger: function() {
-					if ( this === safeActiveElement() && this.blur ) {
-						this.blur();
-						return false;
-					}
-				},
-				delegateType: "focusout"
-			},
-			click: {
-
-				// For checkbox, fire native event so checked state will be right
-				trigger: function() {
-					if ( this.type === "checkbox" && this.click && jQuery.nodeName( this, "input" ) ) {
-						this.click();
-						return false;
-					}
-				},
-
-				// For cross-browser consistency, don't fire native .click() on links
-				_default: function( event ) {
-					return jQuery.nodeName( event.target, "a" );
-				}
-			},
-
-			beforeunload: {
-				postDispatch: function( event ) {
-
-					// Support: Firefox 20+
-					// Firefox doesn't alert if the returnValue field is not set.
-					if ( event.result !== undefined && event.originalEvent ) {
-						event.originalEvent.returnValue = event.result;
-					}
-				}
-			}
-		}
-	};
-
-	jQuery.removeEvent = function( elem, type, handle ) {
-
-		// This "if" is needed for plain objects
-		if ( elem.removeEventListener ) {
-			elem.removeEventListener( type, handle );
-		}
-	};
-
-	jQuery.Event = function( src, props ) {
-
-		// Allow instantiation without the 'new' keyword
-		if ( !( this instanceof jQuery.Event ) ) {
-			return new jQuery.Event( src, props );
-		}
-
-		// Event object
-		if ( src && src.type ) {
-			this.originalEvent = src;
-			this.type = src.type;
-
-			// Events bubbling up the document may have been marked as prevented
-			// by a handler lower down the tree; reflect the correct value.
-			this.isDefaultPrevented = src.defaultPrevented ||
-					src.defaultPrevented === undefined &&
-
-					// Support: Android<4.0
-					src.returnValue === false ?
-				returnTrue :
-				returnFalse;
-
-		// Event type
-		} else {
-			this.type = src;
-		}
-
-		// Put explicitly provided properties onto the event object
-		if ( props ) {
-			jQuery.extend( this, props );
-		}
-
-		// Create a timestamp if incoming event doesn't have one
-		this.timeStamp = src && src.timeStamp || jQuery.now();
-
-		// Mark it as fixed
-		this[ jQuery.expando ] = true;
-	};
-
-	// jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
-	// http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
-	jQuery.Event.prototype = {
-		constructor: jQuery.Event,
-		isDefaultPrevented: returnFalse,
-		isPropagationStopped: returnFalse,
-		isImmediatePropagationStopped: returnFalse,
-
-		preventDefault: function() {
-			var e = this.originalEvent;
-
-			this.isDefaultPrevented = returnTrue;
-
-			if ( e ) {
-				e.preventDefault();
-			}
-		},
-		stopPropagation: function() {
-			var e = this.originalEvent;
-
-			this.isPropagationStopped = returnTrue;
-
-			if ( e ) {
-				e.stopPropagation();
-			}
-		},
-		stopImmediatePropagation: function() {
-			var e = this.originalEvent;
-
-			this.isImmediatePropagationStopped = returnTrue;
-
-			if ( e ) {
-				e.stopImmediatePropagation();
-			}
-
-			this.stopPropagation();
-		}
-	};
-
-	// Create mouseenter/leave events using mouseover/out and event-time checks
-	// so that event delegation works in jQuery.
-	// Do the same for pointerenter/pointerleave and pointerover/pointerout
-	//
-	// Support: Safari 7 only
-	// Safari sends mouseenter too often; see:
-	// https://code.google.com/p/chromium/issues/detail?id=470258
-	// for the description of the bug (it existed in older Chrome versions as well).
-	jQuery.each( {
-		mouseenter: "mouseover",
-		mouseleave: "mouseout",
-		pointerenter: "pointerover",
-		pointerleave: "pointerout"
-	}, function( orig, fix ) {
-		jQuery.event.special[ orig ] = {
-			delegateType: fix,
-			bindType: fix,
-
-			handle: function( event ) {
-				var ret,
-					target = this,
-					related = event.relatedTarget,
-					handleObj = event.handleObj;
-
-				// For mouseenter/leave call the handler if related is outside the target.
-				// NB: No relatedTarget if the mouse left/entered the browser window
-				if ( !related || ( related !== target && !jQuery.contains( target, related ) ) ) {
-					event.type = handleObj.origType;
-					ret = handleObj.handler.apply( this, arguments );
-					event.type = fix;
-				}
-				return ret;
-			}
-		};
-	} );
-
-	jQuery.fn.extend( {
-		on: function( types, selector, data, fn ) {
-			return on( this, types, selector, data, fn );
-		},
-		one: function( types, selector, data, fn ) {
-			return on( this, types, selector, data, fn, 1 );
-		},
-		off: function( types, selector, fn ) {
-			var handleObj, type;
-			if ( types && types.preventDefault && types.handleObj ) {
-
-				// ( event )  dispatched jQuery.Event
-				handleObj = types.handleObj;
-				jQuery( types.delegateTarget ).off(
-					handleObj.namespace ?
-						handleObj.origType + "." + handleObj.namespace :
-						handleObj.origType,
-					handleObj.selector,
-					handleObj.handler
-				);
-				return this;
-			}
-			if ( typeof types === "object" ) {
-
-				// ( types-object [, selector] )
-				for ( type in types ) {
-					this.off( type, selector, types[ type ] );
-				}
-				return this;
-			}
-			if ( selector === false || typeof selector === "function" ) {
-
-				// ( types [, fn] )
-				fn = selector;
-				selector = undefined;
-			}
-			if ( fn === false ) {
-				fn = returnFalse;
-			}
-			return this.each( function() {
-				jQuery.event.remove( this, types, fn, selector );
-			} );
-		}
-	} );
-
-
-	var
-		rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:-]+)[^>]*)\/>/gi,
-
-		// Support: IE 10-11, Edge 10240+
-		// In IE/Edge using regex groups here causes severe slowdowns.
-		// See https://connect.microsoft.com/IE/feedback/details/1736512/
-		rnoInnerhtml = /<script|<style|<link/i,
-
-		// checked="checked" or checked
-		rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
-		rscriptTypeMasked = /^true\/(.*)/,
-		rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
-
-	// Manipulating tables requires a tbody
-	function manipulationTarget( elem, content ) {
-		return jQuery.nodeName( elem, "table" ) &&
-			jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ?
-
-			elem.getElementsByTagName( "tbody" )[ 0 ] ||
-				elem.appendChild( elem.ownerDocument.createElement( "tbody" ) ) :
-			elem;
-	}
-
-	// Replace/restore the type attribute of script elements for safe DOM manipulation
-	function disableScript( elem ) {
-		elem.type = ( elem.getAttribute( "type" ) !== null ) + "/" + elem.type;
-		return elem;
-	}
-	function restoreScript( elem ) {
-		var match = rscriptTypeMasked.exec( elem.type );
-
-		if ( match ) {
-			elem.type = match[ 1 ];
-		} else {
-			elem.removeAttribute( "type" );
-		}
-
-		return elem;
-	}
-
-	function cloneCopyEvent( src, dest ) {
-		var i, l, type, pdataOld, pdataCur, udataOld, udataCur, events;
-
-		if ( dest.nodeType !== 1 ) {
-			return;
-		}
-
-		// 1. Copy private data: events, handlers, etc.
-		if ( dataPriv.hasData( src ) ) {
-			pdataOld = dataPriv.access( src );
-			pdataCur = dataPriv.set( dest, pdataOld );
-			events = pdataOld.events;
-
-			if ( events ) {
-				delete pdataCur.handle;
-				pdataCur.events = {};
-
-				for ( type in events ) {
-					for ( i = 0, l = events[ type ].length; i < l; i++ ) {
-						jQuery.event.add( dest, type, events[ type ][ i ] );
-					}
-				}
-			}
-		}
-
-		// 2. Copy user data
-		if ( dataUser.hasData( src ) ) {
-			udataOld = dataUser.access( src );
-			udataCur = jQuery.extend( {}, udataOld );
-
-			dataUser.set( dest, udataCur );
-		}
-	}
-
-	// Fix IE bugs, see support tests
-	function fixInput( src, dest ) {
-		var nodeName = dest.nodeName.toLowerCase();
-
-		// Fails to persist the checked state of a cloned checkbox or radio button.
-		if ( nodeName === "input" && rcheckableType.test( src.type ) ) {
-			dest.checked = src.checked;
-
-		// Fails to return the selected option to the default selected state when cloning options
-		} else if ( nodeName === "input" || nodeName === "textarea" ) {
-			dest.defaultValue = src.defaultValue;
-		}
-	}
-
-	function domManip( collection, args, callback, ignored ) {
-
-		// Flatten any nested arrays
-		args = concat.apply( [], args );
-
-		var fragment, first, scripts, hasScripts, node, doc,
-			i = 0,
-			l = collection.length,
-			iNoClone = l - 1,
-			value = args[ 0 ],
-			isFunction = jQuery.isFunction( value );
-
-		// We can't cloneNode fragments that contain checked, in WebKit
-		if ( isFunction ||
-				( l > 1 && typeof value === "string" &&
-					!support.checkClone && rchecked.test( value ) ) ) {
-			return collection.each( function( index ) {
-				var self = collection.eq( index );
-				if ( isFunction ) {
-					args[ 0 ] = value.call( this, index, self.html() );
-				}
-				domManip( self, args, callback, ignored );
-			} );
-		}
-
-		if ( l ) {
-			fragment = buildFragment( args, collection[ 0 ].ownerDocument, false, collection, ignored );
-			first = fragment.firstChild;
-
-			if ( fragment.childNodes.length === 1 ) {
-				fragment = first;
-			}
-
-			// Require either new content or an interest in ignored elements to invoke the callback
-			if ( first || ignored ) {
-				scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
-				hasScripts = scripts.length;
-
-				// Use the original fragment for the last item
-				// instead of the first because it can end up
-				// being emptied incorrectly in certain situations (#8070).
-				for ( ; i < l; i++ ) {
-					node = fragment;
-
-					if ( i !== iNoClone ) {
-						node = jQuery.clone( node, true, true );
-
-						// Keep references to cloned scripts for later restoration
-						if ( hasScripts ) {
-
-							// Support: Android<4.1, PhantomJS<2
-							// push.apply(_, arraylike) throws on ancient WebKit
-							jQuery.merge( scripts, getAll( node, "script" ) );
-						}
-					}
-
-					callback.call( collection[ i ], node, i );
-				}
-
-				if ( hasScripts ) {
-					doc = scripts[ scripts.length - 1 ].ownerDocument;
-
-					// Reenable scripts
-					jQuery.map( scripts, restoreScript );
-
-					// Evaluate executable scripts on first document insertion
-					for ( i = 0; i < hasScripts; i++ ) {
-						node = scripts[ i ];
-						if ( rscriptType.test( node.type || "" ) &&
-							!dataPriv.access( node, "globalEval" ) &&
-							jQuery.contains( doc, node ) ) {
-
-							if ( node.src ) {
-
-								// Optional AJAX dependency, but won't run scripts if not present
-								if ( jQuery._evalUrl ) {
-									jQuery._evalUrl( node.src );
-								}
-							} else {
-								jQuery.globalEval( node.textContent.replace( rcleanScript, "" ) );
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return collection;
-	}
-
-	function remove( elem, selector, keepData ) {
-		var node,
-			nodes = selector ? jQuery.filter( selector, elem ) : elem,
-			i = 0;
-
-		for ( ; ( node = nodes[ i ] ) != null; i++ ) {
-			if ( !keepData && node.nodeType === 1 ) {
-				jQuery.cleanData( getAll( node ) );
-			}
-
-			if ( node.parentNode ) {
-				if ( keepData && jQuery.contains( node.ownerDocument, node ) ) {
-					setGlobalEval( getAll( node, "script" ) );
-				}
-				node.parentNode.removeChild( node );
-			}
-		}
-
-		return elem;
-	}
-
-	jQuery.extend( {
-		htmlPrefilter: function( html ) {
-			return html.replace( rxhtmlTag, "<$1></$2>" );
-		},
-
-		clone: function( elem, dataAndEvents, deepDataAndEvents ) {
-			var i, l, srcElements, destElements,
-				clone = elem.cloneNode( true ),
-				inPage = jQuery.contains( elem.ownerDocument, elem );
-
-			// Fix IE cloning issues
-			if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
-					!jQuery.isXMLDoc( elem ) ) {
-
-				// We eschew Sizzle here for performance reasons: http://jsperf.com/getall-vs-sizzle/2
-				destElements = getAll( clone );
-				srcElements = getAll( elem );
-
-				for ( i = 0, l = srcElements.length; i < l; i++ ) {
-					fixInput( srcElements[ i ], destElements[ i ] );
-				}
-			}
-
-			// Copy the events from the original to the clone
-			if ( dataAndEvents ) {
-				if ( deepDataAndEvents ) {
-					srcElements = srcElements || getAll( elem );
-					destElements = destElements || getAll( clone );
-
-					for ( i = 0, l = srcElements.length; i < l; i++ ) {
-						cloneCopyEvent( srcElements[ i ], destElements[ i ] );
-					}
-				} else {
-					cloneCopyEvent( elem, clone );
-				}
-			}
-
-			// Preserve script evaluation history
-			destElements = getAll( clone, "script" );
-			if ( destElements.length > 0 ) {
-				setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
-			}
-
-			// Return the cloned set
-			return clone;
-		},
-
-		cleanData: function( elems ) {
-			var data, elem, type,
-				special = jQuery.event.special,
-				i = 0;
-
-			for ( ; ( elem = elems[ i ] ) !== undefined; i++ ) {
-				if ( acceptData( elem ) ) {
-					if ( ( data = elem[ dataPriv.expando ] ) ) {
-						if ( data.events ) {
-							for ( type in data.events ) {
-								if ( special[ type ] ) {
-									jQuery.event.remove( elem, type );
-
-								// This is a shortcut to avoid jQuery.event.remove's overhead
-								} else {
-									jQuery.removeEvent( elem, type, data.handle );
-								}
-							}
-						}
-
-						// Support: Chrome <= 35-45+
-						// Assign undefined instead of using delete, see Data#remove
-						elem[ dataPriv.expando ] = undefined;
-					}
-					if ( elem[ dataUser.expando ] ) {
-
-						// Support: Chrome <= 35-45+
-						// Assign undefined instead of using delete, see Data#remove
-						elem[ dataUser.expando ] = undefined;
-					}
-				}
-			}
-		}
-	} );
-
-	jQuery.fn.extend( {
-
-		// Keep domManip exposed until 3.0 (gh-2225)
-		domManip: domManip,
-
-		detach: function( selector ) {
-			return remove( this, selector, true );
-		},
-
-		remove: function( selector ) {
-			return remove( this, selector );
-		},
-
-		text: function( value ) {
-			return access( this, function( value ) {
-				return value === undefined ?
-					jQuery.text( this ) :
-					this.empty().each( function() {
-						if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
-							this.textContent = value;
-						}
-					} );
-			}, null, value, arguments.length );
-		},
-
-		append: function() {
-			return domManip( this, arguments, function( elem ) {
-				if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
-					var target = manipulationTarget( this, elem );
-					target.appendChild( elem );
-				}
-			} );
-		},
-
-		prepend: function() {
-			return domManip( this, arguments, function( elem ) {
-				if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
-					var target = manipulationTarget( this, elem );
-					target.insertBefore( elem, target.firstChild );
-				}
-			} );
-		},
-
-		before: function() {
-			return domManip( this, arguments, function( elem ) {
-				if ( this.parentNode ) {
-					this.parentNode.insertBefore( elem, this );
-				}
-			} );
-		},
-
-		after: function() {
-			return domManip( this, arguments, function( elem ) {
-				if ( this.parentNode ) {
-					this.parentNode.insertBefore( elem, this.nextSibling );
-				}
-			} );
-		},
-
-		empty: function() {
-			var elem,
-				i = 0;
-
-			for ( ; ( elem = this[ i ] ) != null; i++ ) {
-				if ( elem.nodeType === 1 ) {
-
-					// Prevent memory leaks
-					jQuery.cleanData( getAll( elem, false ) );
-
-					// Remove any remaining nodes
-					elem.textContent = "";
-				}
-			}
-
-			return this;
-		},
-
-		clone: function( dataAndEvents, deepDataAndEvents ) {
-			dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
-			deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
-
-			return this.map( function() {
-				return jQuery.clone( this, dataAndEvents, deepDataAndEvents );
-			} );
-		},
-
-		html: function( value ) {
-			return access( this, function( value ) {
-				var elem = this[ 0 ] || {},
-					i = 0,
-					l = this.length;
-
-				if ( value === undefined && elem.nodeType === 1 ) {
-					return elem.innerHTML;
-				}
-
-				// See if we can take a shortcut and just use innerHTML
-				if ( typeof value === "string" && !rnoInnerhtml.test( value ) &&
-					!wrapMap[ ( rtagName.exec( value ) || [ "", "" ] )[ 1 ].toLowerCase() ] ) {
-
-					value = jQuery.htmlPrefilter( value );
-
-					try {
-						for ( ; i < l; i++ ) {
-							elem = this[ i ] || {};
-
-							// Remove element nodes and prevent memory leaks
-							if ( elem.nodeType === 1 ) {
-								jQuery.cleanData( getAll( elem, false ) );
-								elem.innerHTML = value;
-							}
-						}
-
-						elem = 0;
-
-					// If using innerHTML throws an exception, use the fallback method
-					} catch ( e ) {}
-				}
-
-				if ( elem ) {
-					this.empty().append( value );
-				}
-			}, null, value, arguments.length );
-		},
-
-		replaceWith: function() {
-			var ignored = [];
-
-			// Make the changes, replacing each non-ignored context element with the new content
-			return domManip( this, arguments, function( elem ) {
-				var parent = this.parentNode;
-
-				if ( jQuery.inArray( this, ignored ) < 0 ) {
-					jQuery.cleanData( getAll( this ) );
-					if ( parent ) {
-						parent.replaceChild( elem, this );
-					}
-				}
-
-			// Force callback invocation
-			}, ignored );
-		}
-	} );
-
-	jQuery.each( {
-		appendTo: "append",
-		prependTo: "prepend",
-		insertBefore: "before",
-		insertAfter: "after",
-		replaceAll: "replaceWith"
-	}, function( name, original ) {
-		jQuery.fn[ name ] = function( selector ) {
-			var elems,
-				ret = [],
-				insert = jQuery( selector ),
-				last = insert.length - 1,
-				i = 0;
-
-			for ( ; i <= last; i++ ) {
-				elems = i === last ? this : this.clone( true );
-				jQuery( insert[ i ] )[ original ]( elems );
-
-				// Support: QtWebKit
-				// .get() because push.apply(_, arraylike) throws
-				push.apply( ret, elems.get() );
-			}
-
-			return this.pushStack( ret );
-		};
-	} );
-
-
-	var iframe,
-		elemdisplay = {
-
-			// Support: Firefox
-			// We have to pre-define these values for FF (#10227)
-			HTML: "block",
-			BODY: "block"
-		};
-
-	/**
-	 * Retrieve the actual display of a element
-	 * @param {String} name nodeName of the element
-	 * @param {Object} doc Document object
-	 */
-
-	// Called only from within defaultDisplay
-	function actualDisplay( name, doc ) {
-		var elem = jQuery( doc.createElement( name ) ).appendTo( doc.body ),
-
-			display = jQuery.css( elem[ 0 ], "display" );
-
-		// We don't have any data stored on the element,
-		// so use "detach" method as fast way to get rid of the element
-		elem.detach();
-
-		return display;
-	}
-
-	/**
-	 * Try to determine the default display value of an element
-	 * @param {String} nodeName
-	 */
-	function defaultDisplay( nodeName ) {
-		var doc = document,
-			display = elemdisplay[ nodeName ];
-
-		if ( !display ) {
-			display = actualDisplay( nodeName, doc );
-
-			// If the simple way fails, read from inside an iframe
-			if ( display === "none" || !display ) {
-
-				// Use the already-created iframe if possible
-				iframe = ( iframe || jQuery( "<iframe frameborder='0' width='0' height='0'/>" ) )
-					.appendTo( doc.documentElement );
-
-				// Always write a new HTML skeleton so Webkit and Firefox don't choke on reuse
-				doc = iframe[ 0 ].contentDocument;
-
-				// Support: IE
-				doc.write();
-				doc.close();
-
-				display = actualDisplay( nodeName, doc );
-				iframe.detach();
-			}
-
-			// Store the correct default display
-			elemdisplay[ nodeName ] = display;
-		}
-
-		return display;
-	}
-	var rmargin = ( /^margin/ );
-
-	var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
-
-	var getStyles = function( elem ) {
-
-			// Support: IE<=11+, Firefox<=30+ (#15098, #14150)
-			// IE throws on elements created in popups
-			// FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
-			var view = elem.ownerDocument.defaultView;
-
-			if ( !view || !view.opener ) {
-				view = window;
-			}
-
-			return view.getComputedStyle( elem );
-		};
-
-	var swap = function( elem, options, callback, args ) {
-		var ret, name,
-			old = {};
-
-		// Remember the old values, and insert the new ones
-		for ( name in options ) {
-			old[ name ] = elem.style[ name ];
-			elem.style[ name ] = options[ name ];
-		}
-
-		ret = callback.apply( elem, args || [] );
-
-		// Revert the old values
-		for ( name in options ) {
-			elem.style[ name ] = old[ name ];
-		}
-
-		return ret;
-	};
-
-
-	var documentElement = document.documentElement;
-
-
-
-	( function() {
-		var pixelPositionVal, boxSizingReliableVal, pixelMarginRightVal, reliableMarginLeftVal,
-			container = document.createElement( "div" ),
-			div = document.createElement( "div" );
-
-		// Finish early in limited (non-browser) environments
-		if ( !div.style ) {
-			return;
-		}
-
-		// Support: IE9-11+
-		// Style of cloned element affects source element cloned (#8908)
-		div.style.backgroundClip = "content-box";
-		div.cloneNode( true ).style.backgroundClip = "";
-		support.clearCloneStyle = div.style.backgroundClip === "content-box";
-
-		container.style.cssText = "border:0;width:8px;height:0;top:0;left:-9999px;" +
-			"padding:0;margin-top:1px;position:absolute";
-		container.appendChild( div );
-
-		// Executing both pixelPosition & boxSizingReliable tests require only one layout
-		// so they're executed at the same time to save the second computation.
-		function computeStyleTests() {
-			div.style.cssText =
-
-				// Support: Firefox<29, Android 2.3
-				// Vendor-prefix box-sizing
-				"-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;" +
-				"position:relative;display:block;" +
-				"margin:auto;border:1px;padding:1px;" +
-				"top:1%;width:50%";
-			div.innerHTML = "";
-			documentElement.appendChild( container );
-
-			var divStyle = window.getComputedStyle( div );
-			pixelPositionVal = divStyle.top !== "1%";
-			reliableMarginLeftVal = divStyle.marginLeft === "2px";
-			boxSizingReliableVal = divStyle.width === "4px";
-
-			// Support: Android 4.0 - 4.3 only
-			// Some styles come back with percentage values, even though they shouldn't
-			div.style.marginRight = "50%";
-			pixelMarginRightVal = divStyle.marginRight === "4px";
-
-			documentElement.removeChild( container );
-		}
-
-		jQuery.extend( support, {
-			pixelPosition: function() {
-
-				// This test is executed only once but we still do memoizing
-				// since we can use the boxSizingReliable pre-computing.
-				// No need to check if the test was already performed, though.
-				computeStyleTests();
-				return pixelPositionVal;
-			},
-			boxSizingReliable: function() {
-				if ( boxSizingReliableVal == null ) {
-					computeStyleTests();
-				}
-				return boxSizingReliableVal;
-			},
-			pixelMarginRight: function() {
-
-				// Support: Android 4.0-4.3
-				// We're checking for boxSizingReliableVal here instead of pixelMarginRightVal
-				// since that compresses better and they're computed together anyway.
-				if ( boxSizingReliableVal == null ) {
-					computeStyleTests();
-				}
-				return pixelMarginRightVal;
-			},
-			reliableMarginLeft: function() {
-
-				// Support: IE <=8 only, Android 4.0 - 4.3 only, Firefox <=3 - 37
-				if ( boxSizingReliableVal == null ) {
-					computeStyleTests();
-				}
-				return reliableMarginLeftVal;
-			},
-			reliableMarginRight: function() {
-
-				// Support: Android 2.3
-				// Check if div with explicit width and no margin-right incorrectly
-				// gets computed margin-right based on width of container. (#3333)
-				// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
-				// This support function is only executed once so no memoizing is needed.
-				var ret,
-					marginDiv = div.appendChild( document.createElement( "div" ) );
-
-				// Reset CSS: box-sizing; display; margin; border; padding
-				marginDiv.style.cssText = div.style.cssText =
-
-					// Support: Android 2.3
-					// Vendor-prefix box-sizing
-					"-webkit-box-sizing:content-box;box-sizing:content-box;" +
-					"display:block;margin:0;border:0;padding:0";
-				marginDiv.style.marginRight = marginDiv.style.width = "0";
-				div.style.width = "1px";
-				documentElement.appendChild( container );
-
-				ret = !parseFloat( window.getComputedStyle( marginDiv ).marginRight );
-
-				documentElement.removeChild( container );
-				div.removeChild( marginDiv );
-
-				return ret;
-			}
-		} );
-	} )();
-
-
-	function curCSS( elem, name, computed ) {
-		var width, minWidth, maxWidth, ret,
-			style = elem.style;
-
-		computed = computed || getStyles( elem );
-		ret = computed ? computed.getPropertyValue( name ) || computed[ name ] : undefined;
-
-		// Support: Opera 12.1x only
-		// Fall back to style even without computed
-		// computed is undefined for elems on document fragments
-		if ( ( ret === "" || ret === undefined ) && !jQuery.contains( elem.ownerDocument, elem ) ) {
-			ret = jQuery.style( elem, name );
-		}
-
-		// Support: IE9
-		// getPropertyValue is only needed for .css('filter') (#12537)
-		if ( computed ) {
-
-			// A tribute to the "awesome hack by Dean Edwards"
-			// Android Browser returns percentage for some values,
-			// but width seems to be reliably pixels.
-			// This is against the CSSOM draft spec:
-			// http://dev.w3.org/csswg/cssom/#resolved-values
-			if ( !support.pixelMarginRight() && rnumnonpx.test( ret ) && rmargin.test( name ) ) {
-
-				// Remember the original values
-				width = style.width;
-				minWidth = style.minWidth;
-				maxWidth = style.maxWidth;
-
-				// Put in the new values to get a computed value out
-				style.minWidth = style.maxWidth = style.width = ret;
-				ret = computed.width;
-
-				// Revert the changed values
-				style.width = width;
-				style.minWidth = minWidth;
-				style.maxWidth = maxWidth;
-			}
-		}
-
-		return ret !== undefined ?
-
-			// Support: IE9-11+
-			// IE returns zIndex value as an integer.
-			ret + "" :
-			ret;
-	}
-
-
-	function addGetHookIf( conditionFn, hookFn ) {
-
-		// Define the hook, we'll check on the first run if it's really needed.
-		return {
-			get: function() {
-				if ( conditionFn() ) {
-
-					// Hook not needed (or it's not possible to use it due
-					// to missing dependency), remove it.
-					delete this.get;
-					return;
-				}
-
-				// Hook needed; redefine it so that the support test is not executed again.
-				return ( this.get = hookFn ).apply( this, arguments );
-			}
-		};
-	}
-
-
-	var
-
-		// Swappable if display is none or starts with table
-		// except "table", "table-cell", or "table-caption"
-		// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-		rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-
-		cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-		cssNormalTransform = {
-			letterSpacing: "0",
-			fontWeight: "400"
-		},
-
-		cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
-		emptyStyle = document.createElement( "div" ).style;
-
-	// Return a css property mapped to a potentially vendor prefixed property
-	function vendorPropName( name ) {
-
-		// Shortcut for names that are not vendor prefixed
-		if ( name in emptyStyle ) {
-			return name;
-		}
-
-		// Check for vendor prefixed names
-		var capName = name[ 0 ].toUpperCase() + name.slice( 1 ),
-			i = cssPrefixes.length;
-
-		while ( i-- ) {
-			name = cssPrefixes[ i ] + capName;
-			if ( name in emptyStyle ) {
-				return name;
-			}
-		}
-	}
-
-	function setPositiveNumber( elem, value, subtract ) {
-
-		// Any relative (+/-) values have already been
-		// normalized at this point
-		var matches = rcssNum.exec( value );
-		return matches ?
-
-			// Guard against undefined "subtract", e.g., when used as in cssHooks
-			Math.max( 0, matches[ 2 ] - ( subtract || 0 ) ) + ( matches[ 3 ] || "px" ) :
-			value;
-	}
-
-	function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
-		var i = extra === ( isBorderBox ? "border" : "content" ) ?
-
-			// If we already have the right measurement, avoid augmentation
-			4 :
-
-			// Otherwise initialize for horizontal or vertical properties
-			name === "width" ? 1 : 0,
-
-			val = 0;
-
-		for ( ; i < 4; i += 2 ) {
-
-			// Both box models exclude margin, so add it if we want it
-			if ( extra === "margin" ) {
-				val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
-			}
-
-			if ( isBorderBox ) {
-
-				// border-box includes padding, so remove it if we want content
-				if ( extra === "content" ) {
-					val -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
-				}
-
-				// At this point, extra isn't border nor margin, so remove border
-				if ( extra !== "margin" ) {
-					val -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
-				}
-			} else {
-
-				// At this point, extra isn't content, so add padding
-				val += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
-
-				// At this point, extra isn't content nor padding, so add border
-				if ( extra !== "padding" ) {
-					val += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
-				}
-			}
-		}
-
-		return val;
-	}
-
-	function getWidthOrHeight( elem, name, extra ) {
-
-		// Start with offset property, which is equivalent to the border-box value
-		var valueIsBorderBox = true,
-			val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
-			styles = getStyles( elem ),
-			isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-		// Support: IE11 only
-		// In IE 11 fullscreen elements inside of an iframe have
-		// 100x too small dimensions (gh-1764).
-		if ( document.msFullscreenElement && window.top !== window ) {
-
-			// Support: IE11 only
-			// Running getBoundingClientRect on a disconnected node
-			// in IE throws an error.
-			if ( elem.getClientRects().length ) {
-				val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-			}
-		}
-
-		// Some non-html elements return undefined for offsetWidth, so check for null/undefined
-		// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
-		// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
-		if ( val <= 0 || val == null ) {
-
-			// Fall back to computed then uncomputed css if necessary
-			val = curCSS( elem, name, styles );
-			if ( val < 0 || val == null ) {
-				val = elem.style[ name ];
-			}
-
-			// Computed unit is not pixels. Stop here and return.
-			if ( rnumnonpx.test( val ) ) {
-				return val;
-			}
-
-			// Check for style in case a browser which returns unreliable values
-			// for getComputedStyle silently falls back to the reliable elem.style
-			valueIsBorderBox = isBorderBox &&
-				( support.boxSizingReliable() || val === elem.style[ name ] );
-
-			// Normalize "", auto, and prepare for extra
-			val = parseFloat( val ) || 0;
-		}
-
-		// Use the active box-sizing model to add/subtract irrelevant styles
-		return ( val +
-			augmentWidthOrHeight(
-				elem,
-				name,
-				extra || ( isBorderBox ? "border" : "content" ),
-				valueIsBorderBox,
-				styles
-			)
-		) + "px";
-	}
-
-	function showHide( elements, show ) {
-		var display, elem, hidden,
-			values = [],
-			index = 0,
-			length = elements.length;
-
-		for ( ; index < length; index++ ) {
-			elem = elements[ index ];
-			if ( !elem.style ) {
-				continue;
-			}
-
-			values[ index ] = dataPriv.get( elem, "olddisplay" );
-			display = elem.style.display;
-			if ( show ) {
-
-				// Reset the inline display of this element to learn if it is
-				// being hidden by cascaded rules or not
-				if ( !values[ index ] && display === "none" ) {
-					elem.style.display = "";
-				}
-
-				// Set elements which have been overridden with display: none
-				// in a stylesheet to whatever the default browser style is
-				// for such an element
-				if ( elem.style.display === "" && isHidden( elem ) ) {
-					values[ index ] = dataPriv.access(
-						elem,
-						"olddisplay",
-						defaultDisplay( elem.nodeName )
-					);
-				}
-			} else {
-				hidden = isHidden( elem );
-
-				if ( display !== "none" || !hidden ) {
-					dataPriv.set(
-						elem,
-						"olddisplay",
-						hidden ? display : jQuery.css( elem, "display" )
-					);
-				}
-			}
-		}
-
-		// Set the display of most of the elements in a second loop
-		// to avoid the constant reflow
-		for ( index = 0; index < length; index++ ) {
-			elem = elements[ index ];
-			if ( !elem.style ) {
-				continue;
-			}
-			if ( !show || elem.style.display === "none" || elem.style.display === "" ) {
-				elem.style.display = show ? values[ index ] || "" : "none";
-			}
-		}
-
-		return elements;
-	}
-
-	jQuery.extend( {
-
-		// Add in style property hooks for overriding the default
-		// behavior of getting and setting a style property
-		cssHooks: {
-			opacity: {
-				get: function( elem, computed ) {
-					if ( computed ) {
-
-						// We should always get a number back from opacity
-						var ret = curCSS( elem, "opacity" );
-						return ret === "" ? "1" : ret;
-					}
-				}
-			}
-		},
-
-		// Don't automatically add "px" to these possibly-unitless properties
-		cssNumber: {
-			"animationIterationCount": true,
-			"columnCount": true,
-			"fillOpacity": true,
-			"flexGrow": true,
-			"flexShrink": true,
-			"fontWeight": true,
-			"lineHeight": true,
-			"opacity": true,
-			"order": true,
-			"orphans": true,
-			"widows": true,
-			"zIndex": true,
-			"zoom": true
-		},
-
-		// Add in properties whose names you wish to fix before
-		// setting or getting the value
-		cssProps: {
-			"float": "cssFloat"
-		},
-
-		// Get and set the style property on a DOM Node
-		style: function( elem, name, value, extra ) {
-
-			// Don't set styles on text and comment nodes
-			if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
-				return;
-			}
-
-			// Make sure that we're working with the right name
-			var ret, type, hooks,
-				origName = jQuery.camelCase( name ),
-				style = elem.style;
-
-			name = jQuery.cssProps[ origName ] ||
-				( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
-
-			// Gets hook for the prefixed version, then unprefixed version
-			hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
-
-			// Check if we're setting a value
-			if ( value !== undefined ) {
-				type = typeof value;
-
-				// Convert "+=" or "-=" to relative numbers (#7345)
-				if ( type === "string" && ( ret = rcssNum.exec( value ) ) && ret[ 1 ] ) {
-					value = adjustCSS( elem, name, ret );
-
-					// Fixes bug #9237
-					type = "number";
-				}
-
-				// Make sure that null and NaN values aren't set (#7116)
-				if ( value == null || value !== value ) {
-					return;
-				}
-
-				// If a number was passed in, add the unit (except for certain CSS properties)
-				if ( type === "number" ) {
-					value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
-				}
-
-				// Support: IE9-11+
-				// background-* props affect original clone's values
-				if ( !support.clearCloneStyle && value === "" && name.indexOf( "background" ) === 0 ) {
-					style[ name ] = "inherit";
-				}
-
-				// If a hook was provided, use that value, otherwise just set the specified value
-				if ( !hooks || !( "set" in hooks ) ||
-					( value = hooks.set( elem, value, extra ) ) !== undefined ) {
-
-					style[ name ] = value;
-				}
-
-			} else {
-
-				// If a hook was provided get the non-computed value from there
-				if ( hooks && "get" in hooks &&
-					( ret = hooks.get( elem, false, extra ) ) !== undefined ) {
-
-					return ret;
-				}
-
-				// Otherwise just get the value from the style object
-				return style[ name ];
-			}
-		},
-
-		css: function( elem, name, extra, styles ) {
-			var val, num, hooks,
-				origName = jQuery.camelCase( name );
-
-			// Make sure that we're working with the right name
-			name = jQuery.cssProps[ origName ] ||
-				( jQuery.cssProps[ origName ] = vendorPropName( origName ) || origName );
-
-			// Try prefixed name followed by the unprefixed name
-			hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
-
-			// If a hook was provided get the computed value from there
-			if ( hooks && "get" in hooks ) {
-				val = hooks.get( elem, true, extra );
-			}
-
-			// Otherwise, if a way to get the computed value exists, use that
-			if ( val === undefined ) {
-				val = curCSS( elem, name, styles );
-			}
-
-			// Convert "normal" to computed value
-			if ( val === "normal" && name in cssNormalTransform ) {
-				val = cssNormalTransform[ name ];
-			}
-
-			// Make numeric if forced or a qualifier was provided and val looks numeric
-			if ( extra === "" || extra ) {
-				num = parseFloat( val );
-				return extra === true || isFinite( num ) ? num || 0 : val;
-			}
-			return val;
-		}
-	} );
-
-	jQuery.each( [ "height", "width" ], function( i, name ) {
-		jQuery.cssHooks[ name ] = {
-			get: function( elem, computed, extra ) {
-				if ( computed ) {
-
-					// Certain elements can have dimension info if we invisibly show them
-					// but it must have a current display style that would benefit
-					return rdisplayswap.test( jQuery.css( elem, "display" ) ) &&
-						elem.offsetWidth === 0 ?
-							swap( elem, cssShow, function() {
-								return getWidthOrHeight( elem, name, extra );
-							} ) :
-							getWidthOrHeight( elem, name, extra );
-				}
-			},
-
-			set: function( elem, value, extra ) {
-				var matches,
-					styles = extra && getStyles( elem ),
-					subtract = extra && augmentWidthOrHeight(
-						elem,
-						name,
-						extra,
-						jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-						styles
-					);
-
-				// Convert to pixels if value adjustment is needed
-				if ( subtract && ( matches = rcssNum.exec( value ) ) &&
-					( matches[ 3 ] || "px" ) !== "px" ) {
-
-					elem.style[ name ] = value;
-					value = jQuery.css( elem, name );
-				}
-
-				return setPositiveNumber( elem, value, subtract );
-			}
-		};
-	} );
-
-	jQuery.cssHooks.marginLeft = addGetHookIf( support.reliableMarginLeft,
-		function( elem, computed ) {
-			if ( computed ) {
-				return ( parseFloat( curCSS( elem, "marginLeft" ) ) ||
-					elem.getBoundingClientRect().left -
-						swap( elem, { marginLeft: 0 }, function() {
-							return elem.getBoundingClientRect().left;
-						} )
-					) + "px";
-			}
-		}
-	);
-
-	// Support: Android 2.3
-	jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
-		function( elem, computed ) {
-			if ( computed ) {
-				return swap( elem, { "display": "inline-block" },
-					curCSS, [ elem, "marginRight" ] );
-			}
-		}
-	);
-
-	// These hooks are used by animate to expand properties
-	jQuery.each( {
-		margin: "",
-		padding: "",
-		border: "Width"
-	}, function( prefix, suffix ) {
-		jQuery.cssHooks[ prefix + suffix ] = {
-			expand: function( value ) {
-				var i = 0,
-					expanded = {},
-
-					// Assumes a single number if not a string
-					parts = typeof value === "string" ? value.split( " " ) : [ value ];
-
-				for ( ; i < 4; i++ ) {
-					expanded[ prefix + cssExpand[ i ] + suffix ] =
-						parts[ i ] || parts[ i - 2 ] || parts[ 0 ];
-				}
-
-				return expanded;
-			}
-		};
-
-		if ( !rmargin.test( prefix ) ) {
-			jQuery.cssHooks[ prefix + suffix ].set = setPositiveNumber;
-		}
-	} );
-
-	jQuery.fn.extend( {
-		css: function( name, value ) {
-			return access( this, function( elem, name, value ) {
-				var styles, len,
-					map = {},
-					i = 0;
-
-				if ( jQuery.isArray( name ) ) {
-					styles = getStyles( elem );
-					len = name.length;
-
-					for ( ; i < len; i++ ) {
-						map[ name[ i ] ] = jQuery.css( elem, name[ i ], false, styles );
-					}
-
-					return map;
-				}
-
-				return value !== undefined ?
-					jQuery.style( elem, name, value ) :
-					jQuery.css( elem, name );
-			}, name, value, arguments.length > 1 );
-		},
-		show: function() {
-			return showHide( this, true );
-		},
-		hide: function() {
-			return showHide( this );
-		},
-		toggle: function( state ) {
-			if ( typeof state === "boolean" ) {
-				return state ? this.show() : this.hide();
-			}
-
-			return this.each( function() {
-				if ( isHidden( this ) ) {
-					jQuery( this ).show();
-				} else {
-					jQuery( this ).hide();
-				}
-			} );
-		}
-	} );
-
-
-	function Tween( elem, options, prop, end, easing ) {
-		return new Tween.prototype.init( elem, options, prop, end, easing );
-	}
-	jQuery.Tween = Tween;
-
-	Tween.prototype = {
-		constructor: Tween,
-		init: function( elem, options, prop, end, easing, unit ) {
-			this.elem = elem;
-			this.prop = prop;
-			this.easing = easing || jQuery.easing._default;
-			this.options = options;
-			this.start = this.now = this.cur();
-			this.end = end;
-			this.unit = unit || ( jQuery.cssNumber[ prop ] ? "" : "px" );
-		},
-		cur: function() {
-			var hooks = Tween.propHooks[ this.prop ];
-
-			return hooks && hooks.get ?
-				hooks.get( this ) :
-				Tween.propHooks._default.get( this );
-		},
-		run: function( percent ) {
-			var eased,
-				hooks = Tween.propHooks[ this.prop ];
-
-			if ( this.options.duration ) {
-				this.pos = eased = jQuery.easing[ this.easing ](
-					percent, this.options.duration * percent, 0, 1, this.options.duration
-				);
-			} else {
-				this.pos = eased = percent;
-			}
-			this.now = ( this.end - this.start ) * eased + this.start;
-
-			if ( this.options.step ) {
-				this.options.step.call( this.elem, this.now, this );
-			}
-
-			if ( hooks && hooks.set ) {
-				hooks.set( this );
-			} else {
-				Tween.propHooks._default.set( this );
-			}
-			return this;
-		}
-	};
-
-	Tween.prototype.init.prototype = Tween.prototype;
-
-	Tween.propHooks = {
-		_default: {
-			get: function( tween ) {
-				var result;
-
-				// Use a property on the element directly when it is not a DOM element,
-				// or when there is no matching style property that exists.
-				if ( tween.elem.nodeType !== 1 ||
-					tween.elem[ tween.prop ] != null && tween.elem.style[ tween.prop ] == null ) {
-					return tween.elem[ tween.prop ];
-				}
-
-				// Passing an empty string as a 3rd parameter to .css will automatically
-				// attempt a parseFloat and fallback to a string if the parse fails.
-				// Simple values such as "10px" are parsed to Float;
-				// complex values such as "rotate(1rad)" are returned as-is.
-				result = jQuery.css( tween.elem, tween.prop, "" );
-
-				// Empty strings, null, undefined and "auto" are converted to 0.
-				return !result || result === "auto" ? 0 : result;
-			},
-			set: function( tween ) {
-
-				// Use step hook for back compat.
-				// Use cssHook if its there.
-				// Use .style if available and use plain properties where available.
-				if ( jQuery.fx.step[ tween.prop ] ) {
-					jQuery.fx.step[ tween.prop ]( tween );
-				} else if ( tween.elem.nodeType === 1 &&
-					( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null ||
-						jQuery.cssHooks[ tween.prop ] ) ) {
-					jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
-				} else {
-					tween.elem[ tween.prop ] = tween.now;
-				}
-			}
-		}
-	};
-
-	// Support: IE9
-	// Panic based approach to setting things on disconnected nodes
-	Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
-		set: function( tween ) {
-			if ( tween.elem.nodeType && tween.elem.parentNode ) {
-				tween.elem[ tween.prop ] = tween.now;
-			}
-		}
-	};
-
-	jQuery.easing = {
-		linear: function( p ) {
-			return p;
-		},
-		swing: function( p ) {
-			return 0.5 - Math.cos( p * Math.PI ) / 2;
-		},
-		_default: "swing"
-	};
-
-	jQuery.fx = Tween.prototype.init;
-
-	// Back Compat <1.8 extension point
-	jQuery.fx.step = {};
-
-
-
-
-	var
-		fxNow, timerId,
-		rfxtypes = /^(?:toggle|show|hide)$/,
-		rrun = /queueHooks$/;
-
-	// Animations created synchronously will run synchronously
-	function createFxNow() {
-		window.setTimeout( function() {
-			fxNow = undefined;
-		} );
-		return ( fxNow = jQuery.now() );
-	}
-
-	// Generate parameters to create a standard animation
-	function genFx( type, includeWidth ) {
-		var which,
-			i = 0,
-			attrs = { height: type };
-
-		// If we include width, step value is 1 to do all cssExpand values,
-		// otherwise step value is 2 to skip over Left and Right
-		includeWidth = includeWidth ? 1 : 0;
-		for ( ; i < 4 ; i += 2 - includeWidth ) {
-			which = cssExpand[ i ];
-			attrs[ "margin" + which ] = attrs[ "padding" + which ] = type;
-		}
-
-		if ( includeWidth ) {
-			attrs.opacity = attrs.width = type;
-		}
-
-		return attrs;
-	}
-
-	function createTween( value, prop, animation ) {
-		var tween,
-			collection = ( Animation.tweeners[ prop ] || [] ).concat( Animation.tweeners[ "*" ] ),
-			index = 0,
-			length = collection.length;
-		for ( ; index < length; index++ ) {
-			if ( ( tween = collection[ index ].call( animation, prop, value ) ) ) {
-
-				// We're done with this property
-				return tween;
-			}
-		}
-	}
-
-	function defaultPrefilter( elem, props, opts ) {
-		/* jshint validthis: true */
-		var prop, value, toggle, tween, hooks, oldfire, display, checkDisplay,
-			anim = this,
-			orig = {},
-			style = elem.style,
-			hidden = elem.nodeType && isHidden( elem ),
-			dataShow = dataPriv.get( elem, "fxshow" );
-
-		// Handle queue: false promises
-		if ( !opts.queue ) {
-			hooks = jQuery._queueHooks( elem, "fx" );
-			if ( hooks.unqueued == null ) {
-				hooks.unqueued = 0;
-				oldfire = hooks.empty.fire;
-				hooks.empty.fire = function() {
-					if ( !hooks.unqueued ) {
-						oldfire();
-					}
-				};
-			}
-			hooks.unqueued++;
-
-			anim.always( function() {
-
-				// Ensure the complete handler is called before this completes
-				anim.always( function() {
-					hooks.unqueued--;
-					if ( !jQuery.queue( elem, "fx" ).length ) {
-						hooks.empty.fire();
-					}
-				} );
-			} );
-		}
-
-		// Height/width overflow pass
-		if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
-
-			// Make sure that nothing sneaks out
-			// Record all 3 overflow attributes because IE9-10 do not
-			// change the overflow attribute when overflowX and
-			// overflowY are set to the same value
-			opts.overflow = [ style.overflow, style.overflowX, style.overflowY ];
-
-			// Set display property to inline-block for height/width
-			// animations on inline elements that are having width/height animated
-			display = jQuery.css( elem, "display" );
-
-			// Test default display if display is currently "none"
-			checkDisplay = display === "none" ?
-				dataPriv.get( elem, "olddisplay" ) || defaultDisplay( elem.nodeName ) : display;
-
-			if ( checkDisplay === "inline" && jQuery.css( elem, "float" ) === "none" ) {
-				style.display = "inline-block";
-			}
-		}
-
-		if ( opts.overflow ) {
-			style.overflow = "hidden";
-			anim.always( function() {
-				style.overflow = opts.overflow[ 0 ];
-				style.overflowX = opts.overflow[ 1 ];
-				style.overflowY = opts.overflow[ 2 ];
-			} );
-		}
-
-		// show/hide pass
-		for ( prop in props ) {
-			value = props[ prop ];
-			if ( rfxtypes.exec( value ) ) {
-				delete props[ prop ];
-				toggle = toggle || value === "toggle";
-				if ( value === ( hidden ? "hide" : "show" ) ) {
-
-					// If there is dataShow left over from a stopped hide or show
-					// and we are going to proceed with show, we should pretend to be hidden
-					if ( value === "show" && dataShow && dataShow[ prop ] !== undefined ) {
-						hidden = true;
-					} else {
-						continue;
-					}
-				}
-				orig[ prop ] = dataShow && dataShow[ prop ] || jQuery.style( elem, prop );
-
-			// Any non-fx value stops us from restoring the original display value
-			} else {
-				display = undefined;
-			}
-		}
-
-		if ( !jQuery.isEmptyObject( orig ) ) {
-			if ( dataShow ) {
-				if ( "hidden" in dataShow ) {
-					hidden = dataShow.hidden;
-				}
-			} else {
-				dataShow = dataPriv.access( elem, "fxshow", {} );
-			}
-
-			// Store state if its toggle - enables .stop().toggle() to "reverse"
-			if ( toggle ) {
-				dataShow.hidden = !hidden;
-			}
-			if ( hidden ) {
-				jQuery( elem ).show();
-			} else {
-				anim.done( function() {
-					jQuery( elem ).hide();
-				} );
-			}
-			anim.done( function() {
-				var prop;
-
-				dataPriv.remove( elem, "fxshow" );
-				for ( prop in orig ) {
-					jQuery.style( elem, prop, orig[ prop ] );
-				}
-			} );
-			for ( prop in orig ) {
-				tween = createTween( hidden ? dataShow[ prop ] : 0, prop, anim );
-
-				if ( !( prop in dataShow ) ) {
-					dataShow[ prop ] = tween.start;
-					if ( hidden ) {
-						tween.end = tween.start;
-						tween.start = prop === "width" || prop === "height" ? 1 : 0;
-					}
-				}
-			}
-
-		// If this is a noop like .hide().hide(), restore an overwritten display value
-		} else if ( ( display === "none" ? defaultDisplay( elem.nodeName ) : display ) === "inline" ) {
-			style.display = display;
-		}
-	}
-
-	function propFilter( props, specialEasing ) {
-		var index, name, easing, value, hooks;
-
-		// camelCase, specialEasing and expand cssHook pass
-		for ( index in props ) {
-			name = jQuery.camelCase( index );
-			easing = specialEasing[ name ];
-			value = props[ index ];
-			if ( jQuery.isArray( value ) ) {
-				easing = value[ 1 ];
-				value = props[ index ] = value[ 0 ];
-			}
-
-			if ( index !== name ) {
-				props[ name ] = value;
-				delete props[ index ];
-			}
-
-			hooks = jQuery.cssHooks[ name ];
-			if ( hooks && "expand" in hooks ) {
-				value = hooks.expand( value );
-				delete props[ name ];
-
-				// Not quite $.extend, this won't overwrite existing keys.
-				// Reusing 'index' because we have the correct "name"
-				for ( index in value ) {
-					if ( !( index in props ) ) {
-						props[ index ] = value[ index ];
-						specialEasing[ index ] = easing;
-					}
-				}
-			} else {
-				specialEasing[ name ] = easing;
-			}
-		}
-	}
-
-	function Animation( elem, properties, options ) {
-		var result,
-			stopped,
-			index = 0,
-			length = Animation.prefilters.length,
-			deferred = jQuery.Deferred().always( function() {
-
-				// Don't match elem in the :animated selector
-				delete tick.elem;
-			} ),
-			tick = function() {
-				if ( stopped ) {
-					return false;
-				}
-				var currentTime = fxNow || createFxNow(),
-					remaining = Math.max( 0, animation.startTime + animation.duration - currentTime ),
-
-					// Support: Android 2.3
-					// Archaic crash bug won't allow us to use `1 - ( 0.5 || 0 )` (#12497)
-					temp = remaining / animation.duration || 0,
-					percent = 1 - temp,
-					index = 0,
-					length = animation.tweens.length;
-
-				for ( ; index < length ; index++ ) {
-					animation.tweens[ index ].run( percent );
-				}
-
-				deferred.notifyWith( elem, [ animation, percent, remaining ] );
-
-				if ( percent < 1 && length ) {
-					return remaining;
-				} else {
-					deferred.resolveWith( elem, [ animation ] );
-					return false;
-				}
-			},
-			animation = deferred.promise( {
-				elem: elem,
-				props: jQuery.extend( {}, properties ),
-				opts: jQuery.extend( true, {
-					specialEasing: {},
-					easing: jQuery.easing._default
-				}, options ),
-				originalProperties: properties,
-				originalOptions: options,
-				startTime: fxNow || createFxNow(),
-				duration: options.duration,
-				tweens: [],
-				createTween: function( prop, end ) {
-					var tween = jQuery.Tween( elem, animation.opts, prop, end,
-							animation.opts.specialEasing[ prop ] || animation.opts.easing );
-					animation.tweens.push( tween );
-					return tween;
-				},
-				stop: function( gotoEnd ) {
-					var index = 0,
-
-						// If we are going to the end, we want to run all the tweens
-						// otherwise we skip this part
-						length = gotoEnd ? animation.tweens.length : 0;
-					if ( stopped ) {
-						return this;
-					}
-					stopped = true;
-					for ( ; index < length ; index++ ) {
-						animation.tweens[ index ].run( 1 );
-					}
-
-					// Resolve when we played the last frame; otherwise, reject
-					if ( gotoEnd ) {
-						deferred.notifyWith( elem, [ animation, 1, 0 ] );
-						deferred.resolveWith( elem, [ animation, gotoEnd ] );
-					} else {
-						deferred.rejectWith( elem, [ animation, gotoEnd ] );
-					}
-					return this;
-				}
-			} ),
-			props = animation.props;
-
-		propFilter( props, animation.opts.specialEasing );
-
-		for ( ; index < length ; index++ ) {
-			result = Animation.prefilters[ index ].call( animation, elem, props, animation.opts );
-			if ( result ) {
-				if ( jQuery.isFunction( result.stop ) ) {
-					jQuery._queueHooks( animation.elem, animation.opts.queue ).stop =
-						jQuery.proxy( result.stop, result );
-				}
-				return result;
-			}
-		}
-
-		jQuery.map( props, createTween, animation );
-
-		if ( jQuery.isFunction( animation.opts.start ) ) {
-			animation.opts.start.call( elem, animation );
-		}
-
-		jQuery.fx.timer(
-			jQuery.extend( tick, {
-				elem: elem,
-				anim: animation,
-				queue: animation.opts.queue
-			} )
-		);
-
-		// attach callbacks from options
-		return animation.progress( animation.opts.progress )
-			.done( animation.opts.done, animation.opts.complete )
-			.fail( animation.opts.fail )
-			.always( animation.opts.always );
-	}
-
-	jQuery.Animation = jQuery.extend( Animation, {
-		tweeners: {
-			"*": [ function( prop, value ) {
-				var tween = this.createTween( prop, value );
-				adjustCSS( tween.elem, prop, rcssNum.exec( value ), tween );
-				return tween;
-			} ]
-		},
-
-		tweener: function( props, callback ) {
-			if ( jQuery.isFunction( props ) ) {
-				callback = props;
-				props = [ "*" ];
-			} else {
-				props = props.match( rnotwhite );
-			}
-
-			var prop,
-				index = 0,
-				length = props.length;
-
-			for ( ; index < length ; index++ ) {
-				prop = props[ index ];
-				Animation.tweeners[ prop ] = Animation.tweeners[ prop ] || [];
-				Animation.tweeners[ prop ].unshift( callback );
-			}
-		},
-
-		prefilters: [ defaultPrefilter ],
-
-		prefilter: function( callback, prepend ) {
-			if ( prepend ) {
-				Animation.prefilters.unshift( callback );
-			} else {
-				Animation.prefilters.push( callback );
-			}
-		}
-	} );
-
-	jQuery.speed = function( speed, easing, fn ) {
-		var opt = speed && typeof speed === "object" ? jQuery.extend( {}, speed ) : {
-			complete: fn || !fn && easing ||
-				jQuery.isFunction( speed ) && speed,
-			duration: speed,
-			easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
-		};
-
-		opt.duration = jQuery.fx.off ? 0 : typeof opt.duration === "number" ?
-			opt.duration : opt.duration in jQuery.fx.speeds ?
-				jQuery.fx.speeds[ opt.duration ] : jQuery.fx.speeds._default;
-
-		// Normalize opt.queue - true/undefined/null -> "fx"
-		if ( opt.queue == null || opt.queue === true ) {
-			opt.queue = "fx";
-		}
-
-		// Queueing
-		opt.old = opt.complete;
-
-		opt.complete = function() {
-			if ( jQuery.isFunction( opt.old ) ) {
-				opt.old.call( this );
-			}
-
-			if ( opt.queue ) {
-				jQuery.dequeue( this, opt.queue );
-			}
-		};
-
-		return opt;
-	};
-
-	jQuery.fn.extend( {
-		fadeTo: function( speed, to, easing, callback ) {
-
-			// Show any hidden elements after setting opacity to 0
-			return this.filter( isHidden ).css( "opacity", 0 ).show()
-
-				// Animate to the value specified
-				.end().animate( { opacity: to }, speed, easing, callback );
-		},
-		animate: function( prop, speed, easing, callback ) {
-			var empty = jQuery.isEmptyObject( prop ),
-				optall = jQuery.speed( speed, easing, callback ),
-				doAnimation = function() {
-
-					// Operate on a copy of prop so per-property easing won't be lost
-					var anim = Animation( this, jQuery.extend( {}, prop ), optall );
-
-					// Empty animations, or finishing resolves immediately
-					if ( empty || dataPriv.get( this, "finish" ) ) {
-						anim.stop( true );
-					}
-				};
-				doAnimation.finish = doAnimation;
-
-			return empty || optall.queue === false ?
-				this.each( doAnimation ) :
-				this.queue( optall.queue, doAnimation );
-		},
-		stop: function( type, clearQueue, gotoEnd ) {
-			var stopQueue = function( hooks ) {
-				var stop = hooks.stop;
-				delete hooks.stop;
-				stop( gotoEnd );
-			};
-
-			if ( typeof type !== "string" ) {
-				gotoEnd = clearQueue;
-				clearQueue = type;
-				type = undefined;
-			}
-			if ( clearQueue && type !== false ) {
-				this.queue( type || "fx", [] );
-			}
-
-			return this.each( function() {
-				var dequeue = true,
-					index = type != null && type + "queueHooks",
-					timers = jQuery.timers,
-					data = dataPriv.get( this );
-
-				if ( index ) {
-					if ( data[ index ] && data[ index ].stop ) {
-						stopQueue( data[ index ] );
-					}
-				} else {
-					for ( index in data ) {
-						if ( data[ index ] && data[ index ].stop && rrun.test( index ) ) {
-							stopQueue( data[ index ] );
-						}
-					}
-				}
-
-				for ( index = timers.length; index--; ) {
-					if ( timers[ index ].elem === this &&
-						( type == null || timers[ index ].queue === type ) ) {
-
-						timers[ index ].anim.stop( gotoEnd );
-						dequeue = false;
-						timers.splice( index, 1 );
-					}
-				}
-
-				// Start the next in the queue if the last step wasn't forced.
-				// Timers currently will call their complete callbacks, which
-				// will dequeue but only if they were gotoEnd.
-				if ( dequeue || !gotoEnd ) {
-					jQuery.dequeue( this, type );
-				}
-			} );
-		},
-		finish: function( type ) {
-			if ( type !== false ) {
-				type = type || "fx";
-			}
-			return this.each( function() {
-				var index,
-					data = dataPriv.get( this ),
-					queue = data[ type + "queue" ],
-					hooks = data[ type + "queueHooks" ],
-					timers = jQuery.timers,
-					length = queue ? queue.length : 0;
-
-				// Enable finishing flag on private data
-				data.finish = true;
-
-				// Empty the queue first
-				jQuery.queue( this, type, [] );
-
-				if ( hooks && hooks.stop ) {
-					hooks.stop.call( this, true );
-				}
-
-				// Look for any active animations, and finish them
-				for ( index = timers.length; index--; ) {
-					if ( timers[ index ].elem === this && timers[ index ].queue === type ) {
-						timers[ index ].anim.stop( true );
-						timers.splice( index, 1 );
-					}
-				}
-
-				// Look for any animations in the old queue and finish them
-				for ( index = 0; index < length; index++ ) {
-					if ( queue[ index ] && queue[ index ].finish ) {
-						queue[ index ].finish.call( this );
-					}
-				}
-
-				// Turn off finishing flag
-				delete data.finish;
-			} );
-		}
-	} );
-
-	jQuery.each( [ "toggle", "show", "hide" ], function( i, name ) {
-		var cssFn = jQuery.fn[ name ];
-		jQuery.fn[ name ] = function( speed, easing, callback ) {
-			return speed == null || typeof speed === "boolean" ?
-				cssFn.apply( this, arguments ) :
-				this.animate( genFx( name, true ), speed, easing, callback );
-		};
-	} );
-
-	// Generate shortcuts for custom animations
-	jQuery.each( {
-		slideDown: genFx( "show" ),
-		slideUp: genFx( "hide" ),
-		slideToggle: genFx( "toggle" ),
-		fadeIn: { opacity: "show" },
-		fadeOut: { opacity: "hide" },
-		fadeToggle: { opacity: "toggle" }
-	}, function( name, props ) {
-		jQuery.fn[ name ] = function( speed, easing, callback ) {
-			return this.animate( props, speed, easing, callback );
-		};
-	} );
-
-	jQuery.timers = [];
-	jQuery.fx.tick = function() {
-		var timer,
-			i = 0,
-			timers = jQuery.timers;
-
-		fxNow = jQuery.now();
-
-		for ( ; i < timers.length; i++ ) {
-			timer = timers[ i ];
-
-			// Checks the timer has not already been removed
-			if ( !timer() && timers[ i ] === timer ) {
-				timers.splice( i--, 1 );
-			}
-		}
-
-		if ( !timers.length ) {
-			jQuery.fx.stop();
-		}
-		fxNow = undefined;
-	};
-
-	jQuery.fx.timer = function( timer ) {
-		jQuery.timers.push( timer );
-		if ( timer() ) {
-			jQuery.fx.start();
-		} else {
-			jQuery.timers.pop();
-		}
-	};
-
-	jQuery.fx.interval = 13;
-	jQuery.fx.start = function() {
-		if ( !timerId ) {
-			timerId = window.setInterval( jQuery.fx.tick, jQuery.fx.interval );
-		}
-	};
-
-	jQuery.fx.stop = function() {
-		window.clearInterval( timerId );
-
-		timerId = null;
-	};
-
-	jQuery.fx.speeds = {
-		slow: 600,
-		fast: 200,
-
-		// Default speed
-		_default: 400
-	};
-
-
-	// Based off of the plugin by Clint Helfers, with permission.
-	// http://web.archive.org/web/20100324014747/http://blindsignals.com/index.php/2009/07/jquery-delay/
-	jQuery.fn.delay = function( time, type ) {
-		time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
-		type = type || "fx";
-
-		return this.queue( type, function( next, hooks ) {
-			var timeout = window.setTimeout( next, time );
-			hooks.stop = function() {
-				window.clearTimeout( timeout );
-			};
-		} );
-	};
-
-
-	( function() {
-		var input = document.createElement( "input" ),
-			select = document.createElement( "select" ),
-			opt = select.appendChild( document.createElement( "option" ) );
-
-		input.type = "checkbox";
-
-		// Support: iOS<=5.1, Android<=4.2+
-		// Default value for a checkbox should be "on"
-		support.checkOn = input.value !== "";
-
-		// Support: IE<=11+
-		// Must access selectedIndex to make default options select
-		support.optSelected = opt.selected;
-
-		// Support: Android<=2.3
-		// Options inside disabled selects are incorrectly marked as disabled
-		select.disabled = true;
-		support.optDisabled = !opt.disabled;
-
-		// Support: IE<=11+
-		// An input loses its value after becoming a radio
-		input = document.createElement( "input" );
-		input.value = "t";
-		input.type = "radio";
-		support.radioValue = input.value === "t";
-	} )();
-
-
-	var boolHook,
-		attrHandle = jQuery.expr.attrHandle;
-
-	jQuery.fn.extend( {
-		attr: function( name, value ) {
-			return access( this, jQuery.attr, name, value, arguments.length > 1 );
-		},
-
-		removeAttr: function( name ) {
-			return this.each( function() {
-				jQuery.removeAttr( this, name );
-			} );
-		}
-	} );
-
-	jQuery.extend( {
-		attr: function( elem, name, value ) {
-			var ret, hooks,
-				nType = elem.nodeType;
-
-			// Don't get/set attributes on text, comment and attribute nodes
-			if ( nType === 3 || nType === 8 || nType === 2 ) {
-				return;
-			}
-
-			// Fallback to prop when attributes are not supported
-			if ( typeof elem.getAttribute === "undefined" ) {
-				return jQuery.prop( elem, name, value );
-			}
-
-			// All attributes are lowercase
-			// Grab necessary hook if one is defined
-			if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
-				name = name.toLowerCase();
-				hooks = jQuery.attrHooks[ name ] ||
-					( jQuery.expr.match.bool.test( name ) ? boolHook : undefined );
-			}
-
-			if ( value !== undefined ) {
-				if ( value === null ) {
-					jQuery.removeAttr( elem, name );
-					return;
-				}
-
-				if ( hooks && "set" in hooks &&
-					( ret = hooks.set( elem, value, name ) ) !== undefined ) {
-					return ret;
-				}
-
-				elem.setAttribute( name, value + "" );
-				return value;
-			}
-
-			if ( hooks && "get" in hooks && ( ret = hooks.get( elem, name ) ) !== null ) {
-				return ret;
-			}
-
-			ret = jQuery.find.attr( elem, name );
-
-			// Non-existent attributes return null, we normalize to undefined
-			return ret == null ? undefined : ret;
-		},
-
-		attrHooks: {
-			type: {
-				set: function( elem, value ) {
-					if ( !support.radioValue && value === "radio" &&
-						jQuery.nodeName( elem, "input" ) ) {
-						var val = elem.value;
-						elem.setAttribute( "type", value );
-						if ( val ) {
-							elem.value = val;
-						}
-						return value;
-					}
-				}
-			}
-		},
-
-		removeAttr: function( elem, value ) {
-			var name, propName,
-				i = 0,
-				attrNames = value && value.match( rnotwhite );
-
-			if ( attrNames && elem.nodeType === 1 ) {
-				while ( ( name = attrNames[ i++ ] ) ) {
-					propName = jQuery.propFix[ name ] || name;
-
-					// Boolean attributes get special treatment (#10870)
-					if ( jQuery.expr.match.bool.test( name ) ) {
-
-						// Set corresponding property to false
-						elem[ propName ] = false;
-					}
-
-					elem.removeAttribute( name );
-				}
-			}
-		}
-	} );
-
-	// Hooks for boolean attributes
-	boolHook = {
-		set: function( elem, value, name ) {
-			if ( value === false ) {
-
-				// Remove boolean attributes when set to false
-				jQuery.removeAttr( elem, name );
-			} else {
-				elem.setAttribute( name, name );
-			}
-			return name;
-		}
-	};
-	jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( i, name ) {
-		var getter = attrHandle[ name ] || jQuery.find.attr;
-
-		attrHandle[ name ] = function( elem, name, isXML ) {
-			var ret, handle;
-			if ( !isXML ) {
-
-				// Avoid an infinite loop by temporarily removing this function from the getter
-				handle = attrHandle[ name ];
-				attrHandle[ name ] = ret;
-				ret = getter( elem, name, isXML ) != null ?
-					name.toLowerCase() :
-					null;
-				attrHandle[ name ] = handle;
-			}
-			return ret;
-		};
-	} );
-
-
-
-
-	var rfocusable = /^(?:input|select|textarea|button)$/i,
-		rclickable = /^(?:a|area)$/i;
-
-	jQuery.fn.extend( {
-		prop: function( name, value ) {
-			return access( this, jQuery.prop, name, value, arguments.length > 1 );
-		},
-
-		removeProp: function( name ) {
-			return this.each( function() {
-				delete this[ jQuery.propFix[ name ] || name ];
-			} );
-		}
-	} );
-
-	jQuery.extend( {
-		prop: function( elem, name, value ) {
-			var ret, hooks,
-				nType = elem.nodeType;
-
-			// Don't get/set properties on text, comment and attribute nodes
-			if ( nType === 3 || nType === 8 || nType === 2 ) {
-				return;
-			}
-
-			if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
-
-				// Fix name and attach hooks
-				name = jQuery.propFix[ name ] || name;
-				hooks = jQuery.propHooks[ name ];
-			}
-
-			if ( value !== undefined ) {
-				if ( hooks && "set" in hooks &&
-					( ret = hooks.set( elem, value, name ) ) !== undefined ) {
-					return ret;
-				}
-
-				return ( elem[ name ] = value );
-			}
-
-			if ( hooks && "get" in hooks && ( ret = hooks.get( elem, name ) ) !== null ) {
-				return ret;
-			}
-
-			return elem[ name ];
-		},
-
-		propHooks: {
-			tabIndex: {
-				get: function( elem ) {
-
-					// elem.tabIndex doesn't always return the
-					// correct value when it hasn't been explicitly set
-					// http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
-					// Use proper attribute retrieval(#12072)
-					var tabindex = jQuery.find.attr( elem, "tabindex" );
-
-					return tabindex ?
-						parseInt( tabindex, 10 ) :
-						rfocusable.test( elem.nodeName ) ||
-							rclickable.test( elem.nodeName ) && elem.href ?
-								0 :
-								-1;
-				}
-			}
-		},
-
-		propFix: {
-			"for": "htmlFor",
-			"class": "className"
-		}
-	} );
-
-	if ( !support.optSelected ) {
-		jQuery.propHooks.selected = {
-			get: function( elem ) {
-				var parent = elem.parentNode;
-				if ( parent && parent.parentNode ) {
-					parent.parentNode.selectedIndex;
-				}
-				return null;
-			}
-		};
-	}
-
-	jQuery.each( [
-		"tabIndex",
-		"readOnly",
-		"maxLength",
-		"cellSpacing",
-		"cellPadding",
-		"rowSpan",
-		"colSpan",
-		"useMap",
-		"frameBorder",
-		"contentEditable"
-	], function() {
-		jQuery.propFix[ this.toLowerCase() ] = this;
-	} );
-
-
-
-
-	var rclass = /[\t\r\n\f]/g;
-
-	function getClass( elem ) {
-		return elem.getAttribute && elem.getAttribute( "class" ) || "";
-	}
-
-	jQuery.fn.extend( {
-		addClass: function( value ) {
-			var classes, elem, cur, curValue, clazz, j, finalValue,
-				i = 0;
-
-			if ( jQuery.isFunction( value ) ) {
-				return this.each( function( j ) {
-					jQuery( this ).addClass( value.call( this, j, getClass( this ) ) );
-				} );
-			}
-
-			if ( typeof value === "string" && value ) {
-				classes = value.match( rnotwhite ) || [];
-
-				while ( ( elem = this[ i++ ] ) ) {
-					curValue = getClass( elem );
-					cur = elem.nodeType === 1 &&
-						( " " + curValue + " " ).replace( rclass, " " );
-
-					if ( cur ) {
-						j = 0;
-						while ( ( clazz = classes[ j++ ] ) ) {
-							if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
-								cur += clazz + " ";
-							}
-						}
-
-						// Only assign if different to avoid unneeded rendering.
-						finalValue = jQuery.trim( cur );
-						if ( curValue !== finalValue ) {
-							elem.setAttribute( "class", finalValue );
-						}
-					}
-				}
-			}
-
-			return this;
-		},
-
-		removeClass: function( value ) {
-			var classes, elem, cur, curValue, clazz, j, finalValue,
-				i = 0;
-
-			if ( jQuery.isFunction( value ) ) {
-				return this.each( function( j ) {
-					jQuery( this ).removeClass( value.call( this, j, getClass( this ) ) );
-				} );
-			}
-
-			if ( !arguments.length ) {
-				return this.attr( "class", "" );
-			}
-
-			if ( typeof value === "string" && value ) {
-				classes = value.match( rnotwhite ) || [];
-
-				while ( ( elem = this[ i++ ] ) ) {
-					curValue = getClass( elem );
-
-					// This expression is here for better compressibility (see addClass)
-					cur = elem.nodeType === 1 &&
-						( " " + curValue + " " ).replace( rclass, " " );
-
-					if ( cur ) {
-						j = 0;
-						while ( ( clazz = classes[ j++ ] ) ) {
-
-							// Remove *all* instances
-							while ( cur.indexOf( " " + clazz + " " ) > -1 ) {
-								cur = cur.replace( " " + clazz + " ", " " );
-							}
-						}
-
-						// Only assign if different to avoid unneeded rendering.
-						finalValue = jQuery.trim( cur );
-						if ( curValue !== finalValue ) {
-							elem.setAttribute( "class", finalValue );
-						}
-					}
-				}
-			}
-
-			return this;
-		},
-
-		toggleClass: function( value, stateVal ) {
-			var type = typeof value;
-
-			if ( typeof stateVal === "boolean" && type === "string" ) {
-				return stateVal ? this.addClass( value ) : this.removeClass( value );
-			}
-
-			if ( jQuery.isFunction( value ) ) {
-				return this.each( function( i ) {
-					jQuery( this ).toggleClass(
-						value.call( this, i, getClass( this ), stateVal ),
-						stateVal
-					);
-				} );
-			}
-
-			return this.each( function() {
-				var className, i, self, classNames;
-
-				if ( type === "string" ) {
-
-					// Toggle individual class names
-					i = 0;
-					self = jQuery( this );
-					classNames = value.match( rnotwhite ) || [];
-
-					while ( ( className = classNames[ i++ ] ) ) {
-
-						// Check each className given, space separated list
-						if ( self.hasClass( className ) ) {
-							self.removeClass( className );
-						} else {
-							self.addClass( className );
-						}
-					}
-
-				// Toggle whole class name
-				} else if ( value === undefined || type === "boolean" ) {
-					className = getClass( this );
-					if ( className ) {
-
-						// Store className if set
-						dataPriv.set( this, "__className__", className );
-					}
-
-					// If the element has a class name or if we're passed `false`,
-					// then remove the whole classname (if there was one, the above saved it).
-					// Otherwise bring back whatever was previously saved (if anything),
-					// falling back to the empty string if nothing was stored.
-					if ( this.setAttribute ) {
-						this.setAttribute( "class",
-							className || value === false ?
-							"" :
-							dataPriv.get( this, "__className__" ) || ""
-						);
-					}
-				}
-			} );
-		},
-
-		hasClass: function( selector ) {
-			var className, elem,
-				i = 0;
-
-			className = " " + selector + " ";
-			while ( ( elem = this[ i++ ] ) ) {
-				if ( elem.nodeType === 1 &&
-					( " " + getClass( elem ) + " " ).replace( rclass, " " )
-						.indexOf( className ) > -1
-				) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-	} );
-
-
-
-
-	var rreturn = /\r/g;
-
-	jQuery.fn.extend( {
-		val: function( value ) {
-			var hooks, ret, isFunction,
-				elem = this[ 0 ];
-
-			if ( !arguments.length ) {
-				if ( elem ) {
-					hooks = jQuery.valHooks[ elem.type ] ||
-						jQuery.valHooks[ elem.nodeName.toLowerCase() ];
-
-					if ( hooks &&
-						"get" in hooks &&
-						( ret = hooks.get( elem, "value" ) ) !== undefined
-					) {
-						return ret;
-					}
-
-					ret = elem.value;
-
-					return typeof ret === "string" ?
-
-						// Handle most common string cases
-						ret.replace( rreturn, "" ) :
-
-						// Handle cases where value is null/undef or number
-						ret == null ? "" : ret;
-				}
-
-				return;
-			}
-
-			isFunction = jQuery.isFunction( value );
-
-			return this.each( function( i ) {
-				var val;
-
-				if ( this.nodeType !== 1 ) {
-					return;
-				}
-
-				if ( isFunction ) {
-					val = value.call( this, i, jQuery( this ).val() );
-				} else {
-					val = value;
-				}
-
-				// Treat null/undefined as ""; convert numbers to string
-				if ( val == null ) {
-					val = "";
-
-				} else if ( typeof val === "number" ) {
-					val += "";
-
-				} else if ( jQuery.isArray( val ) ) {
-					val = jQuery.map( val, function( value ) {
-						return value == null ? "" : value + "";
-					} );
-				}
-
-				hooks = jQuery.valHooks[ this.type ] || jQuery.valHooks[ this.nodeName.toLowerCase() ];
-
-				// If set returns undefined, fall back to normal setting
-				if ( !hooks || !( "set" in hooks ) || hooks.set( this, val, "value" ) === undefined ) {
-					this.value = val;
-				}
-			} );
-		}
-	} );
-
-	jQuery.extend( {
-		valHooks: {
-			option: {
-				get: function( elem ) {
-
-					// Support: IE<11
-					// option.value not trimmed (#14858)
-					return jQuery.trim( elem.value );
-				}
-			},
-			select: {
-				get: function( elem ) {
-					var value, option,
-						options = elem.options,
-						index = elem.selectedIndex,
-						one = elem.type === "select-one" || index < 0,
-						values = one ? null : [],
-						max = one ? index + 1 : options.length,
-						i = index < 0 ?
-							max :
-							one ? index : 0;
-
-					// Loop through all the selected options
-					for ( ; i < max; i++ ) {
-						option = options[ i ];
-
-						// IE8-9 doesn't update selected after form reset (#2551)
-						if ( ( option.selected || i === index ) &&
-
-								// Don't return options that are disabled or in a disabled optgroup
-								( support.optDisabled ?
-									!option.disabled : option.getAttribute( "disabled" ) === null ) &&
-								( !option.parentNode.disabled ||
-									!jQuery.nodeName( option.parentNode, "optgroup" ) ) ) {
-
-							// Get the specific value for the option
-							value = jQuery( option ).val();
-
-							// We don't need an array for one selects
-							if ( one ) {
-								return value;
-							}
-
-							// Multi-Selects return an array
-							values.push( value );
-						}
-					}
-
-					return values;
-				},
-
-				set: function( elem, value ) {
-					var optionSet, option,
-						options = elem.options,
-						values = jQuery.makeArray( value ),
-						i = options.length;
-
-					while ( i-- ) {
-						option = options[ i ];
-						if ( option.selected =
-								jQuery.inArray( jQuery.valHooks.option.get( option ), values ) > -1
-						) {
-							optionSet = true;
-						}
-					}
-
-					// Force browsers to behave consistently when non-matching value is set
-					if ( !optionSet ) {
-						elem.selectedIndex = -1;
-					}
-					return values;
-				}
-			}
-		}
-	} );
-
-	// Radios and checkboxes getter/setter
-	jQuery.each( [ "radio", "checkbox" ], function() {
-		jQuery.valHooks[ this ] = {
-			set: function( elem, value ) {
-				if ( jQuery.isArray( value ) ) {
-					return ( elem.checked = jQuery.inArray( jQuery( elem ).val(), value ) > -1 );
-				}
-			}
-		};
-		if ( !support.checkOn ) {
-			jQuery.valHooks[ this ].get = function( elem ) {
-				return elem.getAttribute( "value" ) === null ? "on" : elem.value;
-			};
-		}
-	} );
-
-
-
-
-	// Return jQuery for attributes-only inclusion
-
-
-	var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/;
-
-	jQuery.extend( jQuery.event, {
-
-		trigger: function( event, data, elem, onlyHandlers ) {
-
-			var i, cur, tmp, bubbleType, ontype, handle, special,
-				eventPath = [ elem || document ],
-				type = hasOwn.call( event, "type" ) ? event.type : event,
-				namespaces = hasOwn.call( event, "namespace" ) ? event.namespace.split( "." ) : [];
-
-			cur = tmp = elem = elem || document;
-
-			// Don't do events on text and comment nodes
-			if ( elem.nodeType === 3 || elem.nodeType === 8 ) {
-				return;
-			}
-
-			// focus/blur morphs to focusin/out; ensure we're not firing them right now
-			if ( rfocusMorph.test( type + jQuery.event.triggered ) ) {
-				return;
-			}
-
-			if ( type.indexOf( "." ) > -1 ) {
-
-				// Namespaced trigger; create a regexp to match event type in handle()
-				namespaces = type.split( "." );
-				type = namespaces.shift();
-				namespaces.sort();
-			}
-			ontype = type.indexOf( ":" ) < 0 && "on" + type;
-
-			// Caller can pass in a jQuery.Event object, Object, or just an event type string
-			event = event[ jQuery.expando ] ?
-				event :
-				new jQuery.Event( type, typeof event === "object" && event );
-
-			// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
-			event.isTrigger = onlyHandlers ? 2 : 3;
-			event.namespace = namespaces.join( "." );
-			event.rnamespace = event.namespace ?
-				new RegExp( "(^|\\.)" + namespaces.join( "\\.(?:.*\\.|)" ) + "(\\.|$)" ) :
-				null;
-
-			// Clean up the event in case it is being reused
-			event.result = undefined;
-			if ( !event.target ) {
-				event.target = elem;
-			}
-
-			// Clone any incoming data and prepend the event, creating the handler arg list
-			data = data == null ?
-				[ event ] :
-				jQuery.makeArray( data, [ event ] );
-
-			// Allow special events to draw outside the lines
-			special = jQuery.event.special[ type ] || {};
-			if ( !onlyHandlers && special.trigger && special.trigger.apply( elem, data ) === false ) {
-				return;
-			}
-
-			// Determine event propagation path in advance, per W3C events spec (#9951)
-			// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
-			if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
-
-				bubbleType = special.delegateType || type;
-				if ( !rfocusMorph.test( bubbleType + type ) ) {
-					cur = cur.parentNode;
-				}
-				for ( ; cur; cur = cur.parentNode ) {
-					eventPath.push( cur );
-					tmp = cur;
-				}
-
-				// Only add window if we got to document (e.g., not plain obj or detached DOM)
-				if ( tmp === ( elem.ownerDocument || document ) ) {
-					eventPath.push( tmp.defaultView || tmp.parentWindow || window );
-				}
-			}
-
-			// Fire handlers on the event path
-			i = 0;
-			while ( ( cur = eventPath[ i++ ] ) && !event.isPropagationStopped() ) {
-
-				event.type = i > 1 ?
-					bubbleType :
-					special.bindType || type;
-
-				// jQuery handler
-				handle = ( dataPriv.get( cur, "events" ) || {} )[ event.type ] &&
-					dataPriv.get( cur, "handle" );
-				if ( handle ) {
-					handle.apply( cur, data );
-				}
-
-				// Native handler
-				handle = ontype && cur[ ontype ];
-				if ( handle && handle.apply && acceptData( cur ) ) {
-					event.result = handle.apply( cur, data );
-					if ( event.result === false ) {
-						event.preventDefault();
-					}
-				}
-			}
-			event.type = type;
-
-			// If nobody prevented the default action, do it now
-			if ( !onlyHandlers && !event.isDefaultPrevented() ) {
-
-				if ( ( !special._default ||
-					special._default.apply( eventPath.pop(), data ) === false ) &&
-					acceptData( elem ) ) {
-
-					// Call a native DOM method on the target with the same name name as the event.
-					// Don't do default actions on window, that's where global variables be (#6170)
-					if ( ontype && jQuery.isFunction( elem[ type ] ) && !jQuery.isWindow( elem ) ) {
-
-						// Don't re-trigger an onFOO event when we call its FOO() method
-						tmp = elem[ ontype ];
-
-						if ( tmp ) {
-							elem[ ontype ] = null;
-						}
-
-						// Prevent re-triggering of the same event, since we already bubbled it above
-						jQuery.event.triggered = type;
-						elem[ type ]();
-						jQuery.event.triggered = undefined;
-
-						if ( tmp ) {
-							elem[ ontype ] = tmp;
-						}
-					}
-				}
-			}
-
-			return event.result;
-		},
-
-		// Piggyback on a donor event to simulate a different one
-		simulate: function( type, elem, event ) {
-			var e = jQuery.extend(
-				new jQuery.Event(),
-				event,
-				{
-					type: type,
-					isSimulated: true
-
-					// Previously, `originalEvent: {}` was set here, so stopPropagation call
-					// would not be triggered on donor event, since in our own
-					// jQuery.event.stopPropagation function we had a check for existence of
-					// originalEvent.stopPropagation method, so, consequently it would be a noop.
-					//
-					// But now, this "simulate" function is used only for events
-					// for which stopPropagation() is noop, so there is no need for that anymore.
-					//
-					// For the 1.x branch though, guard for "click" and "submit"
-					// events is still used, but was moved to jQuery.event.stopPropagation function
-					// because `originalEvent` should point to the original event for the constancy
-					// with other events and for more focused logic
-				}
-			);
-
-			jQuery.event.trigger( e, null, elem );
-
-			if ( e.isDefaultPrevented() ) {
-				event.preventDefault();
-			}
-		}
-
-	} );
-
-	jQuery.fn.extend( {
-
-		trigger: function( type, data ) {
-			return this.each( function() {
-				jQuery.event.trigger( type, data, this );
-			} );
-		},
-		triggerHandler: function( type, data ) {
-			var elem = this[ 0 ];
-			if ( elem ) {
-				return jQuery.event.trigger( type, data, elem, true );
-			}
-		}
-	} );
-
-
-	jQuery.each( ( "blur focus focusin focusout load resize scroll unload click dblclick " +
-		"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
-		"change select submit keydown keypress keyup error contextmenu" ).split( " " ),
-		function( i, name ) {
-
-		// Handle event binding
-		jQuery.fn[ name ] = function( data, fn ) {
-			return arguments.length > 0 ?
-				this.on( name, null, data, fn ) :
-				this.trigger( name );
-		};
-	} );
-
-	jQuery.fn.extend( {
-		hover: function( fnOver, fnOut ) {
-			return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
-		}
-	} );
-
-
-
-
-	support.focusin = "onfocusin" in window;
-
-
-	// Support: Firefox
-	// Firefox doesn't have focus(in | out) events
-	// Related ticket - https://bugzilla.mozilla.org/show_bug.cgi?id=687787
-	//
-	// Support: Chrome, Safari
-	// focus(in | out) events fire after focus & blur events,
-	// which is spec violation - http://www.w3.org/TR/DOM-Level-3-Events/#events-focusevent-event-order
-	// Related ticket - https://code.google.com/p/chromium/issues/detail?id=449857
-	if ( !support.focusin ) {
-		jQuery.each( { focus: "focusin", blur: "focusout" }, function( orig, fix ) {
-
-			// Attach a single capturing handler on the document while someone wants focusin/focusout
-			var handler = function( event ) {
-				jQuery.event.simulate( fix, event.target, jQuery.event.fix( event ) );
-			};
-
-			jQuery.event.special[ fix ] = {
-				setup: function() {
-					var doc = this.ownerDocument || this,
-						attaches = dataPriv.access( doc, fix );
-
-					if ( !attaches ) {
-						doc.addEventListener( orig, handler, true );
-					}
-					dataPriv.access( doc, fix, ( attaches || 0 ) + 1 );
-				},
-				teardown: function() {
-					var doc = this.ownerDocument || this,
-						attaches = dataPriv.access( doc, fix ) - 1;
-
-					if ( !attaches ) {
-						doc.removeEventListener( orig, handler, true );
-						dataPriv.remove( doc, fix );
-
-					} else {
-						dataPriv.access( doc, fix, attaches );
-					}
-				}
-			};
-		} );
-	}
-	var location = window.location;
-
-	var nonce = jQuery.now();
-
-	var rquery = ( /\?/ );
-
-
-
-	// Support: Android 2.3
-	// Workaround failure to string-cast null input
-	jQuery.parseJSON = function( data ) {
-		return JSON.parse( data + "" );
-	};
-
-
-	// Cross-browser xml parsing
-	jQuery.parseXML = function( data ) {
-		var xml;
-		if ( !data || typeof data !== "string" ) {
-			return null;
-		}
-
-		// Support: IE9
-		try {
-			xml = ( new window.DOMParser() ).parseFromString( data, "text/xml" );
-		} catch ( e ) {
-			xml = undefined;
-		}
-
-		if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) {
-			jQuery.error( "Invalid XML: " + data );
-		}
-		return xml;
-	};
-
-
-	var
-		rhash = /#.*$/,
-		rts = /([?&])_=[^&]*/,
-		rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg,
-
-		// #7653, #8125, #8152: local protocol detection
-		rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
-		rnoContent = /^(?:GET|HEAD)$/,
-		rprotocol = /^\/\//,
-
-		/* Prefilters
-		 * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.js for an example)
-		 * 2) These are called:
-		 *    - BEFORE asking for a transport
-		 *    - AFTER param serialization (s.data is a string if s.processData is true)
-		 * 3) key is the dataType
-		 * 4) the catchall symbol "*" can be used
-		 * 5) execution will start with transport dataType and THEN continue down to "*" if needed
-		 */
-		prefilters = {},
-
-		/* Transports bindings
-		 * 1) key is the dataType
-		 * 2) the catchall symbol "*" can be used
-		 * 3) selection will start with transport dataType and THEN go to "*" if needed
-		 */
-		transports = {},
-
-		// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
-		allTypes = "*/".concat( "*" ),
-
-		// Anchor tag for parsing the document origin
-		originAnchor = document.createElement( "a" );
-		originAnchor.href = location.href;
-
-	// Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
-	function addToPrefiltersOrTransports( structure ) {
-
-		// dataTypeExpression is optional and defaults to "*"
-		return function( dataTypeExpression, func ) {
-
-			if ( typeof dataTypeExpression !== "string" ) {
-				func = dataTypeExpression;
-				dataTypeExpression = "*";
-			}
-
-			var dataType,
-				i = 0,
-				dataTypes = dataTypeExpression.toLowerCase().match( rnotwhite ) || [];
-
-			if ( jQuery.isFunction( func ) ) {
-
-				// For each dataType in the dataTypeExpression
-				while ( ( dataType = dataTypes[ i++ ] ) ) {
-
-					// Prepend if requested
-					if ( dataType[ 0 ] === "+" ) {
-						dataType = dataType.slice( 1 ) || "*";
-						( structure[ dataType ] = structure[ dataType ] || [] ).unshift( func );
-
-					// Otherwise append
-					} else {
-						( structure[ dataType ] = structure[ dataType ] || [] ).push( func );
-					}
-				}
-			}
-		};
-	}
-
-	// Base inspection function for prefilters and transports
-	function inspectPrefiltersOrTransports( structure, options, originalOptions, jqXHR ) {
-
-		var inspected = {},
-			seekingTransport = ( structure === transports );
-
-		function inspect( dataType ) {
-			var selected;
-			inspected[ dataType ] = true;
-			jQuery.each( structure[ dataType ] || [], function( _, prefilterOrFactory ) {
-				var dataTypeOrTransport = prefilterOrFactory( options, originalOptions, jqXHR );
-				if ( typeof dataTypeOrTransport === "string" &&
-					!seekingTransport && !inspected[ dataTypeOrTransport ] ) {
-
-					options.dataTypes.unshift( dataTypeOrTransport );
-					inspect( dataTypeOrTransport );
-					return false;
-				} else if ( seekingTransport ) {
-					return !( selected = dataTypeOrTransport );
-				}
-			} );
-			return selected;
-		}
-
-		return inspect( options.dataTypes[ 0 ] ) || !inspected[ "*" ] && inspect( "*" );
-	}
-
-	// A special extend for ajax options
-	// that takes "flat" options (not to be deep extended)
-	// Fixes #9887
-	function ajaxExtend( target, src ) {
-		var key, deep,
-			flatOptions = jQuery.ajaxSettings.flatOptions || {};
-
-		for ( key in src ) {
-			if ( src[ key ] !== undefined ) {
-				( flatOptions[ key ] ? target : ( deep || ( deep = {} ) ) )[ key ] = src[ key ];
-			}
-		}
-		if ( deep ) {
-			jQuery.extend( true, target, deep );
-		}
-
-		return target;
-	}
-
-	/* Handles responses to an ajax request:
-	 * - finds the right dataType (mediates between content-type and expected dataType)
-	 * - returns the corresponding response
-	 */
-	function ajaxHandleResponses( s, jqXHR, responses ) {
-
-		var ct, type, finalDataType, firstDataType,
-			contents = s.contents,
-			dataTypes = s.dataTypes;
-
-		// Remove auto dataType and get content-type in the process
-		while ( dataTypes[ 0 ] === "*" ) {
-			dataTypes.shift();
-			if ( ct === undefined ) {
-				ct = s.mimeType || jqXHR.getResponseHeader( "Content-Type" );
-			}
-		}
-
-		// Check if we're dealing with a known content-type
-		if ( ct ) {
-			for ( type in contents ) {
-				if ( contents[ type ] && contents[ type ].test( ct ) ) {
-					dataTypes.unshift( type );
-					break;
-				}
-			}
-		}
-
-		// Check to see if we have a response for the expected dataType
-		if ( dataTypes[ 0 ] in responses ) {
-			finalDataType = dataTypes[ 0 ];
-		} else {
-
-			// Try convertible dataTypes
-			for ( type in responses ) {
-				if ( !dataTypes[ 0 ] || s.converters[ type + " " + dataTypes[ 0 ] ] ) {
-					finalDataType = type;
-					break;
-				}
-				if ( !firstDataType ) {
-					firstDataType = type;
-				}
-			}
-
-			// Or just use first one
-			finalDataType = finalDataType || firstDataType;
-		}
-
-		// If we found a dataType
-		// We add the dataType to the list if needed
-		// and return the corresponding response
-		if ( finalDataType ) {
-			if ( finalDataType !== dataTypes[ 0 ] ) {
-				dataTypes.unshift( finalDataType );
-			}
-			return responses[ finalDataType ];
-		}
-	}
-
-	/* Chain conversions given the request and the original response
-	 * Also sets the responseXXX fields on the jqXHR instance
-	 */
-	function ajaxConvert( s, response, jqXHR, isSuccess ) {
-		var conv2, current, conv, tmp, prev,
-			converters = {},
-
-			// Work with a copy of dataTypes in case we need to modify it for conversion
-			dataTypes = s.dataTypes.slice();
-
-		// Create converters map with lowercased keys
-		if ( dataTypes[ 1 ] ) {
-			for ( conv in s.converters ) {
-				converters[ conv.toLowerCase() ] = s.converters[ conv ];
-			}
-		}
-
-		current = dataTypes.shift();
-
-		// Convert to each sequential dataType
-		while ( current ) {
-
-			if ( s.responseFields[ current ] ) {
-				jqXHR[ s.responseFields[ current ] ] = response;
-			}
-
-			// Apply the dataFilter if provided
-			if ( !prev && isSuccess && s.dataFilter ) {
-				response = s.dataFilter( response, s.dataType );
-			}
-
-			prev = current;
-			current = dataTypes.shift();
-
-			if ( current ) {
-
-			// There's only work to do if current dataType is non-auto
-				if ( current === "*" ) {
-
-					current = prev;
-
-				// Convert response if prev dataType is non-auto and differs from current
-				} else if ( prev !== "*" && prev !== current ) {
-
-					// Seek a direct converter
-					conv = converters[ prev + " " + current ] || converters[ "* " + current ];
-
-					// If none found, seek a pair
-					if ( !conv ) {
-						for ( conv2 in converters ) {
-
-							// If conv2 outputs current
-							tmp = conv2.split( " " );
-							if ( tmp[ 1 ] === current ) {
-
-								// If prev can be converted to accepted input
-								conv = converters[ prev + " " + tmp[ 0 ] ] ||
-									converters[ "* " + tmp[ 0 ] ];
-								if ( conv ) {
-
-									// Condense equivalence converters
-									if ( conv === true ) {
-										conv = converters[ conv2 ];
-
-									// Otherwise, insert the intermediate dataType
-									} else if ( converters[ conv2 ] !== true ) {
-										current = tmp[ 0 ];
-										dataTypes.unshift( tmp[ 1 ] );
-									}
-									break;
-								}
-							}
-						}
-					}
-
-					// Apply converter (if not an equivalence)
-					if ( conv !== true ) {
-
-						// Unless errors are allowed to bubble, catch and return them
-						if ( conv && s.throws ) {
-							response = conv( response );
-						} else {
-							try {
-								response = conv( response );
-							} catch ( e ) {
-								return {
-									state: "parsererror",
-									error: conv ? e : "No conversion from " + prev + " to " + current
-								};
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return { state: "success", data: response };
-	}
-
-	jQuery.extend( {
-
-		// Counter for holding the number of active queries
-		active: 0,
-
-		// Last-Modified header cache for next request
-		lastModified: {},
-		etag: {},
-
-		ajaxSettings: {
-			url: location.href,
-			type: "GET",
-			isLocal: rlocalProtocol.test( location.protocol ),
-			global: true,
-			processData: true,
-			async: true,
-			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-			/*
-			timeout: 0,
-			data: null,
-			dataType: null,
-			username: null,
-			password: null,
-			cache: null,
-			throws: false,
-			traditional: false,
-			headers: {},
-			*/
-
-			accepts: {
-				"*": allTypes,
-				text: "text/plain",
-				html: "text/html",
-				xml: "application/xml, text/xml",
-				json: "application/json, text/javascript"
-			},
-
-			contents: {
-				xml: /\bxml\b/,
-				html: /\bhtml/,
-				json: /\bjson\b/
-			},
-
-			responseFields: {
-				xml: "responseXML",
-				text: "responseText",
-				json: "responseJSON"
-			},
-
-			// Data converters
-			// Keys separate source (or catchall "*") and destination types with a single space
-			converters: {
-
-				// Convert anything to text
-				"* text": String,
-
-				// Text to html (true = no transformation)
-				"text html": true,
-
-				// Evaluate text as a json expression
-				"text json": jQuery.parseJSON,
-
-				// Parse text as xml
-				"text xml": jQuery.parseXML
-			},
-
-			// For options that shouldn't be deep extended:
-			// you can add your own custom options here if
-			// and when you create one that shouldn't be
-			// deep extended (see ajaxExtend)
-			flatOptions: {
-				url: true,
-				context: true
-			}
-		},
-
-		// Creates a full fledged settings object into target
-		// with both ajaxSettings and settings fields.
-		// If target is omitted, writes into ajaxSettings.
-		ajaxSetup: function( target, settings ) {
-			return settings ?
-
-				// Building a settings object
-				ajaxExtend( ajaxExtend( target, jQuery.ajaxSettings ), settings ) :
-
-				// Extending ajaxSettings
-				ajaxExtend( jQuery.ajaxSettings, target );
-		},
-
-		ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
-		ajaxTransport: addToPrefiltersOrTransports( transports ),
-
-		// Main method
-		ajax: function( url, options ) {
-
-			// If url is an object, simulate pre-1.5 signature
-			if ( typeof url === "object" ) {
-				options = url;
-				url = undefined;
-			}
-
-			// Force options to be an object
-			options = options || {};
-
-			var transport,
-
-				// URL without anti-cache param
-				cacheURL,
-
-				// Response headers
-				responseHeadersString,
-				responseHeaders,
-
-				// timeout handle
-				timeoutTimer,
-
-				// Url cleanup var
-				urlAnchor,
-
-				// To know if global events are to be dispatched
-				fireGlobals,
-
-				// Loop variable
-				i,
-
-				// Create the final options object
-				s = jQuery.ajaxSetup( {}, options ),
-
-				// Callbacks context
-				callbackContext = s.context || s,
-
-				// Context for global events is callbackContext if it is a DOM node or jQuery collection
-				globalEventContext = s.context &&
-					( callbackContext.nodeType || callbackContext.jquery ) ?
-						jQuery( callbackContext ) :
-						jQuery.event,
-
-				// Deferreds
-				deferred = jQuery.Deferred(),
-				completeDeferred = jQuery.Callbacks( "once memory" ),
-
-				// Status-dependent callbacks
-				statusCode = s.statusCode || {},
-
-				// Headers (they are sent all at once)
-				requestHeaders = {},
-				requestHeadersNames = {},
-
-				// The jqXHR state
-				state = 0,
-
-				// Default abort message
-				strAbort = "canceled",
-
-				// Fake xhr
-				jqXHR = {
-					readyState: 0,
-
-					// Builds headers hashtable if needed
-					getResponseHeader: function( key ) {
-						var match;
-						if ( state === 2 ) {
-							if ( !responseHeaders ) {
-								responseHeaders = {};
-								while ( ( match = rheaders.exec( responseHeadersString ) ) ) {
-									responseHeaders[ match[ 1 ].toLowerCase() ] = match[ 2 ];
-								}
-							}
-							match = responseHeaders[ key.toLowerCase() ];
-						}
-						return match == null ? null : match;
-					},
-
-					// Raw string
-					getAllResponseHeaders: function() {
-						return state === 2 ? responseHeadersString : null;
-					},
-
-					// Caches the header
-					setRequestHeader: function( name, value ) {
-						var lname = name.toLowerCase();
-						if ( !state ) {
-							name = requestHeadersNames[ lname ] = requestHeadersNames[ lname ] || name;
-							requestHeaders[ name ] = value;
-						}
-						return this;
-					},
-
-					// Overrides response content-type header
-					overrideMimeType: function( type ) {
-						if ( !state ) {
-							s.mimeType = type;
-						}
-						return this;
-					},
-
-					// Status-dependent callbacks
-					statusCode: function( map ) {
-						var code;
-						if ( map ) {
-							if ( state < 2 ) {
-								for ( code in map ) {
-
-									// Lazy-add the new callback in a way that preserves old ones
-									statusCode[ code ] = [ statusCode[ code ], map[ code ] ];
-								}
-							} else {
-
-								// Execute the appropriate callbacks
-								jqXHR.always( map[ jqXHR.status ] );
-							}
-						}
-						return this;
-					},
-
-					// Cancel the request
-					abort: function( statusText ) {
-						var finalText = statusText || strAbort;
-						if ( transport ) {
-							transport.abort( finalText );
-						}
-						done( 0, finalText );
-						return this;
-					}
-				};
-
-			// Attach deferreds
-			deferred.promise( jqXHR ).complete = completeDeferred.add;
-			jqXHR.success = jqXHR.done;
-			jqXHR.error = jqXHR.fail;
-
-			// Remove hash character (#7531: and string promotion)
-			// Add protocol if not provided (prefilters might expect it)
-			// Handle falsy url in the settings object (#10093: consistency with old signature)
-			// We also use the url parameter if available
-			s.url = ( ( url || s.url || location.href ) + "" ).replace( rhash, "" )
-				.replace( rprotocol, location.protocol + "//" );
-
-			// Alias method option to type as per ticket #12004
-			s.type = options.method || options.type || s.method || s.type;
-
-			// Extract dataTypes list
-			s.dataTypes = jQuery.trim( s.dataType || "*" ).toLowerCase().match( rnotwhite ) || [ "" ];
-
-			// A cross-domain request is in order when the origin doesn't match the current origin.
-			if ( s.crossDomain == null ) {
-				urlAnchor = document.createElement( "a" );
-
-				// Support: IE8-11+
-				// IE throws exception if url is malformed, e.g. http://example.com:80x/
-				try {
-					urlAnchor.href = s.url;
-
-					// Support: IE8-11+
-					// Anchor's host property isn't correctly set when s.url is relative
-					urlAnchor.href = urlAnchor.href;
-					s.crossDomain = originAnchor.protocol + "//" + originAnchor.host !==
-						urlAnchor.protocol + "//" + urlAnchor.host;
-				} catch ( e ) {
-
-					// If there is an error parsing the URL, assume it is crossDomain,
-					// it can be rejected by the transport if it is invalid
-					s.crossDomain = true;
-				}
-			}
-
-			// Convert data if not already a string
-			if ( s.data && s.processData && typeof s.data !== "string" ) {
-				s.data = jQuery.param( s.data, s.traditional );
-			}
-
-			// Apply prefilters
-			inspectPrefiltersOrTransports( prefilters, s, options, jqXHR );
-
-			// If request was aborted inside a prefilter, stop there
-			if ( state === 2 ) {
-				return jqXHR;
-			}
-
-			// We can fire global events as of now if asked to
-			// Don't fire events if jQuery.event is undefined in an AMD-usage scenario (#15118)
-			fireGlobals = jQuery.event && s.global;
-
-			// Watch for a new set of requests
-			if ( fireGlobals && jQuery.active++ === 0 ) {
-				jQuery.event.trigger( "ajaxStart" );
-			}
-
-			// Uppercase the type
-			s.type = s.type.toUpperCase();
-
-			// Determine if request has content
-			s.hasContent = !rnoContent.test( s.type );
-
-			// Save the URL in case we're toying with the If-Modified-Since
-			// and/or If-None-Match header later on
-			cacheURL = s.url;
-
-			// More options handling for requests with no content
-			if ( !s.hasContent ) {
-
-				// If data is available, append data to url
-				if ( s.data ) {
-					cacheURL = ( s.url += ( rquery.test( cacheURL ) ? "&" : "?" ) + s.data );
-
-					// #9682: remove data so that it's not used in an eventual retry
-					delete s.data;
-				}
-
-				// Add anti-cache in url if needed
-				if ( s.cache === false ) {
-					s.url = rts.test( cacheURL ) ?
-
-						// If there is already a '_' parameter, set its value
-						cacheURL.replace( rts, "$1_=" + nonce++ ) :
-
-						// Otherwise add one to the end
-						cacheURL + ( rquery.test( cacheURL ) ? "&" : "?" ) + "_=" + nonce++;
-				}
-			}
-
-			// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
-			if ( s.ifModified ) {
-				if ( jQuery.lastModified[ cacheURL ] ) {
-					jqXHR.setRequestHeader( "If-Modified-Since", jQuery.lastModified[ cacheURL ] );
-				}
-				if ( jQuery.etag[ cacheURL ] ) {
-					jqXHR.setRequestHeader( "If-None-Match", jQuery.etag[ cacheURL ] );
-				}
-			}
-
-			// Set the correct header, if data is being sent
-			if ( s.data && s.hasContent && s.contentType !== false || options.contentType ) {
-				jqXHR.setRequestHeader( "Content-Type", s.contentType );
-			}
-
-			// Set the Accepts header for the server, depending on the dataType
-			jqXHR.setRequestHeader(
-				"Accept",
-				s.dataTypes[ 0 ] && s.accepts[ s.dataTypes[ 0 ] ] ?
-					s.accepts[ s.dataTypes[ 0 ] ] +
-						( s.dataTypes[ 0 ] !== "*" ? ", " + allTypes + "; q=0.01" : "" ) :
-					s.accepts[ "*" ]
-			);
-
-			// Check for headers option
-			for ( i in s.headers ) {
-				jqXHR.setRequestHeader( i, s.headers[ i ] );
-			}
-
-			// Allow custom headers/mimetypes and early abort
-			if ( s.beforeSend &&
-				( s.beforeSend.call( callbackContext, jqXHR, s ) === false || state === 2 ) ) {
-
-				// Abort if not done already and return
-				return jqXHR.abort();
-			}
-
-			// Aborting is no longer a cancellation
-			strAbort = "abort";
-
-			// Install callbacks on deferreds
-			for ( i in { success: 1, error: 1, complete: 1 } ) {
-				jqXHR[ i ]( s[ i ] );
-			}
-
-			// Get transport
-			transport = inspectPrefiltersOrTransports( transports, s, options, jqXHR );
-
-			// If no transport, we auto-abort
-			if ( !transport ) {
-				done( -1, "No Transport" );
-			} else {
-				jqXHR.readyState = 1;
-
-				// Send global event
-				if ( fireGlobals ) {
-					globalEventContext.trigger( "ajaxSend", [ jqXHR, s ] );
-				}
-
-				// If request was aborted inside ajaxSend, stop there
-				if ( state === 2 ) {
-					return jqXHR;
-				}
-
-				// Timeout
-				if ( s.async && s.timeout > 0 ) {
-					timeoutTimer = window.setTimeout( function() {
-						jqXHR.abort( "timeout" );
-					}, s.timeout );
-				}
-
-				try {
-					state = 1;
-					transport.send( requestHeaders, done );
-				} catch ( e ) {
-
-					// Propagate exception as error if not done
-					if ( state < 2 ) {
-						done( -1, e );
-
-					// Simply rethrow otherwise
-					} else {
-						throw e;
-					}
-				}
-			}
-
-			// Callback for when everything is done
-			function done( status, nativeStatusText, responses, headers ) {
-				var isSuccess, success, error, response, modified,
-					statusText = nativeStatusText;
-
-				// Called once
-				if ( state === 2 ) {
-					return;
-				}
-
-				// State is "done" now
-				state = 2;
-
-				// Clear timeout if it exists
-				if ( timeoutTimer ) {
-					window.clearTimeout( timeoutTimer );
-				}
-
-				// Dereference transport for early garbage collection
-				// (no matter how long the jqXHR object will be used)
-				transport = undefined;
-
-				// Cache response headers
-				responseHeadersString = headers || "";
-
-				// Set readyState
-				jqXHR.readyState = status > 0 ? 4 : 0;
-
-				// Determine if successful
-				isSuccess = status >= 200 && status < 300 || status === 304;
-
-				// Get response data
-				if ( responses ) {
-					response = ajaxHandleResponses( s, jqXHR, responses );
-				}
-
-				// Convert no matter what (that way responseXXX fields are always set)
-				response = ajaxConvert( s, response, jqXHR, isSuccess );
-
-				// If successful, handle type chaining
-				if ( isSuccess ) {
-
-					// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
-					if ( s.ifModified ) {
-						modified = jqXHR.getResponseHeader( "Last-Modified" );
-						if ( modified ) {
-							jQuery.lastModified[ cacheURL ] = modified;
-						}
-						modified = jqXHR.getResponseHeader( "etag" );
-						if ( modified ) {
-							jQuery.etag[ cacheURL ] = modified;
-						}
-					}
-
-					// if no content
-					if ( status === 204 || s.type === "HEAD" ) {
-						statusText = "nocontent";
-
-					// if not modified
-					} else if ( status === 304 ) {
-						statusText = "notmodified";
-
-					// If we have data, let's convert it
-					} else {
-						statusText = response.state;
-						success = response.data;
-						error = response.error;
-						isSuccess = !error;
-					}
-				} else {
-
-					// Extract error from statusText and normalize for non-aborts
-					error = statusText;
-					if ( status || !statusText ) {
-						statusText = "error";
-						if ( status < 0 ) {
-							status = 0;
-						}
-					}
-				}
-
-				// Set data for the fake xhr object
-				jqXHR.status = status;
-				jqXHR.statusText = ( nativeStatusText || statusText ) + "";
-
-				// Success/Error
-				if ( isSuccess ) {
-					deferred.resolveWith( callbackContext, [ success, statusText, jqXHR ] );
-				} else {
-					deferred.rejectWith( callbackContext, [ jqXHR, statusText, error ] );
-				}
-
-				// Status-dependent callbacks
-				jqXHR.statusCode( statusCode );
-				statusCode = undefined;
-
-				if ( fireGlobals ) {
-					globalEventContext.trigger( isSuccess ? "ajaxSuccess" : "ajaxError",
-						[ jqXHR, s, isSuccess ? success : error ] );
-				}
-
-				// Complete
-				completeDeferred.fireWith( callbackContext, [ jqXHR, statusText ] );
-
-				if ( fireGlobals ) {
-					globalEventContext.trigger( "ajaxComplete", [ jqXHR, s ] );
-
-					// Handle the global AJAX counter
-					if ( !( --jQuery.active ) ) {
-						jQuery.event.trigger( "ajaxStop" );
-					}
-				}
-			}
-
-			return jqXHR;
-		},
-
-		getJSON: function( url, data, callback ) {
-			return jQuery.get( url, data, callback, "json" );
-		},
-
-		getScript: function( url, callback ) {
-			return jQuery.get( url, undefined, callback, "script" );
-		}
-	} );
-
-	jQuery.each( [ "get", "post" ], function( i, method ) {
-		jQuery[ method ] = function( url, data, callback, type ) {
-
-			// Shift arguments if data argument was omitted
-			if ( jQuery.isFunction( data ) ) {
-				type = type || callback;
-				callback = data;
-				data = undefined;
-			}
-
-			// The url can be an options object (which then must have .url)
-			return jQuery.ajax( jQuery.extend( {
-				url: url,
-				type: method,
-				dataType: type,
-				data: data,
-				success: callback
-			}, jQuery.isPlainObject( url ) && url ) );
-		};
-	} );
-
-
-	jQuery._evalUrl = function( url ) {
-		return jQuery.ajax( {
-			url: url,
-
-			// Make this explicit, since user can override this through ajaxSetup (#11264)
-			type: "GET",
-			dataType: "script",
-			async: false,
-			global: false,
-			"throws": true
-		} );
-	};
-
-
-	jQuery.fn.extend( {
-		wrapAll: function( html ) {
-			var wrap;
-
-			if ( jQuery.isFunction( html ) ) {
-				return this.each( function( i ) {
-					jQuery( this ).wrapAll( html.call( this, i ) );
-				} );
-			}
-
-			if ( this[ 0 ] ) {
-
-				// The elements to wrap the target around
-				wrap = jQuery( html, this[ 0 ].ownerDocument ).eq( 0 ).clone( true );
-
-				if ( this[ 0 ].parentNode ) {
-					wrap.insertBefore( this[ 0 ] );
-				}
-
-				wrap.map( function() {
-					var elem = this;
-
-					while ( elem.firstElementChild ) {
-						elem = elem.firstElementChild;
-					}
-
-					return elem;
-				} ).append( this );
-			}
-
-			return this;
-		},
-
-		wrapInner: function( html ) {
-			if ( jQuery.isFunction( html ) ) {
-				return this.each( function( i ) {
-					jQuery( this ).wrapInner( html.call( this, i ) );
-				} );
-			}
-
-			return this.each( function() {
-				var self = jQuery( this ),
-					contents = self.contents();
-
-				if ( contents.length ) {
-					contents.wrapAll( html );
-
-				} else {
-					self.append( html );
-				}
-			} );
-		},
-
-		wrap: function( html ) {
-			var isFunction = jQuery.isFunction( html );
-
-			return this.each( function( i ) {
-				jQuery( this ).wrapAll( isFunction ? html.call( this, i ) : html );
-			} );
-		},
-
-		unwrap: function() {
-			return this.parent().each( function() {
-				if ( !jQuery.nodeName( this, "body" ) ) {
-					jQuery( this ).replaceWith( this.childNodes );
-				}
-			} ).end();
-		}
-	} );
-
-
-	jQuery.expr.filters.hidden = function( elem ) {
-		return !jQuery.expr.filters.visible( elem );
-	};
-	jQuery.expr.filters.visible = function( elem ) {
-
-		// Support: Opera <= 12.12
-		// Opera reports offsetWidths and offsetHeights less than zero on some elements
-		// Use OR instead of AND as the element is not visible if either is true
-		// See tickets #10406 and #13132
-		return elem.offsetWidth > 0 || elem.offsetHeight > 0 || elem.getClientRects().length > 0;
-	};
-
-
-
-
-	var r20 = /%20/g,
-		rbracket = /\[\]$/,
-		rCRLF = /\r?\n/g,
-		rsubmitterTypes = /^(?:submit|button|image|reset|file)$/i,
-		rsubmittable = /^(?:input|select|textarea|keygen)/i;
-
-	function buildParams( prefix, obj, traditional, add ) {
-		var name;
-
-		if ( jQuery.isArray( obj ) ) {
-
-			// Serialize array item.
-			jQuery.each( obj, function( i, v ) {
-				if ( traditional || rbracket.test( prefix ) ) {
-
-					// Treat each array item as a scalar.
-					add( prefix, v );
-
-				} else {
-
-					// Item is non-scalar (array or object), encode its numeric index.
-					buildParams(
-						prefix + "[" + ( typeof v === "object" && v != null ? i : "" ) + "]",
-						v,
-						traditional,
-						add
-					);
-				}
-			} );
-
-		} else if ( !traditional && jQuery.type( obj ) === "object" ) {
-
-			// Serialize object item.
-			for ( name in obj ) {
-				buildParams( prefix + "[" + name + "]", obj[ name ], traditional, add );
-			}
-
-		} else {
-
-			// Serialize scalar item.
-			add( prefix, obj );
-		}
-	}
-
-	// Serialize an array of form elements or a set of
-	// key/values into a query string
-	jQuery.param = function( a, traditional ) {
-		var prefix,
-			s = [],
-			add = function( key, value ) {
-
-				// If value is a function, invoke it and return its value
-				value = jQuery.isFunction( value ) ? value() : ( value == null ? "" : value );
-				s[ s.length ] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
-			};
-
-		// Set traditional to true for jQuery <= 1.3.2 behavior.
-		if ( traditional === undefined ) {
-			traditional = jQuery.ajaxSettings && jQuery.ajaxSettings.traditional;
-		}
-
-		// If an array was passed in, assume that it is an array of form elements.
-		if ( jQuery.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
-
-			// Serialize the form elements
-			jQuery.each( a, function() {
-				add( this.name, this.value );
-			} );
-
-		} else {
-
-			// If traditional, encode the "old" way (the way 1.3.2 or older
-			// did it), otherwise encode params recursively.
-			for ( prefix in a ) {
-				buildParams( prefix, a[ prefix ], traditional, add );
-			}
-		}
-
-		// Return the resulting serialization
-		return s.join( "&" ).replace( r20, "+" );
-	};
-
-	jQuery.fn.extend( {
-		serialize: function() {
-			return jQuery.param( this.serializeArray() );
-		},
-		serializeArray: function() {
-			return this.map( function() {
-
-				// Can add propHook for "elements" to filter or add form elements
-				var elements = jQuery.prop( this, "elements" );
-				return elements ? jQuery.makeArray( elements ) : this;
-			} )
-			.filter( function() {
-				var type = this.type;
-
-				// Use .is( ":disabled" ) so that fieldset[disabled] works
-				return this.name && !jQuery( this ).is( ":disabled" ) &&
-					rsubmittable.test( this.nodeName ) && !rsubmitterTypes.test( type ) &&
-					( this.checked || !rcheckableType.test( type ) );
-			} )
-			.map( function( i, elem ) {
-				var val = jQuery( this ).val();
-
-				return val == null ?
-					null :
-					jQuery.isArray( val ) ?
-						jQuery.map( val, function( val ) {
-							return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
-						} ) :
-						{ name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
-			} ).get();
-		}
-	} );
-
-
-	jQuery.ajaxSettings.xhr = function() {
-		try {
-			return new window.XMLHttpRequest();
-		} catch ( e ) {}
-	};
-
-	var xhrSuccessStatus = {
-
-			// File protocol always yields status code 0, assume 200
-			0: 200,
-
-			// Support: IE9
-			// #1450: sometimes IE returns 1223 when it should be 204
-			1223: 204
-		},
-		xhrSupported = jQuery.ajaxSettings.xhr();
-
-	support.cors = !!xhrSupported && ( "withCredentials" in xhrSupported );
-	support.ajax = xhrSupported = !!xhrSupported;
-
-	jQuery.ajaxTransport( function( options ) {
-		var callback, errorCallback;
-
-		// Cross domain only allowed if supported through XMLHttpRequest
-		if ( support.cors || xhrSupported && !options.crossDomain ) {
-			return {
-				send: function( headers, complete ) {
-					var i,
-						xhr = options.xhr();
-
-					xhr.open(
-						options.type,
-						options.url,
-						options.async,
-						options.username,
-						options.password
-					);
-
-					// Apply custom fields if provided
-					if ( options.xhrFields ) {
-						for ( i in options.xhrFields ) {
-							xhr[ i ] = options.xhrFields[ i ];
-						}
-					}
-
-					// Override mime type if needed
-					if ( options.mimeType && xhr.overrideMimeType ) {
-						xhr.overrideMimeType( options.mimeType );
-					}
-
-					// X-Requested-With header
-					// For cross-domain requests, seeing as conditions for a preflight are
-					// akin to a jigsaw puzzle, we simply never set it to be sure.
-					// (it can always be set on a per-request basis or even using ajaxSetup)
-					// For same-domain requests, won't change header if already provided.
-					if ( !options.crossDomain && !headers[ "X-Requested-With" ] ) {
-						headers[ "X-Requested-With" ] = "XMLHttpRequest";
-					}
-
-					// Set headers
-					for ( i in headers ) {
-						xhr.setRequestHeader( i, headers[ i ] );
-					}
-
-					// Callback
-					callback = function( type ) {
-						return function() {
-							if ( callback ) {
-								callback = errorCallback = xhr.onload =
-									xhr.onerror = xhr.onabort = xhr.onreadystatechange = null;
-
-								if ( type === "abort" ) {
-									xhr.abort();
-								} else if ( type === "error" ) {
-
-									// Support: IE9
-									// On a manual native abort, IE9 throws
-									// errors on any property access that is not readyState
-									if ( typeof xhr.status !== "number" ) {
-										complete( 0, "error" );
-									} else {
-										complete(
-
-											// File: protocol always yields status 0; see #8605, #14207
-											xhr.status,
-											xhr.statusText
-										);
-									}
-								} else {
-									complete(
-										xhrSuccessStatus[ xhr.status ] || xhr.status,
-										xhr.statusText,
-
-										// Support: IE9 only
-										// IE9 has no XHR2 but throws on binary (trac-11426)
-										// For XHR2 non-text, let the caller handle it (gh-2498)
-										( xhr.responseType || "text" ) !== "text"  ||
-										typeof xhr.responseText !== "string" ?
-											{ binary: xhr.response } :
-											{ text: xhr.responseText },
-										xhr.getAllResponseHeaders()
-									);
-								}
-							}
-						};
-					};
-
-					// Listen to events
-					xhr.onload = callback();
-					errorCallback = xhr.onerror = callback( "error" );
-
-					// Support: IE9
-					// Use onreadystatechange to replace onabort
-					// to handle uncaught aborts
-					if ( xhr.onabort !== undefined ) {
-						xhr.onabort = errorCallback;
-					} else {
-						xhr.onreadystatechange = function() {
-
-							// Check readyState before timeout as it changes
-							if ( xhr.readyState === 4 ) {
-
-								// Allow onerror to be called first,
-								// but that will not handle a native abort
-								// Also, save errorCallback to a variable
-								// as xhr.onerror cannot be accessed
-								window.setTimeout( function() {
-									if ( callback ) {
-										errorCallback();
-									}
-								} );
-							}
-						};
-					}
-
-					// Create the abort callback
-					callback = callback( "abort" );
-
-					try {
-
-						// Do send the request (this may raise an exception)
-						xhr.send( options.hasContent && options.data || null );
-					} catch ( e ) {
-
-						// #14683: Only rethrow if this hasn't been notified as an error yet
-						if ( callback ) {
-							throw e;
-						}
-					}
-				},
-
-				abort: function() {
-					if ( callback ) {
-						callback();
-					}
-				}
-			};
-		}
-	} );
-
-
-
-
-	// Install script dataType
-	jQuery.ajaxSetup( {
-		accepts: {
-			script: "text/javascript, application/javascript, " +
-				"application/ecmascript, application/x-ecmascript"
-		},
-		contents: {
-			script: /\b(?:java|ecma)script\b/
-		},
-		converters: {
-			"text script": function( text ) {
-				jQuery.globalEval( text );
-				return text;
-			}
-		}
-	} );
-
-	// Handle cache's special case and crossDomain
-	jQuery.ajaxPrefilter( "script", function( s ) {
-		if ( s.cache === undefined ) {
-			s.cache = false;
-		}
-		if ( s.crossDomain ) {
-			s.type = "GET";
-		}
-	} );
-
-	// Bind script tag hack transport
-	jQuery.ajaxTransport( "script", function( s ) {
-
-		// This transport only deals with cross domain requests
-		if ( s.crossDomain ) {
-			var script, callback;
-			return {
-				send: function( _, complete ) {
-					script = jQuery( "<script>" ).prop( {
-						charset: s.scriptCharset,
-						src: s.url
-					} ).on(
-						"load error",
-						callback = function( evt ) {
-							script.remove();
-							callback = null;
-							if ( evt ) {
-								complete( evt.type === "error" ? 404 : 200, evt.type );
-							}
-						}
-					);
-
-					// Use native DOM manipulation to avoid our domManip AJAX trickery
-					document.head.appendChild( script[ 0 ] );
-				},
-				abort: function() {
-					if ( callback ) {
-						callback();
-					}
-				}
-			};
-		}
-	} );
-
-
-
-
-	var oldCallbacks = [],
-		rjsonp = /(=)\?(?=&|$)|\?\?/;
-
-	// Default jsonp settings
-	jQuery.ajaxSetup( {
-		jsonp: "callback",
-		jsonpCallback: function() {
-			var callback = oldCallbacks.pop() || ( jQuery.expando + "_" + ( nonce++ ) );
-			this[ callback ] = true;
-			return callback;
-		}
-	} );
-
-	// Detect, normalize options and install callbacks for jsonp requests
-	jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
-
-		var callbackName, overwritten, responseContainer,
-			jsonProp = s.jsonp !== false && ( rjsonp.test( s.url ) ?
-				"url" :
-				typeof s.data === "string" &&
-					( s.contentType || "" )
-						.indexOf( "application/x-www-form-urlencoded" ) === 0 &&
-					rjsonp.test( s.data ) && "data"
-			);
-
-		// Handle iff the expected data type is "jsonp" or we have a parameter to set
-		if ( jsonProp || s.dataTypes[ 0 ] === "jsonp" ) {
-
-			// Get callback name, remembering preexisting value associated with it
-			callbackName = s.jsonpCallback = jQuery.isFunction( s.jsonpCallback ) ?
-				s.jsonpCallback() :
-				s.jsonpCallback;
-
-			// Insert callback into url or form data
-			if ( jsonProp ) {
-				s[ jsonProp ] = s[ jsonProp ].replace( rjsonp, "$1" + callbackName );
-			} else if ( s.jsonp !== false ) {
-				s.url += ( rquery.test( s.url ) ? "&" : "?" ) + s.jsonp + "=" + callbackName;
-			}
-
-			// Use data converter to retrieve json after script execution
-			s.converters[ "script json" ] = function() {
-				if ( !responseContainer ) {
-					jQuery.error( callbackName + " was not called" );
-				}
-				return responseContainer[ 0 ];
-			};
-
-			// Force json dataType
-			s.dataTypes[ 0 ] = "json";
-
-			// Install callback
-			overwritten = window[ callbackName ];
-			window[ callbackName ] = function() {
-				responseContainer = arguments;
-			};
-
-			// Clean-up function (fires after converters)
-			jqXHR.always( function() {
-
-				// If previous value didn't exist - remove it
-				if ( overwritten === undefined ) {
-					jQuery( window ).removeProp( callbackName );
-
-				// Otherwise restore preexisting value
-				} else {
-					window[ callbackName ] = overwritten;
-				}
-
-				// Save back as free
-				if ( s[ callbackName ] ) {
-
-					// Make sure that re-using the options doesn't screw things around
-					s.jsonpCallback = originalSettings.jsonpCallback;
-
-					// Save the callback name for future use
-					oldCallbacks.push( callbackName );
-				}
-
-				// Call if it was a function and we have a response
-				if ( responseContainer && jQuery.isFunction( overwritten ) ) {
-					overwritten( responseContainer[ 0 ] );
-				}
-
-				responseContainer = overwritten = undefined;
-			} );
-
-			// Delegate to script
-			return "script";
-		}
-	} );
-
-
-
-
-	// Support: Safari 8+
-	// In Safari 8 documents created via document.implementation.createHTMLDocument
-	// collapse sibling forms: the second one becomes a child of the first one.
-	// Because of that, this security measure has to be disabled in Safari 8.
-	// https://bugs.webkit.org/show_bug.cgi?id=137337
-	support.createHTMLDocument = ( function() {
-		var body = document.implementation.createHTMLDocument( "" ).body;
-		body.innerHTML = "<form></form><form></form>";
-		return body.childNodes.length === 2;
-	} )();
-
-
-	// Argument "data" should be string of html
-	// context (optional): If specified, the fragment will be created in this context,
-	// defaults to document
-	// keepScripts (optional): If true, will include scripts passed in the html string
-	jQuery.parseHTML = function( data, context, keepScripts ) {
-		if ( !data || typeof data !== "string" ) {
-			return null;
-		}
-		if ( typeof context === "boolean" ) {
-			keepScripts = context;
-			context = false;
-		}
-
-		// Stop scripts or inline event handlers from being executed immediately
-		// by using document.implementation
-		context = context || ( support.createHTMLDocument ?
-			document.implementation.createHTMLDocument( "" ) :
-			document );
-
-		var parsed = rsingleTag.exec( data ),
-			scripts = !keepScripts && [];
-
-		// Single tag
-		if ( parsed ) {
-			return [ context.createElement( parsed[ 1 ] ) ];
-		}
-
-		parsed = buildFragment( [ data ], context, scripts );
-
-		if ( scripts && scripts.length ) {
-			jQuery( scripts ).remove();
-		}
-
-		return jQuery.merge( [], parsed.childNodes );
-	};
-
-
-	// Keep a copy of the old load method
-	var _load = jQuery.fn.load;
-
-	/**
-	 * Load a url into a page
-	 */
-	jQuery.fn.load = function( url, params, callback ) {
-		if ( typeof url !== "string" && _load ) {
-			return _load.apply( this, arguments );
-		}
-
-		var selector, type, response,
-			self = this,
-			off = url.indexOf( " " );
-
-		if ( off > -1 ) {
-			selector = jQuery.trim( url.slice( off ) );
-			url = url.slice( 0, off );
-		}
-
-		// If it's a function
-		if ( jQuery.isFunction( params ) ) {
-
-			// We assume that it's the callback
-			callback = params;
-			params = undefined;
-
-		// Otherwise, build a param string
-		} else if ( params && typeof params === "object" ) {
-			type = "POST";
-		}
-
-		// If we have elements to modify, make the request
-		if ( self.length > 0 ) {
-			jQuery.ajax( {
-				url: url,
-
-				// If "type" variable is undefined, then "GET" method will be used.
-				// Make value of this field explicit since
-				// user can override it through ajaxSetup method
-				type: type || "GET",
-				dataType: "html",
-				data: params
-			} ).done( function( responseText ) {
-
-				// Save response for use in complete callback
-				response = arguments;
-
-				self.html( selector ?
-
-					// If a selector was specified, locate the right elements in a dummy div
-					// Exclude scripts to avoid IE 'Permission Denied' errors
-					jQuery( "<div>" ).append( jQuery.parseHTML( responseText ) ).find( selector ) :
-
-					// Otherwise use the full result
-					responseText );
-
-			// If the request succeeds, this function gets "data", "status", "jqXHR"
-			// but they are ignored because response was set above.
-			// If it fails, this function gets "jqXHR", "status", "error"
-			} ).always( callback && function( jqXHR, status ) {
-				self.each( function() {
-					callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
-				} );
-			} );
-		}
-
-		return this;
-	};
-
-
-
-
-	// Attach a bunch of functions for handling common AJAX events
-	jQuery.each( [
-		"ajaxStart",
-		"ajaxStop",
-		"ajaxComplete",
-		"ajaxError",
-		"ajaxSuccess",
-		"ajaxSend"
-	], function( i, type ) {
-		jQuery.fn[ type ] = function( fn ) {
-			return this.on( type, fn );
-		};
-	} );
-
-
-
-
-	jQuery.expr.filters.animated = function( elem ) {
-		return jQuery.grep( jQuery.timers, function( fn ) {
-			return elem === fn.elem;
-		} ).length;
-	};
-
-
-
-
-	/**
-	 * Gets a window from an element
-	 */
-	function getWindow( elem ) {
-		return jQuery.isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
-	}
-
-	jQuery.offset = {
-		setOffset: function( elem, options, i ) {
-			var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
-				position = jQuery.css( elem, "position" ),
-				curElem = jQuery( elem ),
-				props = {};
-
-			// Set position first, in-case top/left are set even on static elem
-			if ( position === "static" ) {
-				elem.style.position = "relative";
-			}
-
-			curOffset = curElem.offset();
-			curCSSTop = jQuery.css( elem, "top" );
-			curCSSLeft = jQuery.css( elem, "left" );
-			calculatePosition = ( position === "absolute" || position === "fixed" ) &&
-				( curCSSTop + curCSSLeft ).indexOf( "auto" ) > -1;
-
-			// Need to be able to calculate position if either
-			// top or left is auto and position is either absolute or fixed
-			if ( calculatePosition ) {
-				curPosition = curElem.position();
-				curTop = curPosition.top;
-				curLeft = curPosition.left;
-
-			} else {
-				curTop = parseFloat( curCSSTop ) || 0;
-				curLeft = parseFloat( curCSSLeft ) || 0;
-			}
-
-			if ( jQuery.isFunction( options ) ) {
-
-				// Use jQuery.extend here to allow modification of coordinates argument (gh-1848)
-				options = options.call( elem, i, jQuery.extend( {}, curOffset ) );
-			}
-
-			if ( options.top != null ) {
-				props.top = ( options.top - curOffset.top ) + curTop;
-			}
-			if ( options.left != null ) {
-				props.left = ( options.left - curOffset.left ) + curLeft;
-			}
-
-			if ( "using" in options ) {
-				options.using.call( elem, props );
-
-			} else {
-				curElem.css( props );
-			}
-		}
-	};
-
-	jQuery.fn.extend( {
-		offset: function( options ) {
-			if ( arguments.length ) {
-				return options === undefined ?
-					this :
-					this.each( function( i ) {
-						jQuery.offset.setOffset( this, options, i );
-					} );
-			}
-
-			var docElem, win,
-				elem = this[ 0 ],
-				box = { top: 0, left: 0 },
-				doc = elem && elem.ownerDocument;
-
-			if ( !doc ) {
-				return;
-			}
-
-			docElem = doc.documentElement;
-
-			// Make sure it's not a disconnected DOM node
-			if ( !jQuery.contains( docElem, elem ) ) {
-				return box;
-			}
-
-			box = elem.getBoundingClientRect();
-			win = getWindow( doc );
-			return {
-				top: box.top + win.pageYOffset - docElem.clientTop,
-				left: box.left + win.pageXOffset - docElem.clientLeft
-			};
-		},
-
-		position: function() {
-			if ( !this[ 0 ] ) {
-				return;
-			}
-
-			var offsetParent, offset,
-				elem = this[ 0 ],
-				parentOffset = { top: 0, left: 0 };
-
-			// Fixed elements are offset from window (parentOffset = {top:0, left: 0},
-			// because it is its only offset parent
-			if ( jQuery.css( elem, "position" ) === "fixed" ) {
-
-				// Assume getBoundingClientRect is there when computed position is fixed
-				offset = elem.getBoundingClientRect();
-
-			} else {
-
-				// Get *real* offsetParent
-				offsetParent = this.offsetParent();
-
-				// Get correct offsets
-				offset = this.offset();
-				if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
-					parentOffset = offsetParent.offset();
-				}
-
-				// Add offsetParent borders
-				parentOffset.top += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true );
-				parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true );
-			}
-
-			// Subtract parent offsets and element margins
-			return {
-				top: offset.top - parentOffset.top - jQuery.css( elem, "marginTop", true ),
-				left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
-			};
-		},
-
-		// This method will return documentElement in the following cases:
-		// 1) For the element inside the iframe without offsetParent, this method will return
-		//    documentElement of the parent window
-		// 2) For the hidden or detached element
-		// 3) For body or html element, i.e. in case of the html node - it will return itself
-		//
-		// but those exceptions were never presented as a real life use-cases
-		// and might be considered as more preferable results.
-		//
-		// This logic, however, is not guaranteed and can change at any point in the future
-		offsetParent: function() {
-			return this.map( function() {
-				var offsetParent = this.offsetParent;
-
-				while ( offsetParent && jQuery.css( offsetParent, "position" ) === "static" ) {
-					offsetParent = offsetParent.offsetParent;
-				}
-
-				return offsetParent || documentElement;
-			} );
-		}
-	} );
-
-	// Create scrollLeft and scrollTop methods
-	jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( method, prop ) {
-		var top = "pageYOffset" === prop;
-
-		jQuery.fn[ method ] = function( val ) {
-			return access( this, function( elem, method, val ) {
-				var win = getWindow( elem );
-
-				if ( val === undefined ) {
-					return win ? win[ prop ] : elem[ method ];
-				}
-
-				if ( win ) {
-					win.scrollTo(
-						!top ? val : win.pageXOffset,
-						top ? val : win.pageYOffset
-					);
-
-				} else {
-					elem[ method ] = val;
-				}
-			}, method, val, arguments.length );
-		};
-	} );
-
-	// Support: Safari<7-8+, Chrome<37-44+
-	// Add the top/left cssHooks using jQuery.fn.position
-	// Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
-	// Blink bug: https://code.google.com/p/chromium/issues/detail?id=229280
-	// getComputedStyle returns percent when specified for top/left/bottom/right;
-	// rather than make the css module depend on the offset module, just check for it here
-	jQuery.each( [ "top", "left" ], function( i, prop ) {
-		jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
-			function( elem, computed ) {
-				if ( computed ) {
-					computed = curCSS( elem, prop );
-
-					// If curCSS returns percentage, fallback to offset
-					return rnumnonpx.test( computed ) ?
-						jQuery( elem ).position()[ prop ] + "px" :
-						computed;
-				}
-			}
-		);
-	} );
-
-
-	// Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
-	jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
-		jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name },
-			function( defaultExtra, funcName ) {
-
-			// Margin is only for outerHeight, outerWidth
-			jQuery.fn[ funcName ] = function( margin, value ) {
-				var chainable = arguments.length && ( defaultExtra || typeof margin !== "boolean" ),
-					extra = defaultExtra || ( margin === true || value === true ? "margin" : "border" );
-
-				return access( this, function( elem, type, value ) {
-					var doc;
-
-					if ( jQuery.isWindow( elem ) ) {
-
-						// As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
-						// isn't a whole lot we can do. See pull request at this URL for discussion:
-						// https://github.com/jquery/jquery/pull/764
-						return elem.document.documentElement[ "client" + name ];
-					}
-
-					// Get document width or height
-					if ( elem.nodeType === 9 ) {
-						doc = elem.documentElement;
-
-						// Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
-						// whichever is greatest
-						return Math.max(
-							elem.body[ "scroll" + name ], doc[ "scroll" + name ],
-							elem.body[ "offset" + name ], doc[ "offset" + name ],
-							doc[ "client" + name ]
-						);
-					}
-
-					return value === undefined ?
-
-						// Get width or height on the element, requesting but not forcing parseFloat
-						jQuery.css( elem, type, extra ) :
-
-						// Set width or height on the element
-						jQuery.style( elem, type, value, extra );
-				}, type, chainable ? margin : undefined, chainable, null );
-			};
-		} );
-	} );
-
-
-	jQuery.fn.extend( {
-
-		bind: function( types, data, fn ) {
-			return this.on( types, null, data, fn );
-		},
-		unbind: function( types, fn ) {
-			return this.off( types, null, fn );
-		},
-
-		delegate: function( selector, types, data, fn ) {
-			return this.on( types, selector, data, fn );
-		},
-		undelegate: function( selector, types, fn ) {
-
-			// ( namespace ) or ( selector, types [, fn] )
-			return arguments.length === 1 ?
-				this.off( selector, "**" ) :
-				this.off( types, selector || "**", fn );
-		},
-		size: function() {
-			return this.length;
-		}
-	} );
-
-	jQuery.fn.andSelf = jQuery.fn.addBack;
-
-
-
-
-	// Register as a named AMD module, since jQuery can be concatenated with other
-	// files that may use define, but not via a proper concatenation script that
-	// understands anonymous AMD modules. A named AMD is safest and most robust
-	// way to register. Lowercase jquery is used because AMD module names are
-	// derived from file names, and jQuery is normally delivered in a lowercase
-	// file name. Do this after creating the global so that if an AMD module wants
-	// to call noConflict to hide this version of jQuery, it will work.
-
-	// Note that for maximum portability, libraries that are not jQuery should
-	// declare themselves as anonymous modules, and avoid setting a global if an
-	// AMD loader is present. jQuery is a special case. For more information, see
-	// https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
-
-	if ( true ) {
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
-			return jQuery;
-		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}
-
-
-
-	var
-
-		// Map over jQuery in case of overwrite
-		_jQuery = window.jQuery,
-
-		// Map over the $ in case of overwrite
-		_$ = window.$;
-
-	jQuery.noConflict = function( deep ) {
-		if ( window.$ === jQuery ) {
-			window.$ = _$;
-		}
-
-		if ( deep && window.jQuery === jQuery ) {
-			window.jQuery = _jQuery;
-		}
-
-		return jQuery;
-	};
-
-	// Expose jQuery and $ identifiers, even in AMD
-	// (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
-	// and CommonJS for browser emulators (#13566)
-	if ( !noGlobal ) {
-		window.jQuery = window.$ = jQuery;
-	}
-
-	return jQuery;
-	}));
-
 
 /***/ },
 /* 342 */

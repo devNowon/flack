@@ -57,6 +57,7 @@ class CreateChannelFormDialog extends React.Component {
     let inputedName = e.target.value;
     this.setState({channelName: inputedName, channelNameValidationMessage: ''});
     this._validateChannelName(inputedName);
+    this._checkDupChannelName(inputedName);
   }
   _validateChannelName(name) {
     let messageArray = [];
@@ -79,6 +80,15 @@ class CreateChannelFormDialog extends React.Component {
         message += text;
       }
       this.setState({channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.'});
+    }
+  }
+  _checkDupChannelName(name) {
+    const channelArr = this.props.channelArr;
+    for (let item of channelArr) {
+      if (item === name) {
+        this.setState({channelNameValidationMessage: 'Name is duplicated.'});
+        break;
+      }
     }
   }
   render() {

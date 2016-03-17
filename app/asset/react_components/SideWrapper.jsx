@@ -14,6 +14,7 @@ class SideWrapper extends React.Component {
         <ChannelWrapperComponent
           handleChnlAddClick={this.props.handleChnlAddClick}
           handleChnlItemClick={this.props.handleChnlItemClick}
+          channelArr={this.props.channelArr}
         />
         <ListWrapperComponent
         />
