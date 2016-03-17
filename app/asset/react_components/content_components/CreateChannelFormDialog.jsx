@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import io from 'socket.io-client';
 import $ from 'jquery';
+import _ from 'lodash';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
@@ -25,10 +26,14 @@ class CreateChannelFormDialog extends React.Component {
     this.displayName = 'CreateChannelFormDialog';
     this.state = {
       channelType: "public",
+      channelName: "",
+      channelNameValidationMessage: "",
     }
     this._toggleChannelType = this._toggleChannelType.bind(this);
     this._createChannel = this._createChannel.bind(this);
     this._closeForm = this._closeForm.bind(this);
+    this._handleChannelNameChange = this._handleChannelNameChange.bind(this);
+    this._validateChannelName = this._validateChannelName.bind(this);
   }
   _toggleChannelType() {
     let channelType = this.state.channelType;
@@ -41,6 +46,34 @@ class CreateChannelFormDialog extends React.Component {
   }
   _closeForm() {
     this.props.handleClose();
+  }
+  _handleChannelNameChange(e) {
+    let inputedName = e.target.value;
+    this.setState({channelName: inputedName, channelNameValidationMessage: ''});
+    this._validateChannelName(inputedName);
+  }
+  _validateChannelName(name) {
+    let messageArray = [];
+    let mustBeFlag = true;
+    if (name.length > 20) {
+      messageArray.push(' 21 characters or less');
+    }
+    if (_.toLower(name) !== name) {
+      messageArray.push(messageArray.length == 1 ? ', lower case' : ' lower case');
+    }
+    if (_.split(name, ' ', 2).length == 2 || _.trim(name) !== name) {
+      if (messageArray.length == 0) {
+        mustBeFlag = false;
+      }
+      messageArray.push((mustBeFlag ? ' and' : ' ') + ' cannot contain spaces or periods');
+    }
+    if (messageArray.length != 0) {
+      let message = '';
+      for (let text of messageArray) {
+        message += text;
+      }
+      this.setState({channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.'});
+    }
   }
   render() {
     const actions = [
@@ -79,9 +112,11 @@ class CreateChannelFormDialog extends React.Component {
         <TextField 
           hintText="# Enter name here" 
           floatingLabelText="Channel name"
-          errorText="Name must be 21 characters or less, lower case and cannot contain spaces or perioed"
+          errorText={this.state.channelNameValidationMessage}
           fullWidth={true}
           id="channelName"
+          onChange={this._handleChannelNameChange}
+          value={this.state.channelName}
         />
         <TextField 
           hintText="Search by name" 

@@ -71250,6 +71250,7 @@
 	      return object ? baseValues(object, keys(object)) : [];
 	    }
 
+<<<<<<< HEAD
 	    /**
 	     * Creates an array of the own and inherited enumerable property values of `object`.
 	     *
@@ -71275,6 +71276,13 @@
 	    function valuesIn(object) {
 	      return object == null ? [] : baseValues(object, keysIn(object));
 	    }
+=======
+	var _lodash = __webpack_require__(308);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+>>>>>>> a9d20cf53492c7a24a1e1c90b77a7852ee17b1b4
 
 	    /*------------------------------------------------------------------------*/
 
@@ -71517,14 +71525,31 @@
 	      string = toString(string);
 	      target = typeof target == 'string' ? target : (target + '');
 
+<<<<<<< HEAD
 	      var length = string.length;
 	      position = position === undefined
 	        ? length
 	        : baseClamp(toInteger(position), 0, length);
+=======
+	    _this.displayName = 'CreateChannelFormDialog';
+	    _this.state = {
+	      channelType: "public",
+	      channelName: "",
+	      channelNameValidationMessage: ""
+	    };
+	    _this._toggleChannelType = _this._toggleChannelType.bind(_this);
+	    _this._createChannel = _this._createChannel.bind(_this);
+	    _this._closeForm = _this._closeForm.bind(_this);
+	    _this._handleChannelNameChange = _this._handleChannelNameChange.bind(_this);
+	    _this._validateChannelName = _this._validateChannelName.bind(_this);
+	    return _this;
+	  }
+>>>>>>> a9d20cf53492c7a24a1e1c90b77a7852ee17b1b4
 
 	      position -= target.length;
 	      return position >= 0 && string.indexOf(target, position) == position;
 	    }
+<<<<<<< HEAD
 
 	    /**
 	     * Converts the characters "&", "<", ">", '"', "'", and "\`" in `string` to
@@ -71563,6 +71588,119 @@
 	      return (string && reHasUnescapedHtml.test(string))
 	        ? string.replace(reUnescapedHtml, escapeHtmlChar)
 	        : string;
+=======
+	  }, {
+	    key: '_handleChannelNameChange',
+	    value: function _handleChannelNameChange(e) {
+	      var inputedName = e.target.value;
+	      this.setState({ channelName: inputedName, channelNameValidationMessage: '' });
+	      this._validateChannelName(inputedName);
+	    }
+	  }, {
+	    key: '_validateChannelName',
+	    value: function _validateChannelName(name) {
+	      var messageArray = [];
+	      var mustBeFlag = true;
+	      if (name.length > 20) {
+	        messageArray.push(' 21 characters or less');
+	      }
+	      if (_lodash2.default.toLower(name) !== name) {
+	        messageArray.push(messageArray.length == 1 ? ', lower case' : ' lower case');
+	      }
+	      if (_lodash2.default.split(name, ' ', 2).length == 2 || _lodash2.default.trim(name) !== name) {
+	        if (messageArray.length == 0) {
+	          mustBeFlag = false;
+	        }
+	        messageArray.push((mustBeFlag ? ' and' : ' ') + ' cannot contain spaces or periods');
+	      }
+	      if (messageArray.length != 0) {
+	        var message = '';
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	          for (var _iterator = messageArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var text = _step.value;
+
+	            message += text;
+	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
+	          }
+	        }
+
+	        this.setState({ channelNameValidationMessage: 'Names' + (mustBeFlag ? ' must be' : '') + message + '.' });
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var actions = [_react2.default.createElement(_flatButton2.default, {
+	        label: 'Cancel',
+	        secondary: true,
+	        onTouchTap: this._closeForm
+	      }), _react2.default.createElement(_flatButton2.default, {
+	        label: 'Create channel',
+	        primary: true,
+	        keyboardFocused: true,
+	        onTouchTap: this._createChannel
+	      })];
+	      return _react2.default.createElement(
+	        _dialog2.default,
+	        _extends({}, this.props, {
+	          actions: actions,
+	          title: "Create new " + this.state.channelType + " channel"
+	        }),
+	        _react2.default.createElement(
+	          'div',
+	          { style: styles.block },
+	          _react2.default.createElement(_toggle2.default, {
+	            label: channelTypeMessage[this.state.channelType],
+	            defaultToggled: true,
+	            labelPosition: 'right',
+	            style: styles.toggle,
+	            onToggle: this._toggleChannelType,
+	            id: 'channelType'
+	          })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'private-desc' },
+	          'A private channel is only visible to its members, and only members of a private channel can read or search its contents.'
+	        ),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: '# Enter name here',
+	          floatingLabelText: 'Channel name',
+	          errorText: this.state.channelNameValidationMessage,
+	          fullWidth: true,
+	          id: 'channelName',
+	          onChange: this._handleChannelNameChange,
+	          value: this.state.channelName
+	        }),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: 'Search by name',
+	          floatingLabelText: 'Invite others to join (optional)',
+	          fullWidth: true
+	        }),
+	        _react2.default.createElement(_textField2.default, {
+	          hintText: 'Briefly describe the purpose of this channel',
+	          floatingLabelText: 'Purpose(optional)',
+	          multiLine: true,
+	          fullWidth: true
+	        })
+	      );
+>>>>>>> a9d20cf53492c7a24a1e1c90b77a7852ee17b1b4
 	    }
 
 	    /**
