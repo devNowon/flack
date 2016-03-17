@@ -24,16 +24,20 @@ class CreateChannelFormDialog extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'CreateChannelFormDialog';
-    this.state = {
-      channelType: "public",
-      channelName: "",
-      channelNameValidationMessage: "",
-    }
+    this._initializeStates = this._initializeStates.bind(this);
+    this._initializeStates();
     this._toggleChannelType = this._toggleChannelType.bind(this);
     this._createChannel = this._createChannel.bind(this);
     this._closeForm = this._closeForm.bind(this);
     this._handleChannelNameChange = this._handleChannelNameChange.bind(this);
     this._validateChannelName = this._validateChannelName.bind(this);
+  }
+  _initializeStates() {
+    this.state = {
+      channelType: "public",
+      channelName: "",
+      channelNameValidationMessage: "",
+    }
   }
   _toggleChannelType() {
     let channelType = this.state.channelType;
@@ -42,9 +46,11 @@ class CreateChannelFormDialog extends React.Component {
   }
   _createChannel() {
     SOCKET.emit('joinRoom', $('#channelName').val());
+    this._initializeStates();
     this._closeForm();
   }
   _closeForm() {
+    this._initializeStates();
     this.props.handleClose();
   }
   _handleChannelNameChange(e) {
@@ -65,7 +71,7 @@ class CreateChannelFormDialog extends React.Component {
       if (messageArray.length == 0) {
         mustBeFlag = false;
       }
-      messageArray.push((mustBeFlag ? ' and' : ' ') + ' cannot contain spaces or periods');
+      messageArray.push((mustBeFlag ? ' and' : '') + ' cannot contain spaces or periods');
     }
     if (messageArray.length != 0) {
       let message = '';
