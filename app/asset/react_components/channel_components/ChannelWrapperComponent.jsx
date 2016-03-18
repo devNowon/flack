@@ -1,7 +1,7 @@
 import React from 'react';
 import SideItemWrapper from '../common_components/SideItemWrapper.jsx';
-import SideAppBar from '../common_components/SideAppBar.jsx';
 import FontIcon from 'material-ui/lib/font-icon';
+import CommunicationChatBubble from 'material-ui/lib/svg-icons/communication/chat-bubble';
 
 const style = {
   leftIcon: {
@@ -17,17 +17,17 @@ class ChannelWrapperComponent extends React.Component {
   render() {
     return(
      <div>
-        <SideAppBar
+        <SideItemWrapper
           itemLength={this.props.channelArr.length}
           title="CHANNELS"
           addToolTip="Add Channel"
-          handleAddClick={this.props.handleChnlAddClick}/>
-        <SideItemWrapper
+          handleAddClick={this.props.handleChnlAddClick}
           itemArr={this.props.channelArr}
           leftIcon={<FontIcon
               className="fa fa-hashtag fa-1"
               style={style.leftIcon}
               />}
+          rightIcon={null}
           handleItemClick={this.props.handleChnlItemClick}/>
      </div>
     );

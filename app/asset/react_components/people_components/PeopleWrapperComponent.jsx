@@ -2,6 +2,7 @@ import React from 'react';
 import SideItemWrapper from '../common_components/SideItemWrapper.jsx';
 import SideAppBar from '../common_components/SideAppBar.jsx';
 import FontIcon from 'material-ui/lib/font-icon';
+import CommunicationChatBubble from 'material-ui/lib/svg-icons/communication/chat-bubble';
 
 const style = {
   leftIcon: {
@@ -17,17 +18,17 @@ class PeopleWrapperComponent extends React.Component {
   render() {
     return(
      <div>
-        <SideAppBar
+        <SideItemWrapper
           itemLength={this.props.peopleArr.length}
           title="DIRECT MESSAGES"
           addToolTip="Open A Direct Message"
-          handleAddClick={this.props.handlePeopleAddClick}/>
-        <SideItemWrapper
+          handleAddClick={this.props.handlePeopleAddClick}
           itemArr={this.props.peopleArr}
           leftIcon={<FontIcon
               className="fa fa-at fa-1"
               style={style.leftIcon}
               />}
+          rightIcon={<CommunicationChatBubble />}
           handleItemClick={this.props.handlePeopleItemClick}/>
      </div>
     );

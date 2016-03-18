@@ -2,6 +2,10 @@ import React from 'react';
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
+import IconButton from 'material-ui/lib/icon-button';
+import FontIcon from 'material-ui/lib/font-icon';
+import Colors from 'material-ui/lib/styles/colors';
+import Avatar from 'material-ui/lib/avatar';
 
 let SelectableList = SelectableContainerEnhance(List);
 
@@ -9,7 +13,16 @@ const style = {
   listItem: {
     // 아이템 스타일 작성
 
+  },
+  appBar: {
+    // 앱바 스타일 작성
   }
+}
+
+const styleSideBarButtonRight ={
+  position: 'absolute',
+  marginTop:-47,
+  right:0
 }
 
 function wrapState(ComposedComponent) {
@@ -56,13 +69,26 @@ class SideItemWrapper extends React.Component {
             leftIcon={this.props.leftIcon}
             primaryText={item}
             onClick={this.props.handleItemClick}
+            rightIcon={this.props.rightIcon}
             style={style.listItem}/>);
         } 
       }
       return itemDom;
     }
     return (
-      <SelectableList>
+      <SelectableList subheader={this.props.title + ' (' + this.props.itemLength + ')'}>
+        <IconButton tooltip={this.props.addToolTip}
+                    tooltipPosition="bottom-left"
+                    onClick={this.props.handleAddClick}
+                    style={styleSideBarButtonRight}>
+          <FontIcon
+            className="material-icons"
+            color={Colors.grey500}
+            hoverColor={Colors.grey800}
+          >
+          add_circle_outline
+          </FontIcon>       
+        </IconButton>
       { showItemList() }
       </SelectableList>
     );
