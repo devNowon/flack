@@ -16,9 +16,12 @@ class AppWrapper extends React.Component {
       contentComponent: MessageWrapperComponent,
       openCreateChannelForm: false,
       channelArr: [],
+      peopleArr: [],
     };
     this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
     this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
+    this.handlePeopleAddClick = this.handlePeopleAddClick.bind(this);
+    this.handlePeopleItemClick = this.handlePeopleItemClick.bind(this);
     this.handleCloseCreateChannelForm = this.handleCloseCreateChannelForm.bind(this);
   }
   handleChnlAddClick() {
@@ -30,6 +33,15 @@ class AppWrapper extends React.Component {
     // 채널 채팅 화면 전환
     console.log('채널채팅화면');
     console.log('clicked value: ' + this.props.value);
+  }
+  handlePeopleAddClick() {
+    // 채널 생성 화면 전환
+    console.log('add clicked');
+  }
+  handlePeopleItemClick(e) {
+    // 채널 채팅 화면 전환
+    console.log('clicked value: ' + this.props.value);
+    console.log(e);
   }
   handleCloseCreateChannelForm() {
     this.setState({openCreateChannelForm: false});
@@ -43,9 +55,12 @@ class AppWrapper extends React.Component {
       const chnlObj =  obj;
       const result = _.keys(chnlObj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
       this.setState({channelArr: result});
+      const resultPeople = _.keys(chnlObj).filter((key) => (_.startsWith(_.trim(key), '/#')));
+      this.setState({peopleArr: resultPeople});
     });
     SOCKET.emit('roomInformation');
   }
+
   render() {
     return (
       <div>
@@ -57,6 +72,9 @@ class AppWrapper extends React.Component {
           handleChnlAddClick={this.handleChnlAddClick}
           handleChnlItemClick={this.handleChnlItemClick}
           channelArr={this.state.channelArr}
+          handlePeopleAddClick={this.handlePeopleAddClick}
+          handlePeopleItemClick={this.handlePeopleItemClick}
+          peopleArr={this.state.peopleArr}
         />
         <CreateChannelFormDialog
           modal={false}

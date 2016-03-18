@@ -1,6 +1,7 @@
 import React from 'react';
 import LeftNav from 'material-ui/lib/left-nav';
 import ChannelWrapperComponent from './channel_components/ChannelWrapperComponent.jsx';
+import PeopleWrapperComponent from './people_components/PeopleWrapperComponent.jsx';
 import ListWrapperComponent from './ListWrapperComponent.jsx';
 
 class SideWrapper extends React.Component {
@@ -15,6 +16,11 @@ class SideWrapper extends React.Component {
           handleChnlAddClick={this.props.handleChnlAddClick}
           handleChnlItemClick={this.props.handleChnlItemClick}
           channelArr={this.props.channelArr}
+        />
+        <PeopleWrapperComponent
+          handlePeopleAddClick={this.props.handlePeopleAddClick}
+          handlePeopleItemClick={this.props.handlePeopleItemClick}
+          peopleArr={this.props.peopleArr}
         />
         <ListWrapperComponent
         />
