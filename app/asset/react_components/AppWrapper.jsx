@@ -16,9 +16,13 @@ class AppWrapper extends React.Component {
       contentComponent: MessageWrapperComponent,
       openCreateChannelForm: false,
       channelArr: [],
+      peopleArr: [],
+      mySession:[]
     };
     this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
     this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
+    this.handlePeopleAddClick = this.handlePeopleAddClick.bind(this);
+    this.handlePeopleItemClick = this.handlePeopleItemClick.bind(this);
     this.handleCloseCreateChannelForm = this.handleCloseCreateChannelForm.bind(this);
   }
   handleChnlAddClick() {
@@ -31,21 +35,39 @@ class AppWrapper extends React.Component {
     console.log('채널채팅화면');
     console.log('clicked value: ' + this.props.value);
   }
+  handlePeopleAddClick() {
+    // 채널 생성 화면 전환
+    console.log('add clicked');
+  }
+  handlePeopleItemClick(e) {
+    // 채널 채팅 화면 전환
+    console.log('clicked value: ' + this.props.value);
+    console.log(e);
+  }
   handleCloseCreateChannelForm() {
     this.setState({openCreateChannelForm: false});
   }
   componentWillMount() {
     // 채널 리스트 받아오는 코드
-    this._getChnlInformation();
+    this._getSessionInformation();
+    this._getMySession();
   }
-  _getChnlInformation() {
+  _getMySession() {
+    SOCKET.on('mySession', (obj) => {
+      this.setState({mySession: obj});
+      console.log(obj);
+    });
+  }
+  _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
-      const chnlObj =  obj;
-      const result = _.keys(chnlObj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
-      this.setState({channelArr: result});
+      const resultChannel = _.keys(obj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
+      this.setState({channelArr: resultChannel});
+      const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));
+      this.setState({peopleArr: resultPeople});
     });
     SOCKET.emit('roomInformation');
   }
+
   render() {
     return (
       <div>
@@ -57,6 +79,10 @@ class AppWrapper extends React.Component {
           handleChnlAddClick={this.handleChnlAddClick}
           handleChnlItemClick={this.handleChnlItemClick}
           channelArr={this.state.channelArr}
+          handlePeopleAddClick={this.handlePeopleAddClick}
+          handlePeopleItemClick={this.handlePeopleItemClick}
+          peopleArr={this.state.peopleArr}
+          mySession={this.state.mySession}
         />
         <CreateChannelFormDialog
           modal={false}
