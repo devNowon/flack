@@ -48,14 +48,13 @@ class AppWrapper extends React.Component {
   }
   componentWillMount() {
     // 채널 리스트 받아오는 코드
-    this._getChnlInformation();
+    this._getSessionInformation();
   }
-  _getChnlInformation() {
+  _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
-      const chnlObj =  obj;
-      const result = _.keys(chnlObj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
-      this.setState({channelArr: result});
-      const resultPeople = _.keys(chnlObj).filter((key) => (_.startsWith(_.trim(key), '/#')));
+      const resultChannel = _.keys(obj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
+      this.setState({channelArr: resultChannel});
+      const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));
       this.setState({peopleArr: resultPeople});
     });
     SOCKET.emit('roomInformation');

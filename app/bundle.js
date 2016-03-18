@@ -29299,20 +29299,19 @@
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
 	      // 채널 리스트 받아오는 코드
-	      this._getChnlInformation();
+	      this._getSessionInformation();
 	    }
 	  }, {
-	    key: '_getChnlInformation',
-	    value: function _getChnlInformation() {
+	    key: '_getSessionInformation',
+	    value: function _getSessionInformation() {
 	      var _this2 = this;
 
 	      SOCKET.on('roomInformation', function (obj) {
-	        var chnlObj = obj;
-	        var result = _lodash2.default.keys(chnlObj).filter(function (key) {
+	        var resultChannel = _lodash2.default.keys(obj).filter(function (key) {
 	          return !_lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
 	        });
-	        _this2.setState({ channelArr: result });
-	        var resultPeople = _lodash2.default.keys(chnlObj).filter(function (key) {
+	        _this2.setState({ channelArr: resultChannel });
+	        var resultPeople = _lodash2.default.keys(obj).filter(function (key) {
 	          return _lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
 	        });
 	        _this2.setState({ peopleArr: resultPeople });
