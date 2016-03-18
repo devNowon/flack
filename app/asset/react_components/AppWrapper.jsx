@@ -17,6 +17,7 @@ class AppWrapper extends React.Component {
       openCreateChannelForm: false,
       channelArr: [],
       peopleArr: [],
+      mySession:[]
     };
     this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
     this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
@@ -49,6 +50,13 @@ class AppWrapper extends React.Component {
   componentWillMount() {
     // 채널 리스트 받아오는 코드
     this._getSessionInformation();
+    this._getMySession();
+  }
+  _getMySession() {
+    SOCKET.on('mySession', (obj) => {
+      this.setState({mySession: obj});
+      console.log(obj);
+    });
   }
   _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
@@ -74,6 +82,7 @@ class AppWrapper extends React.Component {
           handlePeopleAddClick={this.handlePeopleAddClick}
           handlePeopleItemClick={this.handlePeopleItemClick}
           peopleArr={this.state.peopleArr}
+          mySession={this.state.mySession}
         />
         <CreateChannelFormDialog
           modal={false}

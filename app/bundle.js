@@ -29062,7 +29062,8 @@
 	      contentComponent: _MessageWrapperComponent2.default,
 	      openCreateChannelForm: false,
 	      channelArr: [],
-	      peopleArr: []
+	      peopleArr: [],
+	      mySession: []
 	    };
 	    _this.handleChnlAddClick = _this.handleChnlAddClick.bind(_this);
 	    _this.handleChnlItemClick = _this.handleChnlItemClick.bind(_this);
@@ -29109,21 +29110,32 @@
 	    value: function componentWillMount() {
 	      // 채널 리스트 받아오는 코드
 	      this._getSessionInformation();
+	      this._getMySession();
+	    }
+	  }, {
+	    key: '_getMySession',
+	    value: function _getMySession() {
+	      var _this2 = this;
+
+	      SOCKET.on('mySession', function (obj) {
+	        _this2.setState({ mySession: obj });
+	        console.log(obj);
+	      });
 	    }
 	  }, {
 	    key: '_getSessionInformation',
 	    value: function _getSessionInformation() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      SOCKET.on('roomInformation', function (obj) {
 	        var resultChannel = _lodash2.default.keys(obj).filter(function (key) {
 	          return !_lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
 	        });
-	        _this2.setState({ channelArr: resultChannel });
+	        _this3.setState({ channelArr: resultChannel });
 	        var resultPeople = _lodash2.default.keys(obj).filter(function (key) {
 	          return _lodash2.default.startsWith(_lodash2.default.trim(key), '/#');
 	        });
-	        _this2.setState({ peopleArr: resultPeople });
+	        _this3.setState({ peopleArr: resultPeople });
 	      });
 	      SOCKET.emit('roomInformation');
 	    }
@@ -29143,7 +29155,8 @@
 	          channelArr: this.state.channelArr,
 	          handlePeopleAddClick: this.handlePeopleAddClick,
 	          handlePeopleItemClick: this.handlePeopleItemClick,
-	          peopleArr: this.state.peopleArr
+	          peopleArr: this.state.peopleArr,
+	          mySession: this.state.mySession
 	        }),
 	        _react2.default.createElement(_CreateChannelFormDialog2.default, {
 	          modal: false,
@@ -29223,17 +29236,21 @@
 	      return _react2.default.createElement(
 	        _leftNav2.default,
 	        { open: true, docked: true },
-	        _react2.default.createElement(_SideAppBar2.default, null),
+	        _react2.default.createElement(_SideAppBar2.default, {
+	          mySession: this.props.mySession
+	        }),
 	        _react2.default.createElement(_ChannelWrapperComponent2.default, {
 	          handleChnlAddClick: this.props.handleChnlAddClick,
 	          handleChnlItemClick: this.props.handleChnlItemClick,
-	          channelArr: this.props.channelArr
+	          channelArr: this.props.channelArr,
+	          mySession: this.props.mySession
 	        }),
 	        _react2.default.createElement(_divider2.default, null),
 	        _react2.default.createElement(_PeopleWrapperComponent2.default, {
 	          handlePeopleAddClick: this.props.handlePeopleAddClick,
 	          handlePeopleItemClick: this.props.handlePeopleItemClick,
-	          peopleArr: this.props.peopleArr
+	          peopleArr: this.props.peopleArr,
+	          mySession: this.props.mySession
 	        })
 	      );
 	    }
@@ -39174,6 +39191,7 @@
 	          addToolTip: 'Add Channel',
 	          handleAddClick: this.props.handleChnlAddClick,
 	          itemArr: this.props.channelArr,
+	          mySession: this.props.mySession,
 	          leftIcon: _react2.default.createElement(_fontIcon2.default, {
 	            className: 'fa fa-hashtag fa-1',
 	            style: style.leftIcon
@@ -39312,14 +39330,17 @@
 	            for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	              var item = _step.value;
 
-	              itemDom.push(_react2.default.createElement(_listItem2.default, {
-	                key: index,
-	                value: index++,
-	                leftIcon: _this2.props.leftIcon,
-	                primaryText: item,
-	                onClick: _this2.props.handleItemClick,
-	                rightIcon: _this2.props.rightIcon,
-	                style: style.listItem }));
+	              if (item == _this2.props.mySession) {} //자기 세션 제외 출력
+	              else {
+	                  itemDom.push(_react2.default.createElement(_listItem2.default, {
+	                    key: index,
+	                    value: index++,
+	                    leftIcon: _this2.props.leftIcon,
+	                    primaryText: item,
+	                    onClick: _this2.props.handleItemClick,
+	                    rightIcon: _this2.props.rightIcon,
+	                    style: style.listItem }));
+	                }
 	            }
 	          } catch (err) {
 	            _didIteratorError = true;
@@ -39436,6 +39457,7 @@
 	          title: 'DIRECT MESSAGES',
 	          addToolTip: 'Open A Direct Message',
 	          handleAddClick: this.props.handlePeopleAddClick,
+	          mySession: this.props.mySession,
 	          itemArr: this.props.peopleArr,
 	          leftIcon: _react2.default.createElement(_fontIcon2.default, {
 	            className: 'fa fa-at fa-1',
@@ -39519,6 +39541,7 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SideAppBar).call(this, props));
 
 	    _this.displayName = 'SideAppBar';
+	    console.log(props);
 	    return _this;
 	  }
 
@@ -39526,7 +39549,7 @@
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(_appBar2.default, {
-	        title: 'My Profile',
+	        title: this.props.mySession,
 	        iconElementLeft: _react2.default.createElement('i', null),
 	        iconElementRight: _react2.default.createElement(
 	          _iconMenu2.default,

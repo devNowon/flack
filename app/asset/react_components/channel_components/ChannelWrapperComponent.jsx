@@ -23,6 +23,7 @@ class ChannelWrapperComponent extends React.Component {
           addToolTip="Add Channel"
           handleAddClick={this.props.handleChnlAddClick}
           itemArr={this.props.channelArr}
+          mySession={this.props.mySession}
           leftIcon={<FontIcon
               className="fa fa-hashtag fa-1"
               style={style.leftIcon}

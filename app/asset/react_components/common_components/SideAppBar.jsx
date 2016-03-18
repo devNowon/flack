@@ -17,11 +17,12 @@ class SideAppBar extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'SideAppBar';
+    console.log(props);
   }
   render() {
     return (
       <AppBar 
-        title={'My Profile'}
+        title={this.props.mySession}
         iconElementLeft={<i/>}
         iconElementRight={
       <IconMenu

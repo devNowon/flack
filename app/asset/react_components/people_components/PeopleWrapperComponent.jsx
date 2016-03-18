@@ -23,6 +23,7 @@ class PeopleWrapperComponent extends React.Component {
           title="DIRECT MESSAGES"
           addToolTip="Open A Direct Message"
           handleAddClick={this.props.handlePeopleAddClick}
+          mySession={this.props.mySession}
           itemArr={this.props.peopleArr}
           leftIcon={<FontIcon
               className="fa fa-at fa-1"

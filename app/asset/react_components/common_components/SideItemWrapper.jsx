@@ -63,14 +63,17 @@ class SideItemWrapper extends React.Component {
       if (items.length > 0) {
         let index = 1;
         for (let item of items) {
-          itemDom.push(<ListItem 
-            key={index}
-            value={index++}
-            leftIcon={this.props.leftIcon}
-            primaryText={item}
-            onClick={this.props.handleItemClick}
-            rightIcon={this.props.rightIcon}
-            style={style.listItem}/>);
+          if (item==this.props.mySession){} //자기 세션 제외 출력
+          else{
+            itemDom.push(<ListItem 
+              key={index}
+              value={index++}
+              leftIcon={this.props.leftIcon}
+              primaryText={item}
+              onClick={this.props.handleItemClick}
+              rightIcon={this.props.rightIcon}
+              style={style.listItem}/>);
+          }
         } 
       }
       return itemDom;

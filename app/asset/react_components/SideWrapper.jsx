@@ -14,17 +14,20 @@ class SideWrapper extends React.Component {
     return (
       <LeftNav open={true} docked={true}>
         <SideAppBar
+          mySession={this.props.mySession}
         />
         <ChannelWrapperComponent
           handleChnlAddClick={this.props.handleChnlAddClick}
           handleChnlItemClick={this.props.handleChnlItemClick}
           channelArr={this.props.channelArr}
+          mySession={this.props.mySession}
         />
         <Divider />
         <PeopleWrapperComponent
           handlePeopleAddClick={this.props.handlePeopleAddClick}
           handlePeopleItemClick={this.props.handlePeopleItemClick}
           peopleArr={this.props.peopleArr}
+          mySession={this.props.mySession}
         />
       </LeftNav>
     );
