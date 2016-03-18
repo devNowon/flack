@@ -58,10 +58,6 @@
 
 	var _MessageWrapperComponent2 = _interopRequireDefault(_MessageWrapperComponent);
 
-	var _ListWrapperComponent = __webpack_require__(217);
-
-	var _ListWrapperComponent2 = _interopRequireDefault(_ListWrapperComponent);
-
 	var _AppWrapper = __webpack_require__(219);
 
 	var _AppWrapper2 = _interopRequireDefault(_AppWrapper);
@@ -29004,193 +29000,8 @@
 
 
 /***/ },
-/* 217 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _socket = __webpack_require__(160);
-
-	var _socket2 = _interopRequireDefault(_socket);
-
-	var _PeopleComponent = __webpack_require__(218);
-
-	var _PeopleComponent2 = _interopRequireDefault(_PeopleComponent);
-
-	var _superagent = __webpack_require__(210);
-
-	var request = _interopRequireWildcard(_superagent);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	// import io from 'socket.io-client';
-
-
-	// const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
-
-
-	var SOCKET = (0, _socket2.default)('http://murmuring-ridge-75162.herokuapp.com');
-
-	var ListWrapperComponent = function (_React$Component) {
-	  _inherits(ListWrapperComponent, _React$Component);
-
-	  function ListWrapperComponent() {
-	    _classCallCheck(this, ListWrapperComponent);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ListWrapperComponent).call(this));
-
-	    _this.state = { data: [] };
-	    _this.handleFormDirect = _this.handleFormDirect.bind(_this);
-	    // this.receiveUser = this.receiveUser.bind(this);
-	    return _this;
-	  }
-
-	  _createClass(ListWrapperComponent, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this2 = this;
-
-	      // SOCKET.on('userID',(e)=>{this.setState({userID: e})});
-	      // request
-	      //   .get(this.props.url)
-	      //   .end((err, res)=>{
-	      //     if (err || !res.ok) {
-	      //       alert('yay got ' + JSON.stringify(res.body));
-	      //    } else {
-	      //       this.setState({data: res.body});
-	      //    }
-	      // });
-
-	      SOCKET.on('roomInformation', function (obj) {
-	        _this2.setState({ data: obj });
-	      });
-	      SOCKET.on('mySession', function (obj) {
-	        _this2.setState({ data: obj });
-	      });
-	    }
-	  }, {
-	    key: 'handleFormDirect',
-	    value: function handleFormDirect(e) {
-	      console.log(e);
-	    }
-
-	    // receiveUser(msg) {
-	    //   console.log(msg)
-	    //   let receivedUsers = this.state.data.slice();
-	    //   receivedUsers.push(msg);
-	    //   this.setState({ data: receivedUsers });
-	    // }
-
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      "use strict";
-
-	      var _this3 = this;
-
-	      var listsOfPeoples = function listsOfPeoples() {
-	        var dom = [];
-	        var people = _this3.state.data;
-	        console.log(Object.keys(people).length);
-	        for (var i = 0; i < Object.keys(people).length; i++) {
-	          if (Object.keys(people)[i].slice('#')[0] == '/') {
-	            dom.push(_react2.default.createElement(_PeopleComponent2.default, {
-	              tempFunction: _this3.handleFormDirect.bind(_this3, Object.keys(people)[i]),
-	              name: Object.keys(people)[i],
-	              key: i }));
-	          }
-	        }
-	        return dom;
-	      };
-	      // <p>{this.state.userID}</p>
-
-	      return _react2.default.createElement(
-	        'ul',
-	        null,
-	        listsOfPeoples()
-	      );
-	    }
-	  }]);
-
-	  return ListWrapperComponent;
-	}(_react2.default.Component);
-
-	exports.default = ListWrapperComponent;
-
-/***/ },
-/* 218 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(147);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var PeopleComponent = function (_React$Component) {
-	  _inherits(PeopleComponent, _React$Component);
-
-	  function PeopleComponent() {
-	    _classCallCheck(this, PeopleComponent);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PeopleComponent).apply(this, arguments));
-	  }
-
-	  _createClass(PeopleComponent, [{
-	    key: "render",
-	    value: function render() {
-	      "use strict";
-
-	      return _react2.default.createElement(
-	        "li",
-	        null,
-	        _react2.default.createElement(
-	          "span",
-	          { onClick: this.props.tempFunction },
-	          "회원정보 ",
-	          this.props.name
-	        )
-	      );
-	    }
-	  }]);
-
-	  return PeopleComponent;
-	}(_react2.default.Component);
-
-	exports.default = PeopleComponent;
-
-/***/ },
+/* 217 */,
+/* 218 */,
 /* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -29380,10 +29191,6 @@
 
 	var _PeopleWrapperComponent2 = _interopRequireDefault(_PeopleWrapperComponent);
 
-	var _ListWrapperComponent = __webpack_require__(217);
-
-	var _ListWrapperComponent2 = _interopRequireDefault(_ListWrapperComponent);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29419,8 +29226,7 @@
 	          handlePeopleAddClick: this.props.handlePeopleAddClick,
 	          handlePeopleItemClick: this.props.handlePeopleItemClick,
 	          peopleArr: this.props.peopleArr
-	        }),
-	        _react2.default.createElement(_ListWrapperComponent2.default, null)
+	        })
 	      );
 	    }
 	  }]);
