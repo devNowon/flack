@@ -35,6 +35,7 @@ function wrapState(ComposedComponent) {
         selectedIndex: index,
       });
     },
+
     render() {
       return (
         <ComposedComponent
@@ -70,7 +71,7 @@ class SideItemWrapper extends React.Component {
               value={index++}
               leftIcon={this.props.leftIcon}
               primaryText={item}
-              onClick={this.props.handleItemClick}
+              onClick={this.props.handleItemClick.bind(this, item)}
               rightIcon={this.props.rightIcon}
               style={style.listItem}/>);
           }
@@ -79,6 +80,7 @@ class SideItemWrapper extends React.Component {
       return itemDom;
     }
     return (
+
       <SelectableList subheader={this.props.title + ' (' + this.props.itemLength + ')'}>
         <IconButton tooltip={this.props.addToolTip}
                     tooltipPosition="bottom-left"
