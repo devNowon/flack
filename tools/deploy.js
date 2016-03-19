@@ -6,6 +6,7 @@ if(argv.process == 'before'){
      //.init()
      //.addRemote('origin', 'https://git.heroku.com/murmuring-ridge-75162.git')
      .pull('origin','master');
+     console.log('pulled master')
 } else {
      require('simple-git')(require("path").resolve("./build"))
      .add('./*')
