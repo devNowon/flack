@@ -29082,23 +29082,20 @@
 	    }
 	  }, {
 	    key: 'handleChnlItemClick',
-	    value: function handleChnlItemClick() {
+	    value: function handleChnlItemClick(item) {
 	      // 채널 채팅 화면 전환
 	      console.log('채널채팅화면');
-	      console.log('clicked value: ' + this.props.value);
+	      console.log('clicked value: ' + item);
 	    }
 	  }, {
 	    key: 'handlePeopleAddClick',
 	    value: function handlePeopleAddClick() {
-	      // 채널 생성 화면 전환
 	      console.log('add clicked');
 	    }
 	  }, {
 	    key: 'handlePeopleItemClick',
-	    value: function handlePeopleItemClick(e) {
-	      // 채널 채팅 화면 전환
-	      console.log('clicked value: ' + this.props.value);
-	      console.log(e);
+	    value: function handlePeopleItemClick(item) {
+	      console.log(item);
 	    }
 	  }, {
 	    key: 'handleCloseCreateChannelForm',
@@ -39339,7 +39336,7 @@
 	                    value: index++,
 	                    leftIcon: _this2.props.leftIcon,
 	                    primaryText: item,
-	                    onClick: _this2.props.handleItemClick,
+	                    onClick: _this2.props.handleItemClick.bind(_this2, item),
 	                    rightIcon: _this2.props.rightIcon,
 	                    style: style.listItem }));
 	                }
@@ -39410,10 +39407,6 @@
 
 	var _SideItemWrapper2 = _interopRequireDefault(_SideItemWrapper);
 
-	var _SideAppBar = __webpack_require__(309);
-
-	var _SideAppBar2 = _interopRequireDefault(_SideAppBar);
-
 	var _fontIcon = __webpack_require__(288);
 
 	var _fontIcon2 = _interopRequireDefault(_fontIcon);
@@ -39466,7 +39459,7 @@
 	            style: style.leftIcon
 	          }),
 	          rightIcon: _react2.default.createElement(_chatBubble2.default, null),
-	          handleItemClick: this.props.handlePeopleItemClick })
+	          handleItemClick: this.props.handlePeopleItemClick.bind(this.props) })
 	      );
 	    }
 	  }]);

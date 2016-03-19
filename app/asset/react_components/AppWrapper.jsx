@@ -30,19 +30,16 @@ class AppWrapper extends React.Component {
     console.log('add clicked');
     this.setState({openCreateChannelForm: true});
   }
-  handleChnlItemClick() {
+  handleChnlItemClick(item) {
     // 채널 채팅 화면 전환
     console.log('채널채팅화면');
-    console.log('clicked value: ' + this.props.value);
+    console.log('clicked value: ' + item);
   }
   handlePeopleAddClick() {
-    // 채널 생성 화면 전환
     console.log('add clicked');
   }
-  handlePeopleItemClick(e) {
-    // 채널 채팅 화면 전환
-    console.log('clicked value: ' + this.props.value);
-    console.log(e);
+  handlePeopleItemClick(item) {
+    console.log(item);
   }
   handleCloseCreateChannelForm() {
     this.setState({openCreateChannelForm: false});

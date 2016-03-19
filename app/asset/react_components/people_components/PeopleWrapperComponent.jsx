@@ -1,6 +1,5 @@
 import React from 'react';
 import SideItemWrapper from '../common_components/SideItemWrapper.jsx';
-import SideAppBar from '../common_components/SideAppBar.jsx';
 import FontIcon from 'material-ui/lib/font-icon';
 import CommunicationChatBubble from 'material-ui/lib/svg-icons/communication/chat-bubble';
 
