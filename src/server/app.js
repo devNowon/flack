@@ -24,6 +24,7 @@ app.use(passport.session());
 
 require('./config/passport.js')(passport); // pass passport for configuration
 app.use(require('./router/user.router.js'));
+app.use(require('./router/default.router.js'));
 
 mongoose.connect(mongoURI);
 

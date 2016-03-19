@@ -29,8 +29,8 @@ class SideAppBar extends React.Component {
         iconButtonElement={
           <IconButton><MoreVertIcon /></IconButton>
         }
-        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+        targetOrigin={{horizontal: 'left', vertical: 'top'}}
+        anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
       >
         <MenuItem primaryText="Settings" />
         <MenuItem primaryText="Help" />
