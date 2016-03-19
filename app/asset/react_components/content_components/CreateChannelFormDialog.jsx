@@ -31,6 +31,7 @@ class CreateChannelFormDialog extends React.Component {
     this._closeForm = this._closeForm.bind(this);
     this._handleChannelNameChange = this._handleChannelNameChange.bind(this);
     this._validateChannelName = this._validateChannelName.bind(this);
+    this._handleKeyPress = this._handleKeyPress.bind(this);
   }
   _initializeStates() {
     this.state = {
@@ -91,6 +92,11 @@ class CreateChannelFormDialog extends React.Component {
       }
     }
   }
+  _handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this._createChannel();
+    }
+  }
   render() {
     const actions = [
       <FlatButton
@@ -133,6 +139,7 @@ class CreateChannelFormDialog extends React.Component {
           id="channelName"
           onChange={this._handleChannelNameChange}
           value={this.state.channelName}
+          onKeyPress={this._handleKeyPress}
         />
         <TextField 
           hintText="Search by name" 
