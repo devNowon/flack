@@ -1,41 +1,38 @@
-"use strict";
-
 import React from 'react';
-import io from 'socket.io-client';
+import SideItemWrapper from '../common_components/SideItemWrapper.jsx';
+import FontIcon from 'material-ui/lib/font-icon';
+import CommunicationChatBubble from 'material-ui/lib/svg-icons/communication/chat-bubble';
 
-import SideAppBar from './SideAppBar.jsx';
-import SideItemWrapper from '../side_components/SideItemWrapper.jsx';
-
-const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
+const style = {
+  leftIcon: {
+    // 아이콘 스타일 작성
+  }
+}
 
 class ChannelWrapperComponent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.displayName = 'ChannelWrapperComponent';
-        this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
-        this.handleChnlElementClick = this.handleChnlElementClick.bind(this);
-    }
-    componentDidMount() {
-    	// 채널 리스트 받아오는 코드
-    }
-    handleChnlAddClick() {
-    	// 채널 생성 화면 전환
-    }
-    handleChnlItemClick() {
-    	// 채널 채팅 화면 전환
-    }
-    render() {
-        return 
-        (
-        	<div>
-        		<SideAppBar 
-        			title="Channels" 
-        			itemLength={this.props.channelArr.length} 
-        			handleChnlAddClick={this.props.handleChnlAddClick}/>
-        		<SideItemWrapper channelArr={this.props.channelArr}/>
-        	</div>
-        );
-    }
+  constructor(props) {
+    super(props);
+    this.displayName = 'ChannelWrapperComponent';
+  }
+  render() {
+    return(
+     <div>
+        <SideItemWrapper
+          itemLength={this.props.channelArr.length}
+          title="CHANNELS"
+          addToolTip="Add Channel"
+          handleAddClick={this.props.handleChnlAddClick}
+          itemArr={this.props.channelArr}
+          mySession={this.props.mySession}
+          leftIcon={<FontIcon
+              className="fa fa-hashtag fa-1"
+              style={style.leftIcon}
+              />}
+          rightIcon={null}
+          handleItemClick={this.props.handleChnlItemClick}/>
+     </div>
+    );
+  }
 }
 
 export default ChannelWrapperComponent;

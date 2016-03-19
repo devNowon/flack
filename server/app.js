@@ -28,6 +28,21 @@ app.use(require('./router/default.router.js'));
 
 mongoose.connect(mongoURI);
 
+var user =[];
+app.get('/user/list', function(req,res) {
+  user = [
+    {
+      id : 'id',
+      name : 'name',
+    },
+    {
+      id : 'id2',
+      name : 'name2',
+    }
+  ];
+  res.send(user);
+});
+
 var server = http.createServer(app);
 
 var io = require('socket.io')(server);
@@ -36,10 +51,13 @@ server.listen(port);
 
 console.log("http server listening on %d", port);
 
+var clients = [];
 var rooms = [];
 io.on('connection', function(socket){
-  io.emit('roomInformation', io.sockets.adapter.rooms);
+  clients.push(socket.id);
+  io.emit('mySession', socket.id);
 
+  io.emit('roomInformation', io.sockets.adapter.rooms);
   var roomID = 'global';
   socket.join(roomID);
 
