@@ -8,10 +8,10 @@ fs.copy('./package.json', './build/package.json', function() {
   console.log('copied package');
 });
 
-fs.copy('./src/app/index.html', './build/app/index.html', function() {
-  console.log('copied index.html');
+fs.copy('./src/app', './build/app', function() {
+  console.log('copied app folder');
 });
-
+/*
 fs.copy('./src/app/dist', './build/app/dist', function() {
 	console.log('copied build folder');
-})
+})*/
