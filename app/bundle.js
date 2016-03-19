@@ -29118,7 +29118,9 @@
 	      var _this2 = this;
 
 	      SOCKET.on('mySession', function (obj) {
-	        _this2.setState({ mySession: obj });
+	        if (_this2.state.mySession.length == 0) {
+	          _this2.setState({ mySession: obj });
+	        }
 	        console.log(obj);
 	      });
 	    }

@@ -54,7 +54,9 @@ class AppWrapper extends React.Component {
   }
   _getMySession() {
     SOCKET.on('mySession', (obj) => {
-      this.setState({mySession: obj});
+      if (this.state.mySession.length==0){
+        this.setState({mySession: obj});
+      }
       console.log(obj);
     });
   }
