@@ -13,7 +13,6 @@ class AppWrapper extends React.Component {
     super(props);
     this.displayName = 'AppWrapper';
     this.state = {
-      contentComponent: MessageWrapperComponent,
       openCreateChannelForm: false,
       channelArr: [],
       peopleArr: [],
@@ -116,9 +115,16 @@ class AppWrapper extends React.Component {
     SOCKET.emit('typing', false);
   }
   handleKeyPress(e) {
-    if (e.key === 'Enter') {
-      SOCKET.emit('sendMessage', this.state.inputValue);
+    var a = this.state.inputValue;
+    a=a.replace(/\s+$/g, '');
+    console.log(a);
+    if (e.key === 'Enter'&&a!='') { //공백시..
+      SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue]);
       this.setState({inputValue: ''});
+      e.preventDefault();
+      return false;
+    }else if(e.key === 'Enter'&&a==''){
+      e.preventDefault();
     }
   }
   render() {

@@ -1,5 +1,18 @@
+body{
+	margin:0;
+	padding:0;
+	width:100%;
+}
+
+#app{
+	width:100%;
+
+}
 .content-wrapper {
-  padding-left: 256px;
+	padding:0;
+	width: -webkit-calc(100% - 256px);
+	width: calc(100% - 256px);
+	padding-left:256px!important;
 }
 
 /* only for CreateChannelFormDialog - Start */
@@ -10,3 +23,45 @@
   padding-top: 16px;
 }
 /* only for CreateChannelFormDialog - End */
+.messageComponentNavbar{
+	position: fixed;
+	width: calc(100% - 256px);
+
+}
+.messageList{
+	padding-top:56px !important;
+	padding-bottom:56px !important;
+}
+.inputComponent{
+	z-index: 90;
+	width:100% !important;
+	position: fixed !important;
+	bottom:0;
+	padding:5px;
+
+}
+.inputComponent button{
+	position: absolute !important;
+	width:48px;
+	z-index: 100;
+    display: inline-block;
+}
+
+
+.inputFieldComponent{
+	width: calc(100% - 376px)!important;
+    display: inline-block;
+    padding-left:48px;
+}
+
+.messageAuthorSame>div>div{
+  	padding:5px !important;   
+  	padding-left:72px !important;
+}
+
+.messageAuthorSameRightIcon{
+	padding-top:0px !important;
+	height:24px !important;
+	margin-top:0px !important;
+
+}
