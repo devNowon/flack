@@ -17,13 +17,24 @@ class AppWrapper extends React.Component {
       openCreateChannelForm: false,
       channelArr: [],
       peopleArr: [],
-      mySession:[]
+      mySession:[],
+      inputValue: '',
+      receivedMessages: [],
+      TYPING: false,
     };
     this.handleChnlAddClick = this.handleChnlAddClick.bind(this);
     this.handleChnlItemClick = this.handleChnlItemClick.bind(this);
     this.handlePeopleAddClick = this.handlePeopleAddClick.bind(this);
     this.handlePeopleItemClick = this.handlePeopleItemClick.bind(this);
     this.handleCloseCreateChannelForm = this.handleCloseCreateChannelForm.bind(this);
+    this.receiveProcess = this.receiveProcess.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleInputBlur = this.handleInputBlur.bind(this);
+    this.handleInputFocus = this.handleInputFocus.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleRoomNameInputChange = this.handleRoomNameInputChange.bind(this);
+    this.handleRoomNameButtonClick = this.handleRoomNameButtonClick.bind(this);
+
   }
   handleChnlAddClick() {
     // 채널 생성 화면 전환
@@ -67,12 +78,64 @@ class AppWrapper extends React.Component {
     SOCKET.emit('roomInformation');
   }
 
+  componentDidMount() {
+    SOCKET.on('receiveMessage', this.receiveProcess);
+    SOCKET.on('typing', (bool) => {
+      this.setState({ TYPING: bool });
+    });
+  }
+
+  getRoomInformation() {
+    SOCKET.emit('roomInformation');
+  }
+
+  receiveProcess(msg) {
+    let receivedMessages = this.state.receivedMessages.slice();
+    receivedMessages.push(msg);
+    this.setState({ receivedMessages: receivedMessages });
+  }
+
+
+  handleInputChange(e) {
+    this.setState({ inputValue: e.target.value });
+  }
+
+  handleRoomNameInputChange(e) {
+    this.setState({ roomName: e.target.value });
+  }
+
+  handleRoomNameButtonClick() {
+    SOCKET.emit('joinRoom', this.state.roomName);
+  }
+
+  handleInputFocus() {
+    SOCKET.emit('typing', true);
+  }
+
+  handleInputBlur() {
+    SOCKET.emit('typing', false);
+  }
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      SOCKET.emit('sendMessage', this.state.inputValue);
+      this.setState({inputValue: ''});
+    }
+  }
   render() {
     return (
       <div>
-        <ContentWrapper
+        <MessageWrapperComponent
+          handleKeyPress={this.handleKeyPress}
+          handleInputBlur={this.handleInputBlur}
+          handleInputFocus={this.handleInputFocus}
+          handleRoomNameButtonClick={this.handleRoomNameButtonClick}
+          handleInputChange={this.handleInputChange}
+          receiveProcess={this.receiveProcess}
+          getRoomInformation={this.getRoomInformation}
+          inputValue={this.state.inputValue}
+          receivedMessages={this.state.receivedMessages}
+          TYPING={this.state.TYPING}
           className="content-wrapper"
-          contentComponent={this.state.contentComponent}
         />
         <SideWrapper
           handleChnlAddClick={this.handleChnlAddClick}
@@ -89,6 +152,7 @@ class AppWrapper extends React.Component {
           onRequestClose={this.handleCloseCreateChannelForm}
           handleClose={this.handleCloseCreateChannelForm}
           channelArr={this.state.channelArr}
+          socket={SOCKET}
         />
       </div>
     );

@@ -1,79 +1,21 @@
 import React from 'react';
-import io from 'socket.io-client';
-
 import MessageComponent from './MessageComponent.jsx';
 import InputComponent from './InputComponent.jsx';
 import LogIn from './login.jsx';
 
-const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
-
 export default class MessageWrapperComponent extends React.Component {
-  constructor() {
-    super();
-    this.state = {  inputValue: '',
-                    receivedMessages: [],
-                    TYPING: false,
-                  };
-    this.receiveProcess = this.receiveProcess.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleInputBlur = this.handleInputBlur.bind(this);
-    this.handleInputFocus = this.handleInputFocus.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleRoomNameInputChange = this.handleRoomNameInputChange.bind(this);
-    this.handleRoomNameButtonClick = this.handleRoomNameButtonClick.bind(this);
+  constructor(props) {
+    super(props);
+    this.displayName = 'MessageWrapperComponent';
+    console.log(props);
+    console.log(this.state);
   }
  
-  componentDidMount() {
-    SOCKET.on('receiveMessage', this.receiveProcess);
-    SOCKET.on('typing', (bool) => {
-      this.setState({ TYPING: bool });
-    });
-    SOCKET.on('roomInformation', (obj) => {
-      console.log(obj);
-    });
-  }
-
-  getRoomInformation() {
-    SOCKET.emit('roomInformation');
-  }
-
-  receiveProcess(msg) {
-    let receivedMessages = this.state.receivedMessages.slice();
-    receivedMessages.push(msg);
-    this.setState({ receivedMessages: receivedMessages });
-  }
-
-
-  handleInputChange(e) {
-    this.setState({ inputValue: e.target.value });
-  }
-
-  handleRoomNameInputChange(e) {
-    this.setState({ roomName: e.target.value });
-  }
-
-  handleRoomNameButtonClick() {
-    SOCKET.emit('joinRoom', this.state.roomName);
-  }
-
-  handleInputFocus() {
-    SOCKET.emit('typing', true);
-  }
-
-  handleInputBlur() {
-    SOCKET.emit('typing', false);
-  }
-  handleKeyPress(e) {
-    if (e.key === 'Enter') {
-      SOCKET.emit('sendMessage', this.state.inputValue);
-      this.setState({inputValue: ''});
-    }
-  }
   render() {
     "use strict";
     let processReceivedMessages = () => {
       let dom = [];
-      let messages = this.state.receivedMessages;
+      let messages = this.props.receivedMessages;
       for(var i = 0 ; i < messages.length ; i++){
         dom.push(<MessageComponent message={messages[i]} key={i} />);
       }
@@ -84,23 +26,23 @@ export default class MessageWrapperComponent extends React.Component {
         <div {...this.props}>
           <div> { processReceivedMessages() } </div>
           <InputComponent
-            inputValue={this.state.inputValue}
-            handleInputChange={this.handleInputChange}
-            handleInputFocus={this.handleInputFocus}
-            handleInputBlur={this.handleInputBlur}
-            handleKeyPress={this.handleKeyPress}
+            inputValue={this.props.inputValue}
+            handleInputChange={this.props.handleInputChange}
+            handleInputFocus={this.props.handleInputFocus}
+            handleInputBlur={this.props.handleInputBlur}
+            handleKeyPress={this.props.handleKeyPress}
           ></InputComponent>
-          {this.state.TYPING?<nowInput />:""}
+          {this.props.TYPING?<nowInput />:""}
 
           <div>
             <InputComponent
-              inputValue={this.state.roomName}
-              handleInputChange={this.handleRoomNameInputChange}
-              handleButtonClick={this.handleRoomNameButtonClick}
+              inputValue={this.props.roomName}
+              handleInputChange={this.props.handleRoomNameInputChange}
+              handleButtonClick={this.props.handleRoomNameButtonClick}
               buttonText="enter room"
             />
           </div>
-          <button onClick={this.getRoomInformation}> Get Room Info </button>
+          <button onClick={this.props.getRoomInformation}> Get Room Info </button>
           <LogIn />
         </div>
     );
