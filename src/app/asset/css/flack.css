@@ -54,3 +54,14 @@ body{
     padding-left:48px;
 }
 
+.messageAuthorSame>div>div{
+  	padding:5px !important;   
+  	padding-left:72px !important;
+}
+
+.messageAuthorSameRightIcon{
+	padding-top:0px !important;
+	height:24px !important;
+	margin-top:0px !important;
+
+}

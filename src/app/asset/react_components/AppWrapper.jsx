@@ -115,12 +115,15 @@ class AppWrapper extends React.Component {
     SOCKET.emit('typing', false);
   }
   handleKeyPress(e) {
-    if (e.key === 'Enter'&&this.state.inputValue!='') { //공백시..
+    var a = this.state.inputValue;
+    a=a.replace(/\s+$/g, '');
+    console.log(a);
+    if (e.key === 'Enter'&&a!='') { //공백시..
       SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue]);
       this.setState({inputValue: ''});
       e.preventDefault();
       return false;
-    }else if (e.key === 'Enter'&&this.state.inputValue=='') { //Enter값은 공백으로 안들어감.
+    }else if(e.key === 'Enter'&&a==''){
       e.preventDefault();
     }
   }

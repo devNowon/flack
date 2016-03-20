@@ -1,7 +1,6 @@
 import React from 'react';
 import ListItem from 'material-ui/lib/lists/list-item';
 import Divider from 'material-ui/lib/divider';
-import Avatar from 'material-ui/lib/avatar';
 import Colors from 'material-ui/lib/styles/colors';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreHorizIcon from 'material-ui/lib/svg-icons/navigation/more-horiz';
@@ -18,8 +17,7 @@ export default class MessageComponent extends React.Component {
 	const iconButtonElement = (
 	  <IconButton
 	    touch={true}
-	    tooltip="more"
-	    tooltipPosition="bottom-left"
+	    className="messageAuthorSameRightIcon"
 	  >
 	    <MoreHorizIcon color={Colors.grey400} />
 	  </IconButton>
@@ -35,14 +33,13 @@ export default class MessageComponent extends React.Component {
 
     return (
       <ListItem
-      	  leftAvatar={<Avatar src="images/raquelromanp-128.jpg" />}
           rightIconButton={rightIconMenu}
-          primaryText={this.props.author} 
           secondaryText={
             <p style={{height:"auto !important", overflow:"visible", whiteSpace:"wrap"}}>
               {this.props.message} 
             </p> 
           }
+          className="messageAuthorSame"
           >
       </ListItem>
     );

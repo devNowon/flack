@@ -1,5 +1,6 @@
 import React from 'react';
 import MessageComponent from './MessageComponent.jsx';
+import MessageLightComponent from './MessageLightComponent.jsx';
 import InputComponent from './InputComponent.jsx';
 import LogIn from './login.jsx';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -29,8 +30,14 @@ export default class MessageWrapperComponent extends React.Component {
     let processReceivedMessages = () => {
       let dom = [];
       let messages = this.props.receivedMessages;
+      var temp = '';
       for(var i = 0 ; i < messages.length ; i++){
-        dom.push(<MessageComponent author={messages[i][0]} message={messages[i][1]} key={i} />);
+        if (temp==messages[i][0]){
+          dom.push(<MessageLightComponent author={messages[i][0]} message={messages[i][1]} key={i} />);
+        }else{
+          dom.push(<MessageComponent author={messages[i][0]} message={messages[i][1]} key={i} />);
+        }
+        temp=messages[i][0];
       }
       return dom;
     };
@@ -87,9 +94,9 @@ export default class MessageWrapperComponent extends React.Component {
               handleButtonClick={this.props.handleRoomNameButtonClick}
               buttonText="enter room"
             />
-          </div> */}
+          </div> 
           <button onClick={this.props.getRoomInformation}> Get Room Info </button>
-          <LogIn />
+          <LogIn />*/}
         </div>
     );
   }
