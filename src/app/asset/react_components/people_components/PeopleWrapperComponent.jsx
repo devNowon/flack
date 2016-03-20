@@ -18,7 +18,7 @@ class PeopleWrapperComponent extends React.Component {
     return(
      <div>
         <SideItemWrapper
-          itemLength={this.props.peopleArr.length}
+          itemLength={this.props.peopleArr.length-1}  //본인제외
           title="DIRECT MESSAGES"
           addToolTip="Open A Direct Message"
           handleAddClick={this.props.handlePeopleAddClick}

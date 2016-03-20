@@ -3,11 +3,9 @@ import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
-import io from 'socket.io-client';
 import $ from 'jquery';
 import _ from 'lodash';
 
-const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 
 const styles = {
   block: {
@@ -46,7 +44,7 @@ class CreateChannelFormDialog extends React.Component {
     $('.private-desc').toggle();
   }
   _createChannel() {
-    SOCKET.emit('joinRoom', $('#channelName').val());
+    this.props.socket.emit('joinRoom', $('#channelName').val());
     this._initializeStates();
     this._closeForm();
   }
