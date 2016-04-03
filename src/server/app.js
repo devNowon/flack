@@ -10,6 +10,9 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var mongoURI = process.env.MONGOLAB_URI || 'mongodb://localhost/flack-dev';
 
+var Message = require('./model/message.model.js');
+var Channel = require('./model/channel.model.js');
+
 app.use(express.static(path.join(__dirname, '../app')));
 
 app.use(cors()); //enable cors
@@ -57,7 +60,12 @@ io.on('connection', function(socket){
   clients.push(socket.id);
   io.emit('mySession', socket.id);
 
-  io.emit('roomInformation', io.sockets.adapter.rooms);
+  Channel.find({}, function(err, channel) {
+        if (err) {
+
+        }
+        io.emit('roomInformation', channel);
+      });
   var roomID = 'global';
   socket.join(roomID);
 
@@ -78,6 +86,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('sendMessage', function(data){
+    // Message.save(new Message({content: data}), )
     io.sockets.in(roomID).emit('receiveMessage', data);
   });
 
@@ -87,5 +96,27 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     io.emit('roomInformation', io.sockets.adapter.rooms);
+  });
+
+  socket.on('createChannel', function(data) {
+    console.log(data);
+    var channel = new Channel({
+      name: data.name,
+      type: data.type,
+      teamId: data.teamId,
+      members: data.members,
+    });
+    channel.save(function(err, channel) {
+      if (err) {
+        console.log(err);
+        io.sockets.in(roomID).emit('createChannelErr', err);
+      }
+      Channel.find({}, function(err, channel) {
+        if (err) {
+
+        }
+        io.emit('roomInformation', channel);
+      });
+    });
   });
 });

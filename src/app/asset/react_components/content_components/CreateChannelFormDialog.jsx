@@ -6,7 +6,6 @@ import Dialog from 'material-ui/lib/dialog';
 import $ from 'jquery';
 import _ from 'lodash';
 
-
 const styles = {
   block: {
     maxWidth: '250px'
@@ -44,7 +43,12 @@ class CreateChannelFormDialog extends React.Component {
     $('.private-desc').toggle();
   }
   _createChannel() {
-    this.props.socket.emit('joinRoom', $('#channelName').val());
+    this.props.socket.emit('createChannel', {
+      name: $('#channelName').val(),
+      type: this.state.channelType,
+      teamId: null,
+      members: null,
+    });
     this._initializeStates();
     this._closeForm();
   }

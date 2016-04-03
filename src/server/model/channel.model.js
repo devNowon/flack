@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 // define the schema for our user model
 var channelSchema = new mongoose.Schema({
   name: String,
-  type: Number,
+  type: String,
   teamId: mongoose.Schema.ObjectId,
   members: Array,
 });

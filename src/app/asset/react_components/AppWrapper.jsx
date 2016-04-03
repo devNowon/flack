@@ -7,6 +7,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 
 const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
+// const SOCKET = io('http://localhost:3000/');
 
 class AppWrapper extends React.Component {
   constructor(props) {
@@ -69,10 +70,13 @@ class AppWrapper extends React.Component {
   }
   _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
-      const resultChannel = _.keys(obj).filter((key) => !(_.startsWith(_.trim(key), '/#')));
+      let resultChannel = [];
+      for (let name of obj) {
+        resultChannel.push(name);
+      }
       this.setState({channelArr: resultChannel});
-      const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));
-      this.setState({peopleArr: resultPeople});
+      // const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));
+      // this.setState({peopleArr: resultPeople});
     });
     SOCKET.emit('roomInformation');
   }
