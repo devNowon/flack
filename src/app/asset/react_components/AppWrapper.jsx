@@ -71,8 +71,9 @@ class AppWrapper extends React.Component {
   _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
       let resultChannel = [];
-      for (let name of obj) {
-        resultChannel.push(name);
+      for (let channel of obj) {
+        console.log('names: ' + channel.name);
+        resultChannel.push(channel.name);
       }
       this.setState({channelArr: resultChannel});
       // const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));
