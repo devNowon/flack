@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 
 // define the schema for our user model
 var messageSchema = new mongoose.Schema({
-  author: mongoose.Schema.ObjectId,
+  authorId: mongoose.Schema.ObjectId,
   content: String,
-  channel: mongoose.Schema.ObjectId,
+  channelId: mongoose.Schema.ObjectId,
 }, {
   timestamps: true,
 });
