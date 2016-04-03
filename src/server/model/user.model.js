@@ -7,7 +7,8 @@ var userSchema = new mongoose.Schema({
   nickname : String,
   note : String,
   channel : Array,
-  teamid : Array,
+  teamId : Array,
+  sessionId : String,
 },{
 	timestamps: true
 });
