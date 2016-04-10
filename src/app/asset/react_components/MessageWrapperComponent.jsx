@@ -2,7 +2,6 @@ import React from 'react';
 import MessageComponent from './MessageComponent.jsx';
 import MessageLightComponent from './MessageLightComponent.jsx';
 import InputComponent from './InputComponent.jsx';
-import LogIn from './login.jsx';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import IconButton from 'material-ui/lib/icon-button';
 import FontIcon from 'material-ui/lib/font-icon';
@@ -96,7 +95,7 @@ export default class MessageWrapperComponent extends React.Component {
             />
           </div> 
           <button onClick={this.props.getRoomInformation}> Get Room Info </button>
-          <LogIn />*/}
+          */}
         </div>
     );
   }

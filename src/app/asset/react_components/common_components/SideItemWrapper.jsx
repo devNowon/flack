@@ -6,6 +6,7 @@ import IconButton from 'material-ui/lib/icon-button';
 import FontIcon from 'material-ui/lib/font-icon';
 import Colors from 'material-ui/lib/styles/colors';
 import Avatar from 'material-ui/lib/avatar';
+import req from 'superagent';
 
 let SelectableList = SelectableContainerEnhance(List);
 
@@ -56,6 +57,7 @@ class SideItemWrapper extends React.Component {
     super(props);
     this.displayName = 'SideItemWrapper';
   }
+
   render() {
     // 채널 리스트를 뿌려주는 메소드
     const showItemList = () => {
@@ -63,14 +65,23 @@ class SideItemWrapper extends React.Component {
       const items = this.props.itemArr; // 아이템 이름 배열
       if (items.length > 0) {
         let index = 1;
-        for (let item of items) {
+        for (var item of items) {
           if (item==this.props.mySession){} //자기 세션 제외 출력
           else{
+            var name = item;
+            if (this.props.sessionList!=-1){
+              for (var itemSession of this.props.sessionList) {
+                if (itemSession.clientId==item){
+                  name = itemSession.customId;
+                } 
+              } 
+            }
+            
             itemDom.push(<ListItem 
               key={index}
               value={index++}
               leftIcon={this.props.leftIcon}
-              primaryText={item}
+              primaryText={name}
               onClick={this.props.handleItemClick.bind(this, item)}
               rightIcon={this.props.rightIcon}
               style={style.listItem}/>);

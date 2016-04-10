@@ -14,6 +14,7 @@ class PeopleWrapperComponent extends React.Component {
     super(props);
     this.displayName = 'PeopleWrapperComponent';
   }
+
   render() {
     return(
      <div>
@@ -23,6 +24,7 @@ class PeopleWrapperComponent extends React.Component {
           addToolTip="Open A Direct Message"
           handleAddClick={this.props.handlePeopleAddClick}
           mySession={this.props.mySession}
+          sessionList={this.props.sessionList}
           itemArr={this.props.peopleArr}
           leftIcon={<FontIcon
               className="fa fa-at fa-1"
