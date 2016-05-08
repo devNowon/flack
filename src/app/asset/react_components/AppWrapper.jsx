@@ -10,6 +10,7 @@ import req from 'superagent';
 
 // const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
 const SOCKET = io('http://localhost:3000/');
+const ENTER_KEY = 13;
 
 class AppWrapper extends React.Component {
   constructor(props) {
@@ -160,21 +161,10 @@ class AppWrapper extends React.Component {
     SOCKET.emit('typing', false);
   }
   handleKeyPress(e) {
-    if (e.key === 'Enter') { 
-    SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue]);
+    if (e.keyCode === ENTER_KEY) {
+      SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue.trim()]);
       this.setState({inputValue: ''});
     }
-    // var a = this.state.inputValue;
-    // a=a.replace(/\s+$/g, '');
-    // console.log(a);
-    // if (e.key === 'Enter'&&a!='') { //공백시..
-    //   SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue]);
-    //   this.setState({inputValue: ''});
-    //   e.preventDefault();
-    //   return false;
-    // }else if(e.key === 'Enter'&&a==''){
-    //   e.preventDefault();
-    // }
   }
   render() {
     return (
