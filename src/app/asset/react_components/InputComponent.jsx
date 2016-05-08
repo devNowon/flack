@@ -15,7 +15,7 @@ export default class InputComponent extends React.Component {
           onChange={this.props.handleInputChange}
           onBlur={this.props.handleInputBlur}
           onFocus={this.props.handleInputFocus}
-          onKeyPress = {this.props.handleKeyPress} 
+          onKeyDown = {this.props.handleKeyPress} 
           multiLine={true}
           rows={1}
           rowsMax={4}

@@ -161,7 +161,7 @@ class AppWrapper extends React.Component {
     SOCKET.emit('typing', false);
   }
   handleKeyPress(e) {
-    if (e.keyCode === ENTER_KEY) {
+    if (e.keyCode === ENTER_KEY) { 
       SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue.trim()]);
       this.setState({inputValue: ''});
     }
