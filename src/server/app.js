@@ -91,12 +91,15 @@ io.on('connection', function(socket){
   });
 
   socket.on('roomInformation', function(){
-    io.emit('roomInformation', io.sockets.adapter.rooms);
+      Channel.find({}, function(err, channel) {
+        if (err) {}
+        io.emit('roomInformation', channel);
+      });
   });
 
   socket.on('sendMessage', function(data){
     // Message.save(new Message({content: data}), );
-    io.sockets.in(roomID).emit('receiveMessage', data);
+    io.sockets.in(roomID).emit('receiveMessage', {room: roomID, data: data});
   });
 
   socket.on('typing', function(bool){
