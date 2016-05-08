@@ -29,7 +29,9 @@ class ChannelWrapperComponent extends React.Component {
               style={style.leftIcon}
               />}
           rightIcon={null}
-          handleItemClick={this.props.handleChnlItemClick}/>
+          handleItemClick={this.props.handleChnlItemClick}
+          sessionList={-1}
+          />
      </div>
     );
   }

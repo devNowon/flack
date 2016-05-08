@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 // define the schema for our user model
+
 var messageSchema = new mongoose.Schema({
   authorId: mongoose.Schema.ObjectId,
   content: String,
