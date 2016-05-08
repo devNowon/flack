@@ -3,13 +3,14 @@ import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
+import MultiAutoCompleteTextField from '../common_components/MultiAutoCompleteComponent.jsx';
 import $ from 'jquery';
 import _ from 'lodash';
 
 const styles = {
   block: {
     maxWidth: '250px'
-  }
+  },
 }
 
 const channelTypeMessage = {
@@ -35,6 +36,11 @@ class CreateChannelFormDialog extends React.Component {
       channelType: "public",
       channelName: "",
       channelNameValidationMessage: "",
+      members: [
+          {_id: "1129084adfs", nickname: "garam"}, 
+          {_id: "112asdfj123", nickname: "eunvanz"},           
+          {_id: "1123fadjwsf", nickname: "james"},
+        ]
     }
   }
   _toggleChannelType() {
@@ -113,6 +119,14 @@ class CreateChannelFormDialog extends React.Component {
         onTouchTap={this._createChannel}
       />,
     ];
+    const getMemberList = () => {
+      let list = [];
+      const members = this.state.members;
+      for (let index in members) {
+        list.push({value: members[index]._id, text: members[index].nickname});
+      }
+      return list;
+    }
     return (
       <Dialog
         {...this.props}
@@ -143,10 +157,13 @@ class CreateChannelFormDialog extends React.Component {
           value={this.state.channelName}
           onKeyPress={this._handleKeyPress}
         />
-        <TextField 
-          hintText="Search by name" 
+        <MultiAutoCompleteTextField
+          list={getMemberList()}
+          hintText="Search by name"
           floatingLabelText="Invite others to join (optional)"
           fullWidth={true}
+          openList={this.state.inviteListOpen}
+          onClickListItem={this._handleMemberClick}
         />
         <TextField 
           hintText="Briefly describe the purpose of this channel" 
