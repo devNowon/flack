@@ -61,11 +61,12 @@ io.on('connection', function(socket){
   io.emit('mySession', socket.id);
 
   Channel.find({}, function(err, channel) {
-        if (err) {
+    console.log("channel : " + channel);
+    if (err) {
 
-        }
-        io.emit('roomInformation', channel);
-      });
+    }
+    io.emit('roomInformation', channel);
+  });
   var roomID = 'global';
   socket.join(roomID);
 
@@ -86,7 +87,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('sendMessage', function(data){
-    // Message.save(new Message({content: data}), )
+    // Message.save(new Message({content: data}), );
     io.sockets.in(roomID).emit('receiveMessage', data);
   });
 
