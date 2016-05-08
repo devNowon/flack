@@ -6,8 +6,8 @@ import MessageWrapperComponent from './MessageWrapperComponent.jsx';
 import io from 'socket.io-client';
 import _ from 'lodash';
 
-const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
-// const SOCKET = io('http://localhost:3000/');
+// const SOCKET = io('http://murmuring-ridge-75162.herokuapp.com/');
+const SOCKET = io('http://localhost:3000/');
 
 class AppWrapper extends React.Component {
   constructor(props) {
@@ -71,9 +71,9 @@ class AppWrapper extends React.Component {
   _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
       let resultChannel = [];
-      for (let channel of obj) {
-        console.log('names: ' + channel.name);
-        resultChannel.push(channel.name);
+      for (let index in obj) {
+        console.log('names: ' + obj[index].name);
+        resultChannel.push(obj[index].name);
       }
       this.setState({channelArr: resultChannel});
       // const resultPeople = _.keys(obj).filter((key) => (_.startsWith(_.trim(key), '/#')));

@@ -67,27 +67,27 @@ io.on('connection', function(socket){
     }
     io.emit('roomInformation', channel);
   });
-  // var roomID = 'global';
-  // socket.join(roomID);
+  var roomID = 'global';
+  socket.join(roomID);
 
   socket.on('joinRoom', function(data){
     roomID = data;
-    // socket.join(roomID);
-    // io.emit('roomInformation', io.sockets.adapter.rooms);
+    socket.join(roomID);
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('leaveRoom', function(data){
     socket.leave(roomID);
-    // roomID = 'global';
-    // io.emit('roomInformation', io.sockets.adapter.rooms);
+    roomID = 'global';
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
-  // socket.on('roomInformation', function(){
-  //   io.emit('roomInformation', io.sockets.adapter.rooms);
-  // });
+  socket.on('roomInformation', function(){
+    io.emit('roomInformation', io.sockets.adapter.rooms);
+  });
 
   socket.on('sendMessage', function(data){
-    // Message.save(new Message({content: data}), )
+    // Message.save(new Message({content: data}), );
     io.sockets.in(roomID).emit('receiveMessage', data);
   });
 
@@ -96,7 +96,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    // io.emit('roomInformation', io.sockets.adapter.rooms);
+    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('createChannel', function(data) {
