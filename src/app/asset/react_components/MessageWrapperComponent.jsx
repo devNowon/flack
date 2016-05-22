@@ -31,18 +31,20 @@ export default class MessageWrapperComponent extends React.Component {
       let messages = this.props.receivedMessages;
       var temp = '';
       for(var i = 0 ; i < messages.length ; i++){
-        if (temp==messages[i][0]){
-          dom.push(<MessageLightComponent author={messages[i][0]} message={messages[i][1]} key={i} />);
+        if (temp==messages[i]){
+          dom.push(<MessageLightComponent author={messages[i]} message={messages[i]} key={i} />);
         }else{
-          dom.push(<MessageComponent author={messages[i][0]} message={messages[i][1]} key={i} />);
+          dom.push(<MessageComponent author={messages[i]} message={messages[i]} key={i} />);
         }
-        temp=messages[i][0];
+        temp=messages[i];
       }
       return dom;
     };
 
     const messageComponentNavbar = () => (
       <Toolbar>
+        <ToolbarTitle text={this.props.currentRoom} />
+        <ToolbarTitle text="People" />
         <ToolbarGroup firstChild={true} float="left">
           <DropDownMenu value={3}>
             <MenuItem value={1} primaryText="All Broadcasts" />
@@ -85,17 +87,6 @@ export default class MessageWrapperComponent extends React.Component {
             style={{width:'100%'}}
           ></InputComponent>
           {this.props.TYPING?<nowInput />:""}
-
-          {/* <div>
-            <InputComponent
-              inputValue={this.props.roomName}
-              handleInputChange={this.props.handleRoomNameInputChange}
-              handleButtonClick={this.props.handleRoomNameButtonClick}
-              buttonText="enter room"
-            />
-          </div> 
-          <button onClick={this.props.getRoomInformation}> Get Room Info </button>
-          */}
         </div>
     );
   }

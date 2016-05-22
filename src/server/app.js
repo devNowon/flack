@@ -81,13 +81,11 @@ io.on('connection', function(socket){
   socket.on('joinRoom', function(data){
     roomID = data;
     socket.join(roomID);
-    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('leaveRoom', function(data){
     socket.leave(roomID);
     roomID = 'global';
-    io.emit('roomInformation', io.sockets.adapter.rooms);
   });
 
   socket.on('roomInformation', function(){
@@ -97,9 +95,8 @@ io.on('connection', function(socket){
       });
   });
 
-  socket.on('sendMessage', function(data){
-    // Message.save(new Message({content: data}), );
-    io.sockets.in(roomID).emit('receiveMessage', {room: roomID, data: data});
+  socket.on('sendMessage', function(room, data){
+    io.sockets.in(room).emit('receiveMessage', {room: room, data: data});
   });
 
   socket.on('typing', function(bool){

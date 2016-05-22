@@ -35,8 +35,9 @@ class AppWrapper extends React.Component {
       mySession:[],
       myID:'',
       myName : '',
+      currentRoom: 'global',
       inputValue: '',
-      receivedMessages: [],
+      receivedMessages: {},
       TYPING: false,
       loggedIn : false,
       auth : null,
@@ -67,6 +68,9 @@ class AppWrapper extends React.Component {
     // 채널 채팅 화면 전환
     console.log('채널채팅화면');
     console.log('clicked value: ' + item);
+    this.setState({currentRoom: item}, () => {
+      SOCKET.emit('joinRoom', item);      
+    })
   }
   handlePeopleAddClick() {
     console.log('add clicked');
@@ -95,6 +99,7 @@ class AppWrapper extends React.Component {
   _getSessionInformation() {
     SOCKET.on('roomInformation', (obj) => {
       let resultChannel = [];
+      console.log(obj);
       for (let index in obj) {
         console.log('names: ' + obj[index].name);
         resultChannel.push(obj[index].name);
@@ -112,7 +117,6 @@ class AppWrapper extends React.Component {
   }
 
   componentDidMount() {
-
     SOCKET.on('receiveMessage', this.receiveProcess);
     SOCKET.on('typing', (bool) => {
       this.setState({ TYPING: bool });
@@ -121,21 +125,15 @@ class AppWrapper extends React.Component {
       console.log(obj);
       this.setState({myID: obj.customId});
     });
-    // if (this.state.auth==false){
-
-    // }else{
-
-    // }
   }
 
   getRoomInformation() {
     SOCKET.emit('roomInformation');
   }
-
   
   receiveProcess(msg) {
-    let receivedMessages = this.state.receivedMessages.slice();
-    receivedMessages.push(msg);
+    let receivedMessages = _.cloneDeep(this.state.receivedMessages);
+    (receivedMessages[msg.room] || (receivedMessages[msg.room] = [])).push(msg.data);
     this.setState({ receivedMessages: receivedMessages });
   }
 
@@ -161,7 +159,7 @@ class AppWrapper extends React.Component {
   }
   handleKeyPress(e) {
     if (e.key === 'Enter') { 
-    SOCKET.emit('sendMessage', [this.state.mySession, this.state.inputValue]);
+    SOCKET.emit('sendMessage', this.state.currentRoom, this.state.inputValue);
       this.setState({inputValue: ''});
     }
     // var a = this.state.inputValue;
@@ -189,8 +187,9 @@ class AppWrapper extends React.Component {
               handleInputChange={this.handleInputChange}
               receiveProcess={this.receiveProcess}
               getRoomInformation={this.getRoomInformation}
+              currentRoom={this.state.currentRoom}
               inputValue={this.state.inputValue}
-              receivedMessages={this.state.receivedMessages}
+              receivedMessages={(this.state.receivedMessages[this.state.currentRoom])?this.state.receivedMessages[this.state.currentRoom]:[]}
               TYPING={this.state.TYPING}
               className="content-wrapper"
             />

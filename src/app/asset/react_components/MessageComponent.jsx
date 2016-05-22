@@ -43,8 +43,7 @@ export default class MessageComponent extends React.Component {
               {this.props.message} 
             </p> 
           }
-          >
-      </ListItem>
+      />
     );
   }
 }
